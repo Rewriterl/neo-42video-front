@@ -1,7 +1,7 @@
 <template>
   <div class="app-contain">
     <AwVideo
-      src="https://kol-fans.fp.ps.netease.com/file/617cf57e143cfa9a2065d4eexrIXv1Yk03"
+      src="https://kol-fans.fp.ps.netease.com/file/614828e13e68f4b3716769f9UjSiWoB203"
     />
   </div>
 </template>
@@ -22,12 +22,7 @@ export default defineComponent({
 })
 </script>
 <style lang="less">
-#app {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
+@import '~styles/app';
 .app-contain {
   position: relative;
   width: 100%;

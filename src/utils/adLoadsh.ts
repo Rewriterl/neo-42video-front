@@ -1,8 +1,8 @@
-import Notify from 'element-plus/lib/el-notification'
+// import Notify from 'element-plus/lib/el-notification'
 
-type DefaultFn = (...args: Any[]) => void
+type DefaultFn = (...args: any[]) => void
 interface Tree {
-  [prop: string]: Any
+  [prop: string]: any
   children?: Tree[]
 }
 
@@ -13,7 +13,7 @@ interface Tree {
  */
 export function debounce(callback: DefaultFn, delay = 300) {
   let timer: NodeJS.Timeout | null = null
-  return function (this: Any, ...args: Any[]) {
+  return function (this: any, ...args: any[]) {
     if (timer) clearTimeout(timer)
     timer = setTimeout(() => {
       callback.apply(this, args)
@@ -28,7 +28,7 @@ export function debounce(callback: DefaultFn, delay = 300) {
  */
 export function throttle(callback: DefaultFn, delay = 300) {
   let flag = false
-  return function (this: Any, ...args: Any[]) {
+  return function (this: any, ...args: any[]) {
     if (flag) return
     flag = true
     setTimeout(() => {
@@ -110,8 +110,8 @@ export function numLimit(num: number, min = 0, max = 100): number {
  * @returns 结果下标，找不到为 -1
  */
 export function findLastIndex(
-  arr: Any[],
-  callback: (cur: Any, index: number) => boolean
+  arr: any[],
+  callback: (cur: any, index: number) => boolean
 ) {
   let index = 0
   for (let i = 0; i < arr.length; i++) {
@@ -136,10 +136,10 @@ export function deepCopy<T>(obj: T): T {
  * @param key 去重的对象关键字
  * @returns 去重后结果
  */
-export function arrObjRmSameByKey(arrA: Any[], arrB: Any[], key: string) {
-  const res: Any[] = []
+export function arrObjRmSameByKey(arrA: any[], arrB: any[], key: string) {
+  const res: any[] = []
   for (let i = 0; i < arrA.length; i++) {
-    const index = arrB.findIndex((item: Any) => item[key] === arrA[i][key])
+    const index = arrB.findIndex((item: any) => item[key] === arrA[i][key])
     if (index === -1) res.push(arrA[i])
   }
   return res
@@ -151,9 +151,9 @@ export function arrObjRmSameByKey(arrA: Any[], arrB: Any[], key: string) {
  * @param arrB 数组B
  * @returns 去重后结果
  */
-export function arrSubtraction(arrA: Any[], arrB: Any[]) {
+export function arrSubtraction(arrA: any[], arrB: any[]) {
   return Array.from(
-    new Set([...arrA].filter((item: Any) => !arrB.includes(item)))
+    new Set([...arrA].filter((item: any) => !arrB.includes(item)))
   )
 }
 
@@ -164,7 +164,7 @@ export function arrSubtraction(arrA: Any[], arrB: Any[]) {
  */
 export function objArrDeDuplication<T>(
   arr: T[],
-  callback: (item: T) => Any
+  callback: (item: T) => any
 ): T[] {
   const res: T[] = []
   arr.forEach((item) => {
@@ -181,7 +181,7 @@ export function objArrDeDuplication<T>(
  */
 export function flatTree(tree: Tree[]): Tree[] {
   const res: Tree[] = []
-  tree.forEach((item: Any) => {
+  tree.forEach((item: any) => {
     const hasChild = item.children instanceof Array
     res.push(item)
     if (hasChild) {
@@ -199,9 +199,9 @@ export function flatTree(tree: Tree[]): Tree[] {
  */
 export function findInTree(
   tree: Tree[],
-  callback: (item: Any) => boolean
-): Any {
-  return tree.reduce((total: Any, item: Any) => {
+  callback: (item: any) => boolean
+): any {
+  return tree.reduce((total: any, item: any) => {
     if (callback(item)) {
       total = item
     }
@@ -215,8 +215,8 @@ export function findInTree(
  * @param tree 树形结构
  * @param callback 循环回调，携带当前遍历数据
  */
-export function treeTraversal(tree: Tree[], callback?: (item: Any) => void) {
-  tree.forEach((item: Any) => {
+export function treeTraversal(tree: Tree[], callback?: (item: any) => void) {
+  tree.forEach((item: any) => {
     const hasChild = item.children instanceof Array
     callback && callback(item)
     if (hasChild) {
@@ -231,7 +231,7 @@ export function treeTraversal(tree: Tree[], callback?: (item: Any) => void) {
  * @param callback 条件
  * @returns
  */
-export function splitAfter(arr: Any[], callback: (item: Any) => boolean) {
+export function splitAfter(arr: any[], callback: (item: any) => boolean) {
   const index = arr.findIndex(callback)
   return arr.slice(index + 1, arr.length)
 }
@@ -273,11 +273,11 @@ export function copyText(text: string | number) {
   document.addEventListener('copy', save)
   document.execCommand('copy')
   document.removeEventListener('copy', save)
-  Notify({
-    title: '内容复制',
-    message: '内容已经成功复制到粘贴板~',
-    type: 'success'
-  })
+  // Notify({
+  //   title: '内容复制',
+  //   message: '内容已经成功复制到粘贴板~',
+  //   type: 'success'
+  // })
 }
 
 /**
@@ -285,19 +285,20 @@ export function copyText(text: string | number) {
  * @param el 绑定节点
  * @param type to全屏 exit退出全屏
  */
-export function fullscreen(el: HTMLElement | Any, type: 'to' | 'exit') {
+export function fullscreen(el: HTMLElement, type: 'to' | 'exit') {
   if (type === 'to') {
-    if (el.requestFullscreen) {
-      return el.requestFullscreen()
-    } else if (el.webkitRequestFullScreen) {
-      return el.webkitRequestFullScreen()
-    } else if (el.mozRequestFullScreen) {
-      return el.mozRequestFullScreen()
+    const doc = el as any
+    if (doc.requestFullscreen) {
+      return doc.requestFullscreen()
+    } else if (doc.webkitRequestFullScreen) {
+      return doc.webkitRequestFullScreen()
+    } else if (doc.mozRequestFullScreen) {
+      return doc.mozRequestFullScreen()
     } else {
-      return el.msRequestFullscreen()
+      return doc.msRequestFullscreen()
     }
   } else if (type === 'exit') {
-    const doc = document as Any
+    const doc = document as any
     if (doc.exitFullscreen) {
       doc.exitFullscreen()
     } else if (doc.mozCancelFullScreen) {
@@ -325,10 +326,10 @@ export function getUrlQuery(key: string) {
  * @param rootCallback 用于判断是否为根节点的回调
  * @returns 树
  */
-export function toTree(data: Any[], rootCallback: (item: Any) => boolean) {
+export function toTree(data: any[], rootCallback: (item: any) => boolean) {
   // 创建结果和map容器
-  const tree: Any[] = []
-  const map: Any = {}
+  const tree: any[] = []
+  const map: any = {}
   // 数据处理
   for (const item of data) {
     // 获取自身id和父id
@@ -389,7 +390,7 @@ export function timeToMs(time: string) {
  * @param df 失败时的默认值
  * @returns
  */
-export function jsonParse(str: string, df: Any) {
+export function jsonParse(str: string, df: any) {
   try {
     return JSON.parse(str)
   } catch (e) {
