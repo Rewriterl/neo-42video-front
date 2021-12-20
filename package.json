@@ -1,0 +1,38 @@
+{
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vue-tsc --noEmit && vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@types/node": "^15.12.2",
+    "axios": "^0.21.1",
+    "better-scroll": "^2.4.2",
+    "element-plus": "^1.2.0-beta.6",
+    "flv.js": "^1.6.2",
+    "path": "^0.12.7",
+    "vue": "^3.0.5",
+    "vue-router": "^4.0.8",
+    "vuex": "^4.0.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.28.1",
+    "@typescript-eslint/parser": "^4.28.1",
+    "@vitejs/plugin-vue": "^1.2.3",
+    "@vue/compiler-sfc": "^3.0.5",
+    "@vue/eslint-config-typescript": "^7.0.0",
+    "eslint": "^7.29.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-vue": "^7.12.1",
+    "less": "^4.1.1",
+    "less-loader": "^9.1.0",
+    "prettier": "^2.3.2",
+    "typescript": "^4.3.2",
+    "vite": "^2.3.7",
+    "vite-plugin-compression": "^0.2.5",
+    "vite-plugin-style-import": "^0.10.1",
+    "vue-tsc": "^0.0.24"
+  }
+}
