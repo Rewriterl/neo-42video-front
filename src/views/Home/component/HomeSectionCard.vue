@@ -38,7 +38,7 @@ export default defineComponent({
   img {
     height: 100%;
     aspect-ratio: 1/1;
-    border-radius: 14px;
+    border-radius: 10px;
   }
   .info {
     flex: 1;

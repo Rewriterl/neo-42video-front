@@ -48,7 +48,7 @@ export default defineComponent({
       // background: #fff;
       &__search {
         position: relative;
-        flex: 2;
+        flex: 1;
         input {
           width: 100%;
           height: 100%;
@@ -82,8 +82,8 @@ export default defineComponent({
       display: grid;
       grid-template-columns: 2fr 1fr;
       grid-template-rows: 2fr 1fr;
-      gap: 26px;
-      padding: 40px;
+      gap: 40px;
+      padding: 30px 50px;
       box-sizing: border-box;
     }
   }

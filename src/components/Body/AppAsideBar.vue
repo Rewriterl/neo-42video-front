@@ -60,6 +60,7 @@ export default defineComponent({
   @liHeight: 48px;
   position: relative;
   font-size: @fontSize;
+  user-select: none;
   &-slider {
     position: absolute;
     top: 0;

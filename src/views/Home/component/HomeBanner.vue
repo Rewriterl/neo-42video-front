@@ -7,7 +7,7 @@
           v-for="(item, index) in carousel.list"
           :key="index"
           :class="{ active: index === carousel.index }"
-          @click="changeCarousel(index)"
+          @mouseenter="changeCarousel(index)"
         >
           <BaseImg :src="item.cover" />
         </li>

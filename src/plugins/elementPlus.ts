@@ -5,9 +5,10 @@ import {
   ElLoading,
   ElCarousel,
   ElCarouselItem,
-  ElButton
+  ElButton,
+  ElPagination
 } from 'element-plus'
-const comps = [ElCarousel, ElCarouselItem, ElButton]
+const comps = [ElCarousel, ElCarouselItem, ElButton, ElPagination]
 const plugins = [ElLoading, ElNotification]
 export function elementPlusInit(app: App<Element>) {
   comps.forEach((comp) => {
