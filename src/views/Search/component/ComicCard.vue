@@ -1,5 +1,5 @@
 <template>
-  <div class="comic-card">
+  <div class="comic-card" @click="$router.push({ name: 'ComicMain' })">
     <BaseImg />
     <div class="info">从零开始的异世界生活</div>
   </div>

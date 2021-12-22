@@ -1,9 +1,5 @@
 <template>
   <div class="app-contain">
-    <AwVideo
-      v-if="false"
-      src="https://kol-fans.fp.ps.netease.com/file/614828e13e68f4b3716769f9UjSiWoB203"
-    />
     <aside class="app-contain__aside">
       <b>Χαλαρό</b>
       <AppAsideBar />
@@ -22,13 +18,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import AwVideo from '@comps/Render/AwVideo.vue'
+import '@/assets/icon/iconfont.css'
+import '@/assets/icon/iconfont.js'
+
 import AppAsideBar from '@comps/Body/AppAsideBar.vue'
 
 export default defineComponent({
   name: 'Comic',
   components: {
-    AwVideo,
     AppAsideBar
   },
   setup() {
