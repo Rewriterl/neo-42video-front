@@ -107,16 +107,16 @@ export default defineComponent({
 <style lang="less" scoped>
 .aw-video__progress {
   position: absolute;
-  top: -6px;
+  top: 0;
   width: 100%;
   cursor: pointer;
-  z-index: 8;
   &:hover {
     .aw-video__progress-tooltip {
       opacity: 1;
     }
   }
   ::v-deep(.el-progress) {
+    overflow: hidden;
     .el-progress-bar__outer {
       background: #ebeef53d;
       border-radius: 0;

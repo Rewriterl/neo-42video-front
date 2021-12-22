@@ -52,11 +52,11 @@
           </li>
         </ul>
       </div>
-      <Icon
-        class="control-icon control-volume"
-        :name="player.isMute ? 'mute' : 'volume'"
-        @click="volumeCutover"
-      >
+      <div class="control-icon control-volume">
+        <Icon
+          :name="player.isMute ? 'mute' : 'volume'"
+          @click="volumeCutover"
+        />
         <div class="control-volume__inner">
           <el-slider
             v-model="player.volume"
@@ -66,7 +66,7 @@
             @change="changeVolume(player.realVolume)"
           />
         </div>
-      </Icon>
+      </div>
       <Icon class="control-icon" />
       <Icon class="control-icon" @click="fullScreen" />
     </div>
@@ -237,6 +237,7 @@ export default defineComponent({
       const flv = flvInit(videoEl.value!, props.src)
       if (!flv) return
       flv.load()
+      player.status = 2
       listeners()
     }
     const listeners = () => {
@@ -245,7 +246,7 @@ export default defineComponent({
       videoEl.value.addEventListener('canplay', (e) => {
         const { duration } = e.target as HTMLVideoElement
         player.duration = duration
-        player.status = 2
+        // console.log('in')
       })
       /** 进度监听 */
       videoEl.value.addEventListener('timeupdate', (e) => {
@@ -258,7 +259,7 @@ export default defineComponent({
       })
       /** 暂停监听 */
       videoEl.value.addEventListener('pause', () => {
-        player.status = 2
+        // player.status = 2
       })
     }
     const playHandler = () => {
@@ -288,6 +289,7 @@ export default defineComponent({
       changeVolume(player.isMute ? 0 : player.realVolume)
     }
     const changeVolume = (val: number) => {
+      player.isMute = val === 0
       videoEl.value && (videoEl.value.volume = val)
     }
     const changeProgress = (val: number) => {
@@ -344,11 +346,7 @@ export default defineComponent({
   aspect-ratio: 16 / 9;
   color: var(--font-unactive-color);
   background: #000;
-  &:hover {
-    .aw-video__control {
-      opacity: 1;
-    }
-  }
+  overflow: hidden;
   video {
     position: absolute;
     left: 0;
@@ -359,8 +357,8 @@ export default defineComponent({
   }
   &__play {
     position: absolute;
-    right: 18px;
-    bottom: 10px;
+    right: 30px;
+    bottom: 4px;
     font-size: 50px;
     cursor: pointer;
     text-shadow: 0 4px 16px rgb(0 0 0 / 25%);
@@ -370,23 +368,33 @@ export default defineComponent({
     top: 0;
     left: 0;
     width: 100%;
-    height: calc(100% - @controlHeight);
+    height: calc(100% - @controlHeight - 10px);
     z-index: 5;
   }
   &__control {
+    @padding: 16px;
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 100%;
+    margin: 0 @padding;
+    padding-top: 6px;
+    margin-bottom: 8px;
+    width: calc(100% - @padding*2);
     display: flex;
     align-items: center;
     color: #fff;
-    background: #000;
+    background: rgba(0, 0, 0, 0.7);
     z-index: 8;
     height: @controlHeight;
     user-select: none;
     transition: all 0.25s;
     opacity: 0;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+
+    &:hover {
+      opacity: 1;
+    }
     .control {
       &-icon {
         display: flex;

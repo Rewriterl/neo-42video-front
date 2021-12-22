@@ -27,6 +27,7 @@ export default defineComponent({
   align-items: center;
   width: 100%;
   height: 100%;
-  background: #333;
+  background: var(--box-bg-color);
+  border-top-left-radius: 24px;
 }
 </style>
