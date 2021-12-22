@@ -342,7 +342,7 @@ export default defineComponent({
 .aw-video {
   @controlHeight: 38px;
   position: relative;
-  width: 800px;
+  width: 100%;
   aspect-ratio: 16 / 9;
   color: var(--font-unactive-color);
   background: #000;

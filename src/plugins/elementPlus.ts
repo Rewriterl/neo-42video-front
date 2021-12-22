@@ -8,7 +8,9 @@ import {
   ElButton,
   ElPagination,
   ElProgress,
-  ElSlider
+  ElSlider,
+  ElTabs,
+  ElTabPane
 } from 'element-plus'
 const comps = [
   ElCarousel,
@@ -16,7 +18,9 @@ const comps = [
   ElButton,
   ElPagination,
   ElProgress,
-  ElSlider
+  ElSlider,
+  ElTabs,
+  ElTabPane
 ]
 const plugins = [ElLoading, ElNotification]
 export function elementPlusInit(app: App<Element>) {
