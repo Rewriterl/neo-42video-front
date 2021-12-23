@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
-import AwVideo from '@comps/Render/AwVideo.vue'
+import AwVideo from '@comps/AwVideo/AwVideo.vue'
 import ComicAnthology, { Option } from './component/ComicAnthology.vue'
 import * as Api from '@apis/index'
 import { getEl } from '@/utils/adLoadsh'

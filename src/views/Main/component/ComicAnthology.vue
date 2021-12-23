@@ -67,6 +67,7 @@ export default defineComponent({
   ul {
     display: flex;
     width: 100%;
+    white-space: nowrap;
     li {
       display: flex;
       align-items: center;
@@ -84,6 +85,7 @@ export default defineComponent({
         background: var(--primary-color);
       }
       &.disable {
+        opacity: 0.8;
         color: var(--warning-color);
         cursor: no-drop;
       }

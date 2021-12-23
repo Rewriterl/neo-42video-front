@@ -59,10 +59,10 @@ export default defineComponent({
           name: '最新更新',
           key: 'latest'
         },
-        {
-          name: '热门',
-          key: 'hot'
-        },
+        // {
+        //   name: '热门',
+        //   key: 'hot'
+        // },
         {
           name: '排行',
           key: 'ranke'
@@ -79,9 +79,7 @@ export default defineComponent({
     }
     // const fetchDaysWeek = async () => {
     //   const data = await Api.getDaysWeek()
-    //   if (data) {
     //     comic.dayUpdates = data
-    //   }
     // }
     const changeTab = (key: ComicKey) => {
       tabs.active = key

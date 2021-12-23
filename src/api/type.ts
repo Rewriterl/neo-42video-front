@@ -3,16 +3,16 @@ type Page<T> = {
   total: number
 }
 
-export type SearchReturn = Page<
-  {
-    category: string[]
-    cover: string
-    description: string
-    id: string
-    season: string
-    title: string
-  }[]
->
+export interface ComicPageList {
+  category: string[]
+  cover: string
+  description: string
+  id: string
+  season: string
+  title: string
+}
+
+export type SearchComicReturn = Page<ComicPageList[]>
 
 export interface GetComicMainReturn {
   playlist: {
@@ -25,25 +25,11 @@ export interface GetComicMainReturn {
   title: string
 }
 
-export type GetLatestComic = Page<
-  {
-    category: string[]
-    cover: string
-    description: string
-    id: string
-    season: string
-    title: string
-  }[]
->
+export type GetLatestComic = Page<ComicPageList[]>
 
 export type GetDaysWeek = {
   name: string
-  value: {
-    category: string[]
-    cover: string
-    description: string
-    id: string
-    season: string
-    title: string
-  }[]
+  value: ComicPageList[]
 }[]
+
+export type FilterComicReturn = Page<ComicPageList[]>

@@ -6,11 +6,11 @@
           v-model="filter.name"
           type="text"
           placeholder="Search..."
-          @keyup.enter="searchByName"
+          @keyup.enter="searchByName()"
         />
         <Icon
           :name="hasSearchKey ? 'delete1' : 'iconsearch'"
-          @click="!hasSearchKey ? searchByName() : resetFilter()"
+          @click="!hasSearchKey ? searchByName() : resetName()"
         />
       </div>
       <Icon
@@ -50,7 +50,9 @@
       :page-size="pager.size"
       layout="prev, pager, next, jumper"
       :total="pager.total"
-      @current-change="searchByName"
+      @current-change="
+        hasSearchKey ? searchByName(false) : searchByFilter(false)
+      "
     />
   </div>
 </template>
@@ -68,10 +70,10 @@ import * as Api from '@/api'
 function filterModule() {
   const filter = reactive({
     name: '',
-    releaseTime: '',
+    year: '',
     status: '',
-    cate: '',
-    city: ''
+    label: '',
+    region: ''
   })
   const filterConfig: {
     label: string
@@ -80,12 +82,12 @@ function filterModule() {
   }[] = [
     {
       label: '发布时间',
-      key: 'releaseTime',
+      key: 'year',
       options: SEARCH_FILTER.RELEASE_TIME
     },
     {
       label: '分类',
-      key: 'cate',
+      key: 'label',
       options: SEARCH_FILTER.CATE
     },
     {
@@ -95,22 +97,41 @@ function filterModule() {
     },
     {
       label: '发布时间',
-      key: 'city',
+      key: 'region',
       options: SEARCH_FILTER.CITY
     }
   ]
   const pager = reactive({
-    currnet: 0,
+    currnet: 1,
     size: 24,
-    total: 100
+    total: 0
   })
   const filterVisible = ref(true)
+
+  const resetPager = () => {
+    pager.currnet = 1
+    pager.total = 0
+  }
+  const resetFilter = () => {
+    resetPager()
+    Object.keys(filter).forEach((key) => {
+      if (key !== 'name') {
+        ;(filter as any)[key] = ''
+      }
+    })
+  }
+  const resetName = () => {
+    resetPager()
+    filter.name = ''
+  }
 
   return {
     filter,
     filterConfig,
     pager,
-    filterVisible
+    filterVisible,
+    resetFilter,
+    resetName
   }
 }
 export default defineComponent({
@@ -122,32 +143,38 @@ export default defineComponent({
   },
   setup() {
     const mainContentEl = ref<HTMLElement>()
-    const searchResult = ref<Api.SearchReturn['data']>([])
+    const searchResult = ref<Api.ComicPageList[]>([])
     const isFetchingSearch = ref(false)
-    const { filter, pager, ...filterModuleArgs } = filterModule()
+    const { filter, pager, resetName, resetFilter, ...filterModuleArgs } =
+      filterModule()
 
     const hasSearchKey = computed(() => filter.name !== '')
 
-    const resetFilter = () => {
-      pager.currnet = 0
-      pager.total = 0
-      filter.name = ''
-      searchResult.value.splice(0)
-    }
-    const searchByName = async () => {
+    const searchByName = async (clear = true) => {
       isFetchingSearch.value = true
       mainContentEl.value!.scrollTop = 0
-      const { data, total } = await Api.search({
+      clear && resetFilter()
+      const { data, total } = await Api.searchComic({
         name: filter.name,
-        page: pager.currnet
+        page: pager.currnet - 1
       })
       searchResult.value = data
       pager.total = total
       isFetchingSearch.value = false
     }
-    const searchByFilter = async () => {
-      resetFilter()
-      //
+    const searchByFilter = async (clear = true) => {
+      isFetchingSearch.value = true
+      clear && resetName()
+      const { data, total } = await Api.filterComic({
+        page: pager.currnet - 1,
+        label: filter.label,
+        region: filter.region,
+        year: filter.year,
+        status: filter.status
+      })
+      searchResult.value = data
+      pager.total = total
+      isFetchingSearch.value = false
     }
 
     return {
@@ -159,6 +186,7 @@ export default defineComponent({
       searchByFilter,
       searchByName,
       hasSearchKey,
+      resetName,
       resetFilter,
       ...filterModuleArgs
     }

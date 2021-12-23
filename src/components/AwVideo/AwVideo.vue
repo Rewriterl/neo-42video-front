@@ -1,11 +1,18 @@
 <template>
   <div ref="selfEl" class="aw-video">
-    <div class="aw-video__mask" @click="playHandler">
+    <div class="aw-video__mask" :class="{ disable: !src }" @click="playHandler">
       <Icon
         v-show="player.status === 2"
         class="aw-video__play"
         name="player-fill"
       />
+    </div>
+    <div v-show="player.status === 0" class="aw-video__loading">
+      <LoadingBlockRun />
+    </div>
+    <div v-show="isBad" class="aw-video__bad">
+      <img src="~static/img/video-bad.png" alt="" />
+      <span>加载失败了，好耶！</span>
     </div>
 
     <div class="aw-video__control">
@@ -90,9 +97,10 @@ import {
 } from 'vue'
 import flvjs from 'flv.js'
 import AwVideoProgress from './AwVideoProgress.vue'
+import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
 import { fullscreen, sToMs, throttle } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
-import { getVideoScreenshot } from '@/utils/media'
+// import { getVideoScreenshot } from '@/utils/media'
 
 type FlvInstance = flvjs.Player | null
 interface Player {
@@ -104,8 +112,8 @@ interface Player {
   volume: number
   /** 实际使用的音量 0-1 */
   realVolume: number
-  /** 状态  加载失败 | 加载中 | 播放中 | 暂停中  */
-  status: -1 | 0 | 1 | 2
+  /** 状态 -2无状态 -1加载失败 0加载中 1播放中 2暂停中  */
+  status: -2 | -1 | 0 | 1 | 2
   /** 全屏 */
   fullScreen: boolean
   /** 是否静音 */
@@ -193,7 +201,8 @@ function qualityModule(quality: Quality[], { emit }: SetupContext) {
 export default defineComponent({
   name: 'AwVideo',
   components: {
-    AwVideoProgress
+    AwVideoProgress,
+    LoadingBlockRun
   },
   props: {
     src: {
@@ -202,20 +211,21 @@ export default defineComponent({
     },
     quality: {
       type: Array as PropType<Quality[]>,
-      default: () => [
-        {
-          name: '1080p 超清',
-          value: 0
-        },
-        {
-          name: '720p 高清',
-          value: 1
-        },
-        {
-          name: '自动',
-          value: -1
-        }
-      ]
+      default: () => []
+      // [
+      //   {
+      //     name: '1080p 超清',
+      //     value: 0
+      //   },
+      //   {
+      //     name: '720p 高清',
+      //     value: 1
+      //   },
+      //   {
+      //     name: '自动',
+      //     value: -1
+      //   }
+      // ]
     }
   },
   setup(props, ctx) {
@@ -225,7 +235,7 @@ export default defineComponent({
     const player = reactive<Player>({
       currentTime: 0,
       duration: 0,
-      status: 0,
+      status: -2,
       volume: 60,
       get realVolume() {
         return this.volume / 100
@@ -237,6 +247,8 @@ export default defineComponent({
     })
     const { flvInit, destroy, play, pause, ...flvModuleArgs } =
       flvModule(player)
+
+    const isBad = computed(() => !props.src || player.status === -1)
 
     const init = (url: string) => {
       if (!url) return
@@ -343,19 +355,19 @@ export default defineComponent({
       player.isListened = false
     })
     watch(() => props.src, init)
-    useEventListener('keydown', (e) => {
-      // esc
-      // if ((e as KeyboardEvent).code === 'Escape') {
-      //   player.fullScreen && (player.fullScreen = false)
-      // }
-    })
+    // useEventListener('keydown', (e) => {
+    // esc
+    // if ((e as KeyboardEvent).code === 'Escape') {
+    //   player.fullScreen && (player.fullScreen = false)
+    // }
+    // })
 
-    watch(
-      () => player.fullScreen,
-      (xx) => {
-        console.log(xx, 'xx')
-      }
-    )
+    // watch(
+    //   () => player.fullScreen,
+    //   (xx) => {
+    //     console.log(xx, 'xx')
+    //   }
+    // )
 
     return {
       videoEl,
@@ -368,6 +380,7 @@ export default defineComponent({
       changeVolume,
       changeProgress,
       computedPreview,
+      isBad,
       ...qualityModule(props.quality, ctx),
       ...flvModuleArgs
     }
@@ -391,6 +404,13 @@ export default defineComponent({
     height: 100%;
     z-index: 1;
   }
+  .mask(@height: 100%) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: @height;
+  }
   &__play {
     position: absolute;
     right: 30px;
@@ -400,12 +420,34 @@ export default defineComponent({
     text-shadow: 0 4px 16px rgb(0 0 0 / 25%);
   }
   &__mask {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: calc(100% - @controlHeight - 10px);
-    z-index: 5;
+    .mask(calc(100% - @controlHeight - 10px));
+  }
+  &__bad {
+    .mask;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 16;
+    img {
+      width: 100px;
+    }
+    span {
+      font-weight: 600;
+      font-size: 20px;
+      margin-top: 30px;
+    }
+    &::after {
+      content: '';
+      .mask;
+    }
+  }
+  &__loading {
+    .mask;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 15;
   }
   &__control {
     @padding: 16px;
@@ -501,6 +543,7 @@ export default defineComponent({
         }
       }
       &-volume {
+        margin-left: auto;
         &:hover {
           .control-volume__inner {
             opacity: 1;

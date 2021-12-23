@@ -10,10 +10,10 @@ const newError = () => new Error('bad request')
  * @param param
  * @returns
  */
-export async function search(param: {
+export async function searchComic(param: {
   name: string
   page: number
-}): Promise<ApiReturns.SearchReturn> {
+}): Promise<ApiReturns.SearchComicReturn> {
   try {
     const {
       data: {
@@ -52,7 +52,7 @@ export async function getComicMain(
       .map(([k, v]) => ({
         name: `播放源 - ${k}`,
         value: (v as any[]).map((item) => ({
-          name: item.title,
+          name: item.title || '-',
           value: item.link
         }))
       }))
@@ -104,7 +104,10 @@ export async function getLatestComic(): Promise<ApiReturns.GetLatestComic | null
       throw newError()
     }
   } catch {
-    return null
+    return {
+      data: [],
+      total: 0
+    }
   }
 }
 
@@ -112,7 +115,7 @@ export async function getLatestComic(): Promise<ApiReturns.GetLatestComic | null
  * 获取每日更新动漫
  * @returns
  */
-export async function getDaysWeek(): Promise<ApiReturns.GetDaysWeek | null> {
+export async function getDaysWeek(): Promise<ApiReturns.GetDaysWeek> {
   try {
     const {
       data: { data }
@@ -122,6 +125,45 @@ export async function getDaysWeek(): Promise<ApiReturns.GetDaysWeek | null> {
       value: v
     }))
   } catch {
-    return null
+    return []
+  }
+}
+
+export async function filterComic(param: {
+  /** 类型 */
+  label?: string
+  /** 地区 */
+  region?: string
+  /** 年份 */
+  year?: string
+  /** 状态 */
+  status?: string
+  page: number
+}): Promise<ApiReturns.FilterComicReturn> {
+  try {
+    const api =
+      'api/filter?' +
+      Object.entries(param)
+        .filter(([k, v]) => v !== '')
+        .map(([k, v]) => `${k}=${v}`)
+        .join('&')
+    const {
+      data: {
+        data: { results, pagetotal }
+      }
+    } = await getax(api)
+    if (results instanceof Array) {
+      return {
+        data: results,
+        total: (pagetotal || 0) * 24
+      }
+    } else {
+      throw newError()
+    }
+  } catch {
+    return {
+      data: [],
+      total: 0
+    }
   }
 }

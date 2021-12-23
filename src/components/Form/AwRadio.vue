@@ -7,10 +7,8 @@
       :key="value"
       :class="{ active: modelValue === value }"
       class="aw-radio__item"
-      @click="$emit('update:modelValue', value)"
-      @contextmenu.prevent="
-        modelValue === value && $emit('update:modelValue', '')
-      "
+      @click="itemClick(value)"
+      @contextmenu.prevent="itemRightClick(value)"
     >
       {{ name }}
     </div>
@@ -40,7 +38,20 @@ export default defineComponent({
       default: ''
     }
   },
-  emits: ['update:modelValue']
+  emits: ['update:modelValue', 'change'],
+  setup(props, { emit }) {
+    const itemClick = (value: Option['value']) => {
+      emit('update:modelValue', value)
+      emit('change', value)
+    }
+    const itemRightClick = (value: Option['value']) => {
+      if (props.modelValue === value) {
+        emit('update:modelValue', '')
+        emit('change', '')
+      }
+    }
+    return { itemClick, itemRightClick }
+  }
 })
 </script>
 <style lang="less" scoped>
@@ -49,7 +60,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   width: 100%;
-  gap: 6px 0;
+  gap: 6px;
   flex-wrap: wrap;
   line-height: 16px;
   &__label {
@@ -69,6 +80,9 @@ export default defineComponent({
     &.active {
       color: var(--font-color);
       background: var(--primary-color);
+    }
+    &:hover {
+      .active;
     }
   }
 }

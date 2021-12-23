@@ -13,7 +13,7 @@ export default defineComponent({
   name: 'ComicCard',
   props: {
     detail: {
-      type: Object as PropType<Api.SearchReturn['data'][0] | null>,
+      type: Object as PropType<Api.SearchComicReturn['data'][0] | null>,
       default: null
     }
   },

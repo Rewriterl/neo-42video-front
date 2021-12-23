@@ -1,5 +1,12 @@
 import { Option } from '@comps/Form/type'
 
+function nameToOption(names: string[]): Option[] {
+  return names.map((name) => ({
+    name,
+    value: name
+  }))
+}
+
 export const SEARCH_FILTER: {
   [prop: string]: Option[]
 } = {
@@ -12,101 +19,51 @@ export const SEARCH_FILTER: {
       })),
     {
       name: '2000年以前',
-      value: -1
+      value: '2000年以前'
     }
   ],
-  STATUS: [
-    {
-      name: '连载',
-      value: 0
-    },
-    {
-      name: '完结',
-      value: 1
-    },
-    {
-      name: '未播放',
-      value: 2
-    }
-  ],
-  CATE: [
-    {
-      name: '搞笑',
-      value: 0
-    },
-    {
-      name: '治愈',
-      value: 1
-    },
-    {
-      name: '致郁',
-      value: 2
-    },
-    {
-      name: '后宫',
-      value: 3
-    },
-    {
-      name: '萝莉',
-      value: 4
-    },
-    {
-      name: '热血',
-      value: 5
-    },
-    {
-      name: '战斗',
-      value: 6
-    },
-    {
-      name: '校园',
-      value: 7
-    },
-    {
-      name: '青春',
-      value: 8
-    },
-    {
-      name: '爱情',
-      value: 9
-    },
-    {
-      name: '百合',
-      value: 10
-    },
-    {
-      name: '魔法',
-      value: 11
-    },
-    {
-      name: '悬疑',
-      value: 12
-    },
-    {
-      name: '推理',
-      value: 13
-    },
-    {
-      name: '奇幻',
-      value: 14
-    },
-    {
-      name: '科幻',
-      value: 15
-    },
-    {
-      name: '游戏',
-      value: 16
-    }
-  ],
-  CITY: [
-    {
-      name: '中国',
-      value: 0
-    },
-    {
-      name: '日本',
-      value: 1
-    }
-  ]
+  STATUS: nameToOption(['连载', '完结', '未播放']),
+  CATE: nameToOption([
+    '搞笑',
+    '运动',
+    '励志',
+    '热血',
+    '战斗',
+    '竞技',
+    '校园',
+    '青春',
+    '爱情',
+    '冒险',
+    '后宫',
+    '百合',
+    '治愈',
+    '萝莉',
+    '魔法',
+    '悬疑',
+    '推理',
+    '奇幻',
+    '科幻',
+    '游戏',
+    '神魔',
+    '恐怖',
+    '血腥',
+    '机战',
+    '战争',
+    '犯罪',
+    '历史',
+    '社会',
+    '职场',
+    '剧情',
+    '童年',
+    '教育',
+    '亲子',
+    '歌舞',
+    '美少女',
+    '轻小说',
+    '吸血鬼',
+    '女性向',
+    '泡面番',
+    '欢乐向'
+  ]),
+  CITY: nameToOption(['中国', '日本'])
 }
