@@ -2,8 +2,8 @@
   <div id="home">
     <header class="home-header">
       <div class="home-header__search">
-        <input type="text" placeholder="Search..." />
-        <i></i>
+        <input type="text" placeholder="请输入搜索关键字..." />
+        <Icon name="iconsearch" />
       </div>
       <div class="home-header__else"></div>
     </header>
@@ -65,9 +65,9 @@ export default defineComponent({
           top: 0;
           bottom: 0;
           margin: auto 0;
-          width: 26px;
-          height: 26px;
-          background: #fff;
+          font-size: 22px;
+          height: max-content;
+          color: var(--font-color);
         }
       }
       &__else {

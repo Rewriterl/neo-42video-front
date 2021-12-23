@@ -51,16 +51,16 @@ export default defineComponent({
   width: 100%;
   gap: 6px 0;
   flex-wrap: wrap;
+  line-height: 16px;
   &__label {
     color: var(--font-color);
-    font-weight: 800;
     width: max-content;
   }
   &__item {
     display: flex;
     align-items: center;
     padding: 0 14px;
-    height: 36px;
+    height: 32px;
     transition: all 0.25s;
     border-radius: 8px;
     user-select: none;
@@ -68,7 +68,7 @@ export default defineComponent({
     cursor: pointer;
     &.active {
       color: var(--font-color);
-      background: var(--bg-color);
+      background: var(--primary-color);
     }
   }
 }

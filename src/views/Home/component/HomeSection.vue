@@ -12,25 +12,25 @@
         </li>
       </ul>
     </div>
-    <div class="home-section__main">
-      <HomeSectionCard
-        v-for="item in currentComic"
-        :key="item"
-        :detail="item"
-      />
-    </div>
+    <TransUl tag="div" class="home-section__main">
+      <div v-for="item in currentComic" :key="item">
+        <HomeSectionCard :detail="item" />
+      </div>
+    </TransUl>
   </section>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, reactive } from 'vue'
 import HomeSectionCard from './HomeSectionCard.vue'
+import TransUl from '@comps/Animate/TransUl.vue'
 import * as Api from '@apis/index'
 
 export default defineComponent({
   name: 'HomeSection',
   components: {
-    HomeSectionCard
+    HomeSectionCard,
+    TransUl
   },
   setup() {
     type ComicKey = keyof typeof comic
@@ -112,6 +112,10 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     gap: 14px;
+    & > div {
+      flex: 1;
+      overflow: hidden;
+    }
   }
   &__tabs {
     display: flex;

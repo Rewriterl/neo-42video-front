@@ -5,11 +5,12 @@ import router from './router'
 import { elementPlusInit } from './plugins/elementPlus'
 import { createVueInit } from '@/utils/vue/index'
 import { directs } from '@/utils/vue/directs'
+import { createPreloadCdn } from '@/plugins/preloadCdn.class'
+
+createPreloadCdn()
+createTheme()
 
 const app = createApp(App)
-
-createTheme()
 elementPlusInit(app)
 createVueInit(app).useDirects(directs).useComps()
-
 app.use(router).mount('#app')

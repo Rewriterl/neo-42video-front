@@ -81,7 +81,7 @@ export default defineComponent({
       }
       &.active {
         color: var(--font-color);
-        background: var(--aside-bg-color);
+        background: var(--primary-color);
       }
       &.disable {
         color: var(--warning-color);

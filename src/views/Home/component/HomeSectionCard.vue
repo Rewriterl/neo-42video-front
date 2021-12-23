@@ -31,14 +31,15 @@ export default defineComponent({
   position: relative;
   display: flex;
   align-items: center;
-  flex: 1;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   background: var(--bg-color);
   border-radius: 12px;
   cursor: pointer;
   border: 2px solid rgba(0, 0, 0, 0);
   transition: all 0.25s;
-  padding: 12px;
+  padding: 10px 12px;
   box-sizing: border-box;
   &:hover {
     border-color: var(--primary-color);
@@ -55,6 +56,8 @@ export default defineComponent({
     overflow: hidden;
     p {
       color: var(--font-color);
+      margin-bottom: 4px;
+      .p-truncate;
     }
     span {
       font-size: 14px;

@@ -8,11 +8,19 @@
           placeholder="Search..."
           @keyup.enter="searchByName"
         />
-        <Icon name="iconsearch" @click="searchByName" />
+        <Icon
+          :name="hasSearchKey ? 'delete1' : 'iconsearch'"
+          @click="!hasSearchKey ? searchByName() : resetFilter()"
+        />
       </div>
-      <div class="search-header__else"></div>
+      <Icon
+        class="search-header__filter"
+        name="filter"
+        :class="{ active: filterVisible }"
+        @click="filterVisible = !filterVisible"
+      />
     </header>
-    <article class="search-filter">
+    <article v-show="filterVisible" class="search-filter">
       <AwRadio
         v-for="{ label, key, options } in filterConfig"
         :key="key"
@@ -23,12 +31,20 @@
       />
     </article>
     <main class="search-main">
-      <div v-show="isFetchingSearch" class="search-main__loading"></div>
+      <transition
+        enter-active-class="animate__fadeIn"
+        leave-active-class="animate__fadeOut"
+      >
+        <div v-show="isFetchingSearch" class="search-main__loading">
+          <LoadingCodeRun text="电波获取中，请稍后" />
+        </div>
+      </transition>
       <div ref="mainContentEl" class="search-main__content">
         <ComicCard v-for="item in searchResult" :key="item.id" :detail="item" />
       </div>
     </main>
     <el-pagination
+      v-show="searchResult.length > 0"
       v-model:currentPage="pager.currnet"
       class="search-page"
       :page-size="pager.size"
@@ -40,10 +56,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { computed, defineComponent, reactive, ref } from 'vue'
 
 import AwRadio, { Option } from '@comps/Form/AwRadio.vue'
 import ComicCard from './component/ComicCard.vue'
+import LoadingCodeRun from '@comps/Loading/LoadingCodeRun.vue'
 
 import { SEARCH_FILTER } from './statics/form'
 import * as Api from '@/api'
@@ -87,24 +104,29 @@ function filterModule() {
     size: 24,
     total: 100
   })
+  const filterVisible = ref(true)
 
   return {
     filter,
     filterConfig,
-    pager
+    pager,
+    filterVisible
   }
 }
 export default defineComponent({
   name: 'Search',
   components: {
     AwRadio,
-    ComicCard
+    ComicCard,
+    LoadingCodeRun
   },
   setup() {
     const mainContentEl = ref<HTMLElement>()
     const searchResult = ref<Api.SearchReturn['data']>([])
     const isFetchingSearch = ref(false)
     const { filter, pager, ...filterModuleArgs } = filterModule()
+
+    const hasSearchKey = computed(() => filter.name !== '')
 
     const resetFilter = () => {
       pager.currnet = 0
@@ -136,6 +158,8 @@ export default defineComponent({
       searchResult,
       searchByFilter,
       searchByName,
+      hasSearchKey,
+      resetFilter,
       ...filterModuleArgs
     }
   }
@@ -157,6 +181,7 @@ export default defineComponent({
     }
     &-header {
       display: flex;
+      align-items: center;
       gap: 26px;
       width: 800px;
       height: 48px;
@@ -164,6 +189,7 @@ export default defineComponent({
       &__search {
         position: relative;
         width: 50%;
+        height: 100%;
         color: var(--font-color);
         input {
           width: 100%;
@@ -184,6 +210,23 @@ export default defineComponent({
           margin: auto 0;
           height: max-content;
           font-size: 20px;
+          cursor: pointer;
+          transition: all 0.25s;
+          &:hover {
+            opacity: 0.6;
+          }
+        }
+      }
+      &__filter {
+        color: var(--font-color);
+        font-size: 28px;
+        cursor: pointer;
+        transition: all 0.25s;
+        &.active {
+          color: var(--primary-color);
+        }
+        &:hover {
+          .active;
         }
       }
     }
@@ -191,7 +234,7 @@ export default defineComponent({
       .box;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
       width: 100%;
       padding: 16px 30px;
       box-sizing: border-box;
@@ -222,6 +265,8 @@ export default defineComponent({
         width: 100%;
         height: 100%;
         z-index: 4;
+        background: var(--box-bg-color);
+        animation-duration: 0.5s;
       }
     }
     &-page {
