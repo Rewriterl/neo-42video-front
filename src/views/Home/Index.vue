@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, reactive } from 'vue'
 import HomeBanner from './component/HomeBanner.vue'
 import HomeSection from './component/HomeSection.vue'
 

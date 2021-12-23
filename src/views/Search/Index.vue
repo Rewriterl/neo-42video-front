@@ -2,8 +2,13 @@
   <div id="search">
     <header class="search-header">
       <div class="search-header__search">
-        <input type="text" placeholder="Search..." />
-        <i></i>
+        <input
+          v-model="filter.name"
+          type="text"
+          placeholder="Search..."
+          @keyup.enter="searchByName"
+        />
+        <Icon name="iconsearch" @click="searchByName" />
       </div>
       <div class="search-header__else"></div>
     </header>
@@ -14,10 +19,14 @@
         v-model="filter[key]"
         :label="label"
         :options="options"
+        @change="searchByFilter"
       />
     </article>
     <main class="search-main">
-      <ComicCard v-for="item in 16" :key="item" />
+      <div v-show="isFetchingSearch" class="search-main__loading"></div>
+      <div ref="mainContentEl" class="search-main__content">
+        <ComicCard v-for="item in searchResult" :key="item.id" :detail="item" />
+      </div>
     </main>
     <el-pagination
       v-model:currentPage="pager.currnet"
@@ -25,21 +34,23 @@
       :page-size="pager.size"
       layout="prev, pager, next, jumper"
       :total="pager.total"
-      @current-change="() => false"
+      @current-change="searchByName"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, reactive, ref } from 'vue'
 
 import AwRadio, { Option } from '@comps/Form/AwRadio.vue'
 import ComicCard from './component/ComicCard.vue'
 
 import { SEARCH_FILTER } from './statics/form'
+import * as Api from '@/api'
 
 function filterModule() {
   const filter = reactive({
+    name: '',
     releaseTime: '',
     status: '',
     cate: '',
@@ -73,9 +84,10 @@ function filterModule() {
   ]
   const pager = reactive({
     currnet: 0,
-    size: 16,
+    size: 24,
     total: 100
   })
+
   return {
     filter,
     filterConfig,
@@ -89,9 +101,42 @@ export default defineComponent({
     ComicCard
   },
   setup() {
+    const mainContentEl = ref<HTMLElement>()
+    const searchResult = ref<Api.SearchReturn['data']>([])
+    const isFetchingSearch = ref(false)
+    const { filter, pager, ...filterModuleArgs } = filterModule()
+
+    const resetFilter = () => {
+      pager.currnet = 0
+      pager.total = 0
+      filter.name = ''
+      searchResult.value.splice(0)
+    }
+    const searchByName = async () => {
+      isFetchingSearch.value = true
+      mainContentEl.value!.scrollTop = 0
+      const { data, total } = await Api.search({
+        name: filter.name,
+        page: pager.currnet
+      })
+      searchResult.value = data
+      pager.total = total
+      isFetchingSearch.value = false
+    }
+    const searchByFilter = async () => {
+      resetFilter()
+      //
+    }
+
     return {
-      ...filterModule(),
-      SEARCH_FILTER
+      mainContentEl,
+      filter,
+      pager,
+      isFetchingSearch,
+      searchResult,
+      searchByFilter,
+      searchByName,
+      ...filterModuleArgs
     }
   }
 })
@@ -119,25 +164,26 @@ export default defineComponent({
       &__search {
         position: relative;
         width: 50%;
+        color: var(--font-color);
         input {
           width: 100%;
           height: 100%;
           background: var(--box-bg-color);
           outline: none;
           border: none;
-          color: var(--font-color);
           text-indent: 20px;
           border-radius: 12px;
+          color: var(--font-color);
+          font-size: 16px;
         }
         i {
           position: absolute;
-          right: 14px;
+          right: 16px;
           top: 0;
           bottom: 0;
           margin: auto 0;
-          width: 26px;
-          height: 26px;
-          background: #fff;
+          height: max-content;
+          font-size: 20px;
         }
       }
     }
@@ -154,15 +200,29 @@ export default defineComponent({
     }
     &-main {
       .box;
+      position: relative;
       flex: 1;
       overflow: hidden;
       border-top-left-radius: @radius;
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      padding: 30px;
-      gap: 16px;
-      box-sizing: border-box;
+      &__content {
+        width: 100%;
+        height: 100%;
+        padding: 30px;
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 16px;
+        box-sizing: border-box;
+        overflow-y: auto;
+      }
+      &__loading {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 4;
+      }
     }
     &-page {
       position: absolute;

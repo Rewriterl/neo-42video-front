@@ -1,16 +1,26 @@
 <template>
-  <div class="comic-card" @click="$router.push({ name: 'ComicMain' })">
-    <BaseImg />
-    <div class="info">从零开始的异世界生活</div>
+  <div v-if="detail" class="comic-card" @click="toComicMain(detail!.id)">
+    <BaseImg :src="detail.cover" />
+    <div class="info">{{ detail.title }}</div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
+import * as Api from '@/api'
+import { toComicMain } from '@/hooks/router'
 export default defineComponent({
   name: 'ComicCard',
+  props: {
+    detail: {
+      type: Object as PropType<Api.SearchReturn['data'][0] | null>,
+      default: null
+    }
+  },
   setup() {
-    return {}
+    return {
+      toComicMain
+    }
   }
 })
 </script>
@@ -27,6 +37,7 @@ export default defineComponent({
     width: 80%;
     aspect-ratio: 1/1.4;
     border-radius: 6px;
+    background: #def;
   }
   .info {
     flex: 1;
@@ -35,6 +46,10 @@ export default defineComponent({
     overflow: hidden;
     color: var(--font-color);
     text-align: center;
+    font-size: 14px;
+    height: 28px;
+    margin: 8px 0;
+    .p-truncate(2);
   }
 }
 </style>

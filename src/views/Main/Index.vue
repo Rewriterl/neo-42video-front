@@ -2,18 +2,29 @@
   <div class="comic-main">
     <div class="comic-main__inner">
       <div class="comic-main__video">
-        <AwVideo
-          src="https://kol-fans.fp.ps.netease.com/file/614828e13e68f4b3716769f9UjSiWoB203"
-        />
+        <AwVideo :src="player.url" />
       </div>
       <div class="comic-main__box">
         <el-tabs>
           <el-tab-pane label="详情" lazy>
-            简介：海崎新太（27岁）在作为新毕业生进入的公司工作了3个月就辞职了。之后他的就职活动也不顺利。双亲寄来的生活费也中断了，不得已只好回到乡下。能够倾听他烦恼的朋友和女友全都没有……穷途末路的海崎面前出现了一位神秘人物·夜明了。夜明向海崎提出，要他参加以尼特为对象的社会复归程序“ReLIFE”。其内容是，利用神秘的秘药，仅仅让外表回复年轻，并在一年内以高中生的身份去读高中——。
+            {{ comicName }}
           </el-tab-pane>
           <el-tab-pane label="选集" lazy>
-            <ComicAnthology label="播放列表" />
-            <ComicAnthology label="播放列表2" />
+            <div class="comic-main__anthology">
+              <div
+                v-show="anthology.isPending"
+                class="comic-main__anthology-loading"
+              ></div>
+              <ComicAnthology
+                v-for="(item, index) in playlist"
+                :key="index"
+                :active="anthology.current"
+                :label="item.name"
+                :list="item.value"
+                :bad-anthology="anthology.bads"
+                @change="changeAnthology"
+              />
+            </div>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -22,17 +33,68 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, reactive, ref } from 'vue'
 import AwVideo from '@comps/Render/AwVideo.vue'
-import ComicAnthology from './component/ComicAnthology.vue'
+import ComicAnthology, { Option } from './component/ComicAnthology.vue'
+import * as Api from '@apis/index'
+import { getEl } from '@/utils/adLoadsh'
+
 export default defineComponent({
   name: 'ComicMain',
   components: {
     AwVideo,
     ComicAnthology
   },
-  setup() {
-    return {}
+  props: {
+    id: {
+      type: [Number, String],
+      default: -1
+    }
+  },
+  setup(props) {
+    const playlist = ref<Api.GetComicMainReturn['playlist']>([])
+    const comicName = ref<Api.GetComicMainReturn['title']>('')
+    const anthology = reactive<{
+      current: string
+      bads: Option['value'][]
+      isPending: boolean
+    }>({
+      current: '',
+      bads: [],
+      isPending: false
+    })
+    const player = reactive({
+      url: ''
+    })
+
+    const changeAnthology = async (key: string) => {
+      anthology.current = key
+      anthology.isPending = true
+      const data = await getEl(Api.getVideoUrl.bind(null, key), 5)
+      if (!data) {
+        anthology.current = ''
+        anthology.bads.push(key)
+      } else {
+        player.url = data
+      }
+      anthology.isPending = false
+    }
+
+    ;(async () => {
+      const data = await Api.getComicMain(props.id)
+      if (data) {
+        playlist.value = data.playlist
+        comicName.value = data.title
+      }
+    })()
+
+    return {
+      playlist,
+      comicName,
+      changeAnthology,
+      anthology,
+      player
+    }
   }
 })
 </script>
@@ -82,6 +144,18 @@ export default defineComponent({
           color: var(--font-color);
         }
       }
+    }
+  }
+  &__anthology {
+    position: relative;
+    width: 100%;
+    &-loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 3;
     }
   }
 }

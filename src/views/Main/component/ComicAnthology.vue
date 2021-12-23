@@ -5,8 +5,8 @@
       <li
         v-for="{ name, value } in list"
         :key="value"
-        :class="{ active: active === value }"
-        @click="$emit('change', value)"
+        :class="{ active: active === value, disable: isBad(value) }"
+        @click="liClick(value)"
       >
         {{ name }}
       </li>
@@ -35,16 +35,25 @@ export default defineComponent({
     },
     list: {
       type: Array as PropType<Option[]>,
-      default: () =>
-        Array(12)
-          .fill(0)
-          .map((item, index) => ({
-            name: `第${index + 1}集`,
-            value: index
-          }))
+      default: () => []
+    },
+    badAnthology: {
+      type: Array as PropType<Option['value'][]>,
+      default: () => []
     }
   },
-  emits: ['change']
+  emits: ['change'],
+  setup(props, { emit }) {
+    const isBad = (value: Option['value']) => props.badAnthology.includes(value)
+    const liClick = (value: Option['value']) => {
+      if (isBad(value)) return
+      emit('change', value)
+    }
+    return {
+      isBad,
+      liClick
+    }
+  }
 })
 </script>
 <style lang="less" scoped>
@@ -61,16 +70,22 @@ export default defineComponent({
     li {
       display: flex;
       align-items: center;
-      padding: 0 14px;
-      height: 36px;
+      padding: 8px 14px;
       transition: all 0.25s;
       border-radius: 8px;
       user-select: none;
       color: var(--font-unactive-color);
       cursor: pointer;
+      &:hover {
+        opacity: 0.4;
+      }
       &.active {
         color: var(--font-color);
         background: var(--aside-bg-color);
+      }
+      &.disable {
+        color: var(--warning-color);
+        cursor: no-drop;
       }
     }
   }

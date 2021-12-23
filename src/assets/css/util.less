@@ -1,0 +1,12 @@
+// 超出换行段落
+.p-truncate(@line: 1) {
+  display: -webkit-box !important;
+  width: 100%;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: @line;
+  -moz-box-orient: vertical;
+  -moz-line-clamp: @line;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: pre-wrap;
+}

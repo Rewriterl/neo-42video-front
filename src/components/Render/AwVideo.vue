@@ -79,6 +79,7 @@
 import {
   computed,
   defineComponent,
+  onDeactivated,
   onMounted,
   onUnmounted,
   PropType,
@@ -111,6 +112,8 @@ interface Player {
   isMute: boolean
   /** 进度预览图 */
   preview: string
+  /** 是否已经进行监听 */
+  isListened: boolean
 }
 export interface Quality {
   name: string
@@ -164,6 +167,7 @@ function flvModule(player: Player) {
     flvInstance
   }
 }
+
 function qualityModule(quality: Quality[], { emit }: SetupContext) {
   const currentQuality = ref<Quality['value']>(-1)
   const qualitySelectVisible = ref(false)
@@ -228,39 +232,67 @@ export default defineComponent({
       },
       fullScreen: false,
       isMute: false,
-      preview: ''
+      preview: '',
+      isListened: false
     })
     const { flvInit, destroy, play, pause, ...flvModuleArgs } =
       flvModule(player)
 
-    const init = () => {
-      const flv = flvInit(videoEl.value!, props.src)
+    const init = (url: string) => {
+      if (!url) return
+      destroy()
+      const flv = flvInit(videoEl.value!, url)
       if (!flv) return
       flv.load()
       player.status = 2
       listeners()
     }
     const listeners = () => {
-      if (!videoEl.value) return
+      if (!videoEl.value || player.isListened) return
       /** 可播放监听 */
-      videoEl.value.addEventListener('canplay', (e) => {
-        const { duration } = e.target as HTMLVideoElement
-        player.duration = duration
-        // console.log('in')
-      })
+      useEventListener(
+        'canplay',
+        (e) => {
+          const { duration } = e.target as HTMLVideoElement
+          player.duration = duration
+          // console.log('in')
+        },
+        {
+          target: videoEl.value
+        }
+      )
       /** 进度监听 */
-      videoEl.value.addEventListener('timeupdate', (e) => {
-        const { currentTime } = e.target as HTMLVideoElement
-        player.currentTime = currentTime
-      })
+      useEventListener(
+        'timeupdate',
+        (e) => {
+          const { currentTime } = e.target as HTMLVideoElement
+          player.currentTime = currentTime
+        },
+        {
+          target: videoEl.value
+        }
+      )
       /** 结束监听 */
-      videoEl.value.addEventListener('end', () => {
-        player.status = 2
-      })
+      useEventListener(
+        'end',
+        () => {
+          player.status = 2
+        },
+        {
+          target: videoEl.value
+        }
+      )
       /** 暂停监听 */
-      videoEl.value.addEventListener('pause', () => {
-        // player.status = 2
-      })
+      useEventListener(
+        'pause',
+        () => {
+          // player.status = 2
+        },
+        {
+          target: videoEl.value
+        }
+      )
+      player.isListened = true
     }
     const playHandler = () => {
       switch (player.status) {
@@ -302,11 +334,15 @@ export default defineComponent({
     }, 2000)
 
     onMounted(() => {
-      init()
+      init(props.src)
     })
     onUnmounted(() => {
       destroy()
     })
+    onDeactivated(() => {
+      player.isListened = false
+    })
+    watch(() => props.src, init)
     useEventListener('keydown', (e) => {
       // esc
       // if ((e as KeyboardEvent).code === 'Escape') {

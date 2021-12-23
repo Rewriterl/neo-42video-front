@@ -36,5 +36,11 @@ export const DF_SYSTEM_COLOR: ThemeColorVar[] = [
     value: '#7270fe',
     var: '--primary-color',
     descr: '主颜色'
+  },
+  {
+    prop: 'warning',
+    value: '#f5073e',
+    var: '--warning-color',
+    descr: '错误颜色'
   }
 ]

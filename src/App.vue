@@ -7,7 +7,7 @@
     <main class="app-contain__main">
       <router-view v-slot="{ Component }">
         <!-- <transition :name="transitionName"> -->
-        <keep-alive>
+        <keep-alive exclude="ComicMain">
           <component :is="Component" v-bind="$attrs" />
         </keep-alive>
         <!-- </transition> -->

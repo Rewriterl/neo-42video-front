@@ -3,6 +3,6 @@
  */
 export const timeout = 8000
 /**
- * 博客接口
+ * 接口基准头
  */
-export const BASE_URL = 'https://api.adicw.cn/index/'
+export const BASE_URL = 'http://101.42.141.9:8002/'

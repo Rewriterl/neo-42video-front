@@ -2,13 +2,13 @@
   <ul class="app-aside__bar">
     <li class="app-aside__bar-slider" :style="sliderStyle"></li>
     <li
-      v-for="{ name, routeName } in routeList"
+      v-for="{ name, routeName, icon } in routeList"
       :key="routeName"
       class="app-aside__bar-item"
       :class="{ active: $route.name === routeName }"
       @click="$router.push({ name: routeName })"
     >
-      <i></i>
+      <Icon :name="icon" />
       <p>{{ name }}</p>
     </li>
   </ul>
@@ -25,17 +25,17 @@ export default defineComponent({
       {
         name: '首页',
         routeName: 'Home',
-        icon: ''
+        icon: 'homefill'
       },
       {
         name: '搜索',
         routeName: 'Search',
-        icon: ''
+        icon: 'search'
       },
       {
         name: '用户',
         routeName: 'User',
-        icon: ''
+        icon: 'user'
       }
     ]
     const sliderStyle = computed(() => {
@@ -91,7 +91,6 @@ export default defineComponent({
       width: @fontSize;
       height: @fontSize;
       margin-right: @fontSize;
-      background: #fff;
     }
     p {
       line-height: @fontSize;

@@ -13,14 +13,19 @@
       </ul>
     </div>
     <div class="home-section__main">
-      <HomeSectionCard v-for="item in 5" :key="item" />
+      <HomeSectionCard
+        v-for="item in currentComic"
+        :key="item"
+        :detail="item"
+      />
     </div>
   </section>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { computed, defineComponent, reactive } from 'vue'
 import HomeSectionCard from './HomeSectionCard.vue'
+import * as Api from '@apis/index'
 
 export default defineComponent({
   name: 'HomeSection',
@@ -28,12 +33,31 @@ export default defineComponent({
     HomeSectionCard
   },
   setup() {
-    const tabs = reactive({
-      active: 'new',
+    type ComicKey = keyof typeof comic
+
+    const comic = reactive<{
+      latest: Api.GetLatestComic['data']
+      dayUpdates: Api.GetDaysWeek
+      hot: any[]
+      ranke: any[]
+    }>({
+      latest: [],
+      dayUpdates: [],
+      hot: [],
+      ranke: []
+    })
+    const tabs = reactive<{
+      active: ComicKey
+      list: {
+        name: string
+        key: ComicKey
+      }[]
+    }>({
+      active: 'latest',
       list: [
         {
           name: '最新更新',
-          key: 'new'
+          key: 'latest'
         },
         {
           name: '热门',
@@ -45,12 +69,33 @@ export default defineComponent({
         }
       ]
     })
-    const changeTab = (key: string) => {
+    const currentComic = computed(() => comic[tabs.active].slice(0, 5))
+
+    const fetchLatest = async () => {
+      const data = await Api.getLatestComic()
+      if (data) {
+        comic.latest = data.data
+      }
+    }
+    // const fetchDaysWeek = async () => {
+    //   const data = await Api.getDaysWeek()
+    //   if (data) {
+    //     comic.dayUpdates = data
+    //   }
+    // }
+    const changeTab = (key: ComicKey) => {
       tabs.active = key
     }
+
+    ;(() => {
+      fetchLatest()
+      // fetchDaysWeek()
+    })()
+
     return {
       tabs,
-      changeTab
+      changeTab,
+      currentComic
     }
   }
 })

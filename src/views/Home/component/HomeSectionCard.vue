@@ -1,18 +1,26 @@
 <template>
-  <div class="home-section__card">
-    <BaseImg src="https://api.adicw.cn/uploads/StudyImg/6141a4ce2715a.png" />
+  <div v-if="detail" class="home-section__card">
+    <BaseImg :src="detail.cover" />
     <div class="info">
-      <p>这个是名字</p>
-      <span>这是一个普普通通的描述</span>
+      <p>{{ detail.title }}</p>
+      <span>{{ detail.season }}</span>
     </div>
     <div class="else"></div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
+import * as Api from '@apis/index'
+
 export default defineComponent({
   name: 'HomeSectionCard',
+  props: {
+    detail: {
+      type: Object as PropType<Api.GetLatestComic['data'][0] | null>,
+      default: null
+    }
+  },
   setup() {
     return {}
   }
