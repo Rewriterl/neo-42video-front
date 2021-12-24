@@ -17,6 +17,10 @@ export default defineComponent({
     detail: {
       type: Object as PropType<Api.SearchComicReturn['data'][0] | null>,
       default: null
+    },
+    size: {
+      type: Number,
+      default: 8
     }
   },
   setup() {
@@ -29,38 +33,40 @@ export default defineComponent({
 <style lang="less" scoped>
 .comic-card {
   position: relative;
+  width: calc(100% / v-bind(size));
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  height: 100%;
   cursor: pointer;
+  transition: all 0.25s;
+  overflow: hidden;
   &:hover {
-    img {
-      transform: scale(1.2) translateX(5%);
+    width: calc(100% / v-bind(size) * 2);
+    .info {
+      text-align: left;
     }
   }
   .cover {
-    width: 80%;
-    aspect-ratio: 1/1.4;
+    flex: 1;
+    width: 100%;
     border-radius: 6px;
     overflow: hidden;
     img {
       width: 100%;
+      height: 100%;
       background: #def;
       transition: all 0.25s;
     }
   }
 
   .info {
-    flex: 1;
     display: flex;
     align-items: center;
     overflow: hidden;
     color: var(--font-color);
     text-align: center;
     font-size: 14px;
-    height: 28px;
+    height: 36px;
     margin: 8px 0;
     .p-truncate(2);
   }

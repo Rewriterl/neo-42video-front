@@ -1,8 +1,11 @@
 <template>
   <div id="home">
     <header class="home-header">
-      <div class="home-header__search">
-        <input type="text" placeholder="请输入搜索关键字..." />
+      <div
+        class="home-header__search"
+        @click="$router.push({ name: 'Search' })"
+      >
+        <input type="text" placeholder="请输入搜索关键字..." disabled />
         <Icon name="iconsearch" />
       </div>
       <div class="home-header__else"></div>
@@ -59,6 +62,7 @@ export default defineComponent({
           color: var(--font-color);
           text-indent: 20px;
           border-radius: 12px;
+          cursor: pointer;
         }
         i {
           position: absolute;

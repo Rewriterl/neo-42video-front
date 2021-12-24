@@ -32,8 +32,8 @@ export default defineComponent({
 <style lang="less">
 @import '~styles/common';
 @import '~styles/app';
+@import '~styles/var';
 .app-contain {
-  @padding: 40px;
   position: relative;
   width: 100%;
   height: 100%;
@@ -44,12 +44,12 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     width: 280px;
-    height: calc(100% - @padding*2);
+    height: calc(100% - @frameTop*2);
     background: var(--aside-bg-color);
     border-radius: 24px;
-    padding-left: @padding;
+    padding-left: @frameTop;
     box-sizing: border-box;
-    transform: translateX(-@padding);
+    transform: translateX(-@frameTop);
     & > b {
       display: flex;
       justify-content: center;
@@ -61,9 +61,9 @@ export default defineComponent({
     }
   }
   &__main {
-    margin-top: @padding;
+    margin-top: @frameTop;
     box-sizing: border-box;
-    height: calc(100% - @padding);
+    height: calc(100% - @frameTop);
     flex: 1;
     overflow: hidden;
     position: relative;

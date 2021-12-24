@@ -420,3 +420,11 @@ export async function getEl(
 //   const res: any = obj == null ? undefined : f(obj, path)
 //   return res === undefined ? dfVal : res
 // }
+
+// export function fillArr<T extends Array<T>>(
+//   list: T,
+//   size: number,
+//   fill: () => T
+// ) {
+//   return [...list, Array(size - list.length).fill(fill())]
+// }

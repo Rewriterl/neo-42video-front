@@ -401,6 +401,7 @@ export default defineComponent({
   }
   &__mask {
     .mask(calc(100% - @controlHeight - 10px));
+    z-index: 2;
   }
   &__bad {
     .mask;

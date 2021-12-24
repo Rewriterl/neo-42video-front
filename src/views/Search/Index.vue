@@ -5,7 +5,7 @@
         <input
           v-model="filter.name"
           type="text"
-          placeholder="Search..."
+          placeholder="请输入搜索关键字..."
           @keyup.enter="searchByName()"
         />
         <Icon
@@ -41,7 +41,13 @@
         </div>
       </transition>
       <div ref="mainContentEl" class="search-main__content">
-        <ComicCard v-for="item in searchResult" :key="item.id" :detail="item" />
+        <div
+          v-for="(item, index) in realSearchResult"
+          :key="index"
+          class="search-main__content-col"
+        >
+          <ComicCard v-for="comic in item" :key="comic.id" :detail="comic" />
+        </div>
       </div>
     </main>
     <el-pagination
@@ -68,6 +74,7 @@ import LoadingCodeRun from '@comps/Loading/LoadingCodeRun.vue'
 import { SEARCH_FILTER } from './statics/form'
 import * as Api from '@/api'
 import * as Type from './types/index.type'
+import { arrAvgSplit } from '@/utils/adLoadsh'
 
 function filterModule() {
   const filter = reactive({
@@ -116,7 +123,7 @@ function filterModule() {
     size: 24,
     total: 0
   })
-  const filterVisible = ref(true)
+  const filterVisible = ref(false)
 
   const resetPager = () => {
     pager.currnet = 1
@@ -159,18 +166,20 @@ export default defineComponent({
       filterModule()
 
     const hasSearchKey = computed(() => filter.name !== '')
+    const realSearchResult = computed(() => arrAvgSplit(searchResult.value, 8))
 
     const setSearchResult = (data: Api.ComicPageList[]) => {
-      searchResult.value.splice(0)
-      const push = (count: number) => {
-        searchResult.value.push(data[count])
-        count++
-        if (count < data.length) {
-          requestAnimationFrame(() => push(count))
-        }
-      }
+      searchResult.value = data
+      // searchResult.value.splice(0)
+      // const push = (count: number) => {
+      //   searchResult.value.push(data[count])
+      //   count++
+      //   if (count < data.length) {
+      //     requestAnimationFrame(() => push(count))
+      //   }
+      // }
 
-      push(0)
+      // push(0)
     }
     const searchByName = async (clear = true) => {
       isFetchingSearch.value = true
@@ -215,12 +224,14 @@ export default defineComponent({
       hasSearchKey,
       resetName,
       resetFilter,
+      realSearchResult,
       ...filterModuleArgs
     }
   }
 })
 </script>
 <style lang="less" scoped>
+@import '~styles/var';
 #search {
   position: relative;
   display: flex;
@@ -231,6 +242,7 @@ export default defineComponent({
   overflow: hidden;
   .search {
     @radius: 24px;
+    @headerHeight: 48px;
     .box {
       background: var(--box-bg-color);
     }
@@ -239,7 +251,7 @@ export default defineComponent({
       align-items: center;
       gap: 26px;
       width: 800px;
-      height: 48px;
+      height: @headerHeight;
       // background: #fff;
       &__search {
         position: relative;
@@ -302,16 +314,22 @@ export default defineComponent({
       flex: 1;
       overflow: hidden;
       border-top-left-radius: @radius;
+      overflow-y: auto;
       &__content {
+        @padding: 30px;
         width: 100%;
-        height: 100%;
+        height: calc(100vh - @frameTop - @headerHeight);
         padding: 30px;
-        display: grid;
-        grid-template-columns: repeat(8, 1fr);
-        grid-template-rows: repeat(3, 1fr);
-        gap: 16px;
+        display: flex;
+        flex-direction: column;
         box-sizing: border-box;
-        overflow-y: auto;
+        &-col {
+          flex: 1;
+          width: 100%;
+          display: flex;
+          gap: 16px;
+          overflow: hidden;
+        }
       }
       &__loading {
         position: absolute;
