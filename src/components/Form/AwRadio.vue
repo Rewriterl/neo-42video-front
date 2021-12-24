@@ -36,6 +36,10 @@ export default defineComponent({
     label: {
       type: String,
       default: ''
+    },
+    rightCancle: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['update:modelValue', 'change'],
@@ -45,6 +49,7 @@ export default defineComponent({
       emit('change', value)
     }
     const itemRightClick = (value: Option['value']) => {
+      if (!props.rightCancle) return
       if (props.modelValue === value) {
         emit('update:modelValue', '')
         emit('change', '')

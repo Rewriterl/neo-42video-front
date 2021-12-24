@@ -25,7 +25,7 @@ export interface GetComicMainReturn {
   title: string
 }
 
-export type GetLatestComic = Page<ComicPageList[]>
+// export type GetLatestComic = Page<ComicPageList[]>
 
 export type GetDaysWeek = {
   name: string
@@ -33,3 +33,17 @@ export type GetDaysWeek = {
 }[]
 
 export type FilterComicReturn = Page<ComicPageList[]>
+
+export interface GetHomeMixData {
+  /** 每天排行 */
+  perday: { name: string; value: { title: string; episode: string }[] }[]
+  /** 每周排行 */
+  perweek: {
+    cover: string
+    id: string
+    status: string
+    title: string
+  }[]
+  /** 最新 */
+  latest: ComicPageList[]
+}

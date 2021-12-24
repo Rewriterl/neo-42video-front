@@ -3,7 +3,7 @@
     <BaseImg :src="detail.cover" />
     <div class="info">
       <p>{{ detail.title }}</p>
-      <span>{{ detail.season }}</span>
+      <span>{{ detail.desc }}</span>
     </div>
     <div class="else"></div>
   </div>
@@ -11,13 +11,17 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import * as Api from '@apis/index'
 
 export default defineComponent({
   name: 'HomeSectionCard',
   props: {
     detail: {
-      type: Object as PropType<Api.GetLatestComic['data'][0] | null>,
+      type: Object as PropType<{
+        cover: string
+        id: string
+        title: string
+        desc: string
+      } | null>,
       default: null
     }
   },

@@ -88,44 +88,49 @@ export async function getVideoUrl(key: string) {
  * 获取最新更新动漫
  * @returns
  */
-export async function getLatestComic(): Promise<ApiReturns.GetLatestComic | null> {
-  try {
-    const {
-      data: {
-        data: { results, pagetotal }
-      }
-    } = await getax('api/latest')
-    if (results instanceof Array) {
-      return {
-        data: results,
-        total: (pagetotal || 0) * 24
-      }
-    } else {
-      throw newError()
-    }
-  } catch {
-    return {
-      data: [],
-      total: 0
-    }
-  }
-}
+// export async function getLatestComic(): Promise<ApiReturns.GetLatestComic | null> {
+//   try {
+//     const {
+//       data: {
+//         data: { results, pagetotal }
+//       }
+//     } = await getax('api/latest')
+//     if (results instanceof Array) {
+//       return {
+//         data: results,
+//         total: (pagetotal || 0) * 24
+//       }
+//     } else {
+//       throw newError()
+//     }
+//   } catch {
+//     return {
+//       data: [],
+//       total: 0
+//     }
+//   }
+// }
 
 /**
  * 获取每日更新动漫
  * @returns
  */
-export async function getDaysWeek(): Promise<ApiReturns.GetDaysWeek> {
+export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null> {
   try {
     const {
       data: { data }
-    } = await getax('api/getDaysWeek')
-    return Object.entries(data || {}).map(([k, v]): any => ({
-      name: `星期${+k}`,
-      value: v
-    }))
+    } = await getax('api/getIndex')
+    return {
+      perday: Object.entries(data.perday || {}).map(([k, v]): any => ({
+        name: `星期${+k}`,
+        value: v
+      })),
+      perweek: data.perweek || [],
+      latest: data.latest || []
+    }
+    // return
   } catch {
-    return []
+    return null
   }
 }
 
@@ -138,6 +143,8 @@ export async function filterComic(param: {
   year?: string
   /** 状态 */
   status?: string
+  /** 排序 */
+  order: string | number
   page: number
 }): Promise<ApiReturns.FilterComicReturn> {
   try {

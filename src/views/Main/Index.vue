@@ -35,8 +35,9 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
 import AwVideo from '@comps/AwVideo/AwVideo.vue'
-import ComicAnthology, { Option } from './component/ComicAnthology.vue'
+import ComicAnthology from './component/ComicAnthology.vue'
 import * as Api from '@apis/index'
+import * as Type from './types/index.type'
 import { getEl } from '@/utils/adLoadsh'
 
 export default defineComponent({
@@ -52,13 +53,9 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const playlist = ref<Api.GetComicMainReturn['playlist']>([])
-    const comicName = ref<Api.GetComicMainReturn['title']>('')
-    const anthology = reactive<{
-      current: string
-      bads: Option['value'][]
-      isPending: boolean
-    }>({
+    const playlist = ref<Type.Playlist>([])
+    const comicName = ref<Type.ComicName>('')
+    const anthology = reactive<Type.Anthology>({
       current: '',
       bads: [],
       isPending: false

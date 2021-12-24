@@ -22,11 +22,12 @@
     </header>
     <article v-show="filterVisible" class="search-filter">
       <AwRadio
-        v-for="{ label, key, options } in filterConfig"
+        v-for="{ label, key, options, rightCancle } in filterConfig"
         :key="key"
         v-model="filter[key]"
         :label="label"
         :options="options"
+        :right-cancle="rightCancle"
         @change="searchByFilter"
       />
     </article>
@@ -58,14 +59,15 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref } from 'vue'
+import { computed, defineComponent, onMounted, reactive, ref } from 'vue'
 
-import AwRadio, { Option } from '@comps/Form/AwRadio.vue'
+import AwRadio from '@comps/Form/AwRadio.vue'
 import ComicCard from './component/ComicCard.vue'
 import LoadingCodeRun from '@comps/Loading/LoadingCodeRun.vue'
 
 import { SEARCH_FILTER } from './statics/form'
 import * as Api from '@/api'
+import * as Type from './types/index.type'
 
 function filterModule() {
   const filter = reactive({
@@ -73,32 +75,40 @@ function filterModule() {
     year: '',
     status: '',
     label: '',
-    region: ''
+    region: '',
+    sort: '',
+    order: SEARCH_FILTER.ORDER[0].value
   })
-  const filterConfig: {
-    label: string
-    key: keyof typeof filter
-    options: Option[]
-  }[] = [
+  const filterConfig: Type.FilterConfig<typeof filter>[] = [
     {
       label: '发布时间',
       key: 'year',
+      rightCancle: true,
       options: SEARCH_FILTER.RELEASE_TIME
     },
     {
       label: '分类',
       key: 'label',
+      rightCancle: true,
       options: SEARCH_FILTER.CATE
     },
     {
       label: '状态',
       key: 'status',
+      rightCancle: true,
       options: SEARCH_FILTER.STATUS
     },
     {
       label: '发布时间',
       key: 'region',
+      rightCancle: true,
       options: SEARCH_FILTER.CITY
+    },
+    {
+      label: '排序',
+      key: 'order',
+      rightCancle: false,
+      options: SEARCH_FILTER.ORDER
     }
   ]
   const pager = reactive({
@@ -150,6 +160,18 @@ export default defineComponent({
 
     const hasSearchKey = computed(() => filter.name !== '')
 
+    const setSearchResult = (data: Api.ComicPageList[]) => {
+      searchResult.value.splice(0)
+      const push = (count: number) => {
+        searchResult.value.push(data[count])
+        count++
+        if (count < data.length) {
+          requestAnimationFrame(() => push(count))
+        }
+      }
+
+      push(0)
+    }
     const searchByName = async (clear = true) => {
       isFetchingSearch.value = true
       mainContentEl.value!.scrollTop = 0
@@ -158,8 +180,8 @@ export default defineComponent({
         name: filter.name,
         page: pager.currnet - 1
       })
-      searchResult.value = data
       pager.total = total
+      setSearchResult(data)
       isFetchingSearch.value = false
     }
     const searchByFilter = async (clear = true) => {
@@ -170,12 +192,17 @@ export default defineComponent({
         label: filter.label,
         region: filter.region,
         year: filter.year,
-        status: filter.status
+        status: filter.status,
+        order: filter.order
       })
-      searchResult.value = data
+      setSearchResult(data)
       pager.total = total
       isFetchingSearch.value = false
     }
+
+    onMounted(() => {
+      searchByFilter()
+    })
 
     return {
       mainContentEl,

@@ -13,7 +13,7 @@
       </ul>
     </div>
     <TransUl tag="div" class="home-section__main">
-      <div v-for="item in currentComic" :key="item">
+      <div v-for="item in currentComic" :key="item.id">
         <HomeSectionCard :detail="item" />
       </div>
     </TransUl>
@@ -25,6 +25,7 @@ import { computed, defineComponent, reactive } from 'vue'
 import HomeSectionCard from './HomeSectionCard.vue'
 import TransUl from '@comps/Animate/TransUl.vue'
 import * as Api from '@apis/index'
+import * as Type from '../types/homeSection.type'
 
 export default defineComponent({
   name: 'HomeSection',
@@ -35,24 +36,12 @@ export default defineComponent({
   setup() {
     type ComicKey = keyof typeof comic
 
-    const comic = reactive<{
-      latest: Api.GetLatestComic['data']
-      dayUpdates: Api.GetDaysWeek
-      hot: any[]
-      ranke: any[]
-    }>({
-      latest: [],
-      dayUpdates: [],
-      hot: [],
-      ranke: []
+    const comic = reactive<Type.Comic>({
+      // perday: [],
+      perweek: [],
+      latest: []
     })
-    const tabs = reactive<{
-      active: ComicKey
-      list: {
-        name: string
-        key: ComicKey
-      }[]
-    }>({
+    const tabs = reactive<Type.Tabs<ComicKey>>({
       active: 'latest',
       list: [
         {
@@ -60,34 +49,44 @@ export default defineComponent({
           key: 'latest'
         },
         // {
-        //   name: '热门',
-        //   key: 'hot'
+        //   name: '日排行',
+        //   key: 'perday'
         // },
         {
-          name: '排行',
-          key: 'ranke'
+          name: '周排行',
+          key: 'perweek'
         }
       ]
     })
-    const currentComic = computed(() => comic[tabs.active].slice(0, 5))
+    const currentComic = computed(() => {
+      return {
+        latest: comic.latest.slice(0, 5).map((item) => ({
+          cover: item.cover,
+          title: item.title,
+          id: item.id,
+          desc: item.season
+        })),
+        perweek: comic.perweek.slice(0, 5).map((item) => ({
+          cover: item.cover,
+          title: item.title,
+          id: item.id,
+          desc: item.status
+        }))
+      }[tabs.active]
+    })
 
-    const fetchLatest = async () => {
-      const data = await Api.getLatestComic()
-      if (data) {
-        comic.latest = data.data
-      }
-    }
-    // const fetchDaysWeek = async () => {
-    //   const data = await Api.getDaysWeek()
-    //     comic.dayUpdates = data
-    // }
     const changeTab = (key: ComicKey) => {
       tabs.active = key
     }
 
-    ;(() => {
-      fetchLatest()
-      // fetchDaysWeek()
+    ;(async () => {
+      const data = await Api.getHomeMixData()
+      if (data) {
+        const { perday, perweek, latest } = data
+        // comic.perday = perday
+        comic.perweek = perweek
+        comic.latest = latest
+      }
     })()
 
     return {

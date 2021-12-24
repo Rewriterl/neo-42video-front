@@ -18,6 +18,7 @@
 import { defineComponent, reactive } from 'vue'
 import HomeBanner from './component/HomeBanner.vue'
 import HomeSection from './component/HomeSection.vue'
+import * as Api from '@apis/index'
 
 export default defineComponent({
   name: 'Home',

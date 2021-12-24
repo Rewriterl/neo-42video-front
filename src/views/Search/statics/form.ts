@@ -65,5 +65,6 @@ export const SEARCH_FILTER: {
     '泡面番',
     '欢乐向'
   ]),
-  CITY: nameToOption(['中国', '日本'])
+  CITY: nameToOption(['中国', '日本']),
+  ORDER: nameToOption(['更新时间', '点击量', '名称'])
 }
