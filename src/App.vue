@@ -5,13 +5,7 @@
       <AppAsideBar />
     </aside>
     <main class="app-contain__main">
-      <router-view v-slot="{ Component }">
-        <!-- <transition :name="transitionName"> -->
-        <keep-alive exclude="ComicMain">
-          <component :is="Component" v-bind="$attrs" />
-        </keep-alive>
-        <!-- </transition> -->
-      </router-view>
+      <AppRouter />
     </main>
   </div>
 </template>
@@ -22,11 +16,13 @@ import '@/assets/icon/iconfont.css'
 import '@/assets/icon/iconfont.js'
 
 import AppAsideBar from '@comps/Body/AppAsideBar.vue'
+import AppRouter from '@comps/Body/AppRouter.vue'
 
 export default defineComponent({
   name: 'Comic',
   components: {
-    AppAsideBar
+    AppAsideBar,
+    AppRouter
   },
   setup() {
     return {}
@@ -65,11 +61,12 @@ export default defineComponent({
     }
   }
   &__main {
-    padding-top: @padding;
+    margin-top: @padding;
     box-sizing: border-box;
-    height: 100%;
+    height: calc(100% - @padding);
     flex: 1;
     overflow: hidden;
+    position: relative;
   }
 }
 </style>

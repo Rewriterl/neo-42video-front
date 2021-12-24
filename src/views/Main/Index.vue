@@ -6,9 +6,6 @@
       </div>
       <div class="comic-main__box">
         <el-tabs>
-          <el-tab-pane label="详情" lazy>
-            {{ comicName }}
-          </el-tab-pane>
           <el-tab-pane label="选集" lazy>
             <div class="comic-main__anthology">
               <div
@@ -26,6 +23,9 @@
               />
             </div>
           </el-tab-pane>
+          <el-tab-pane label="详情" lazy>
+            {{ comicName }}
+          </el-tab-pane>
         </el-tabs>
       </div>
     </div>
@@ -39,6 +39,7 @@ import ComicAnthology from './component/ComicAnthology.vue'
 import * as Api from '@apis/index'
 import * as Type from './types/index.type'
 import { getEl } from '@/utils/adLoadsh'
+import { ElNotification } from 'element-plus'
 
 export default defineComponent({
   name: 'ComicMain',
@@ -67,6 +68,13 @@ export default defineComponent({
     const changeAnthology = async (key: string) => {
       anthology.current = key
       anthology.isPending = true
+      const notify = ElNotification({
+        title: '播放源',
+        message: '播放地址获取中...',
+        type: 'warning',
+        duration: 0,
+        showClose: false
+      })
       const data = await getEl(Api.getVideoUrl.bind(null, key), 5)
       if (!data) {
         anthology.current = ''
@@ -74,7 +82,21 @@ export default defineComponent({
       } else {
         player.url = data
       }
+      notify.close()
+      ElNotification({
+        title: '播放源',
+        message: data
+          ? '地址获取成功，正在载入视频'
+          : '地址获取失败，请选择其他播放源',
+        type: data ? 'success' : 'error'
+      })
       anthology.isPending = false
+    }
+    const init = async () => {
+      if (playlist.value.length > 0) {
+        anthology.current = playlist.value[0].value[0].value
+        changeAnthology(anthology.current)
+      }
     }
 
     ;(async () => {
@@ -82,6 +104,7 @@ export default defineComponent({
       if (data) {
         playlist.value = data.playlist
         comicName.value = data.title
+        init()
       }
     })()
 

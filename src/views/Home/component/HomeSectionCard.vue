@@ -1,5 +1,9 @@
 <template>
-  <div v-if="detail" class="home-section__card">
+  <div
+    v-if="detail"
+    class="home-section__card"
+    @click="toComicMain(detail!.id)"
+  >
     <BaseImg :src="detail.cover" />
     <div class="info">
       <p>{{ detail.title }}</p>
@@ -10,6 +14,7 @@
 </template>
 
 <script lang="ts">
+import { toComicMain } from '@/hooks/router'
 import { defineComponent, PropType } from 'vue'
 
 export default defineComponent({
@@ -26,7 +31,9 @@ export default defineComponent({
     }
   },
   setup() {
-    return {}
+    return {
+      toComicMain
+    }
   }
 })
 </script>

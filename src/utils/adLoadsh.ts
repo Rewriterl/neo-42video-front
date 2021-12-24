@@ -12,7 +12,7 @@ interface Tree {
  * @param delay 间隔时间
  */
 export function debounce(callback: DefaultFn, delay = 300) {
-  let timer: number | null = null
+  let timer: NodeJS.Timeout | null = null
   return function (this: any, ...args: any[]) {
     if (timer) clearTimeout(timer)
     timer = setTimeout(() => {
@@ -415,3 +415,8 @@ export async function getEl(
   curCount++
   return data || curCount > count ? data : getEl(callback, count, curCount)
 }
+
+// export function getVal(obj: any, path: string, dfVal = null) {
+//   const res: any = obj == null ? undefined : f(obj, path)
+//   return res === undefined ? dfVal : res
+// }

@@ -1,27 +1,27 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
-import styleImport from 'vite-plugin-style-import'
+// import styleImport from 'vite-plugin-style-import'
 import viteCompression from 'vite-plugin-compression'
 
 export default defineConfig({
   plugins: [
     vue(),
-    styleImport({
-      libs: [
-        {
-          libraryName: 'element-plus',
-          esModule: true,
-          ensureStyleFile: true,
-          resolveStyle: (name) => {
-            return `element-plus/lib/theme-chalk/${name}.css`
-          },
-          resolveComponent: (name) => {
-            return `element-plus/lib/${name}`
-          }
-        }
-      ]
-    }),
+    // styleImport({
+    //   libs: [
+    //     {
+    //       libraryName: 'element-plus',
+    //       esModule: true,
+    //       ensureStyleFile: true,
+    //       resolveStyle: (name) => {
+    //         return `element-plus/lib/theme-chalk/${name}.css`
+    //       },
+    //       resolveComponent: (name) => {
+    //         return `element-plus/lib/${name}`
+    //       }
+    //     }
+    //   ]
+    // }),
     viteCompression({
       verbose: true,
       disable: false,

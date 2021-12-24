@@ -61,13 +61,13 @@ export function useChildren<
   key: string | symbol
 ): {
   children: Child[]
-  linkChildren: (value: Any) => void
+  linkChildren: (value: any) => void
 } {
   const publicChildren: Child[] = reactive([])
   const internalChildren: ComponentInternalInstance[] = reactive([])
   const parent = getCurrentInstance()!
 
-  const linkChildren = (value?: Any) => {
+  const linkChildren = (value?: any) => {
     const link = (child: ComponentInternalInstance) => {
       if (child.proxy) {
         internalChildren.push(child)

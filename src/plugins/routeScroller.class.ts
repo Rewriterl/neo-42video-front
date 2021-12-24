@@ -18,7 +18,7 @@ export default class RouteScroller {
   private init() {
     sessionStorage.setItem(this.sessionStorageName, JSON.stringify({}))
   }
-  private hasDom(obj: Any): boolean {
+  private hasDom(obj: any): boolean {
     return typeof obj.meta.dom !== 'undefined'
   }
   private getOldSession(): SessionData {
@@ -41,14 +41,14 @@ export default class RouteScroller {
     const sessionData: SessionData = this.getOldSession()
     return sessionData[mame]
   }
-  private scrollTo(domName: string, top: Any) {
+  private scrollTo(domName: string, top: any) {
     nextTick(() => {
       const dom: HTMLElement | null = document.querySelector(domName)
       if (dom === null || !top) return
       dom.scrollTop = top
     })
   }
-  public setScrollTop(to: Any) {
+  public setScrollTop(to: any) {
     const { dom } = to.meta
     if (this.hasDom(to)) {
       const sessionObj: SessionObj = this.readToSession(to.name)
@@ -57,7 +57,7 @@ export default class RouteScroller {
     }
     return this
   }
-  public saveScrollTop(from: Any) {
+  public saveScrollTop(from: any) {
     const { dom } = from.meta
     if (this.hasDom(from)) {
       if (dom) {

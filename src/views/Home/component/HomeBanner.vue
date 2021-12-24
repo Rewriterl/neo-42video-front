@@ -5,7 +5,7 @@
       <ul class="home-banner__main-indicator">
         <li
           v-for="(item, index) in carousel.list"
-          :key="index"
+          :key="item.id"
           :class="{ active: index === carousel.index }"
           @mouseenter="changeCarousel(index)"
         >
@@ -20,8 +20,13 @@
         indicator-position="none"
         @change="onCarouselChanged"
       >
-        <el-carousel-item v-for="(item, index) in carousel.list" :key="index">
+        <el-carousel-item
+          v-for="item in carousel.list"
+          :key="item.id"
+          @click="toComicMain(item.id)"
+        >
           <BaseImg :src="item.cover" />
+          <span>{{ item.title }}</span>
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -31,38 +36,42 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
 import { ElCarousel } from 'element-plus'
+import * as Api from '@apis/index'
+import { toComicMain } from '@/hooks/router'
 
 export default defineComponent({
   name: 'HomeBanner',
   setup() {
     const carouselComp = ref<typeof ElCarousel>()
 
-    const carousel = reactive({
+    const carousel = reactive<{
+      index: number
+      list: Api.FilterComicReturn['data']
+    }>({
       index: 0,
-      list: [
-        {
-          cover: 'https://api.adicw.cn/uploads/StudyImg/6141a4ce2715a.png'
-        },
-        {
-          cover: 'https://api.adicw.cn/uploads/StudyImg/6191d88725d2c.jpg'
-        },
-        {
-          cover: 'https://api.adicw.cn/images/StudyImg/60a77a12ed88b.png'
-        }
-      ]
+      list: []
     })
-    const onCarouselChanged = (index: number) => {
+    const onCarouselChanged = (index: any) => {
       carousel.index = index
     }
     const changeCarousel = (index: number) => {
       carouselComp.value!.setActiveItem(index)
     }
 
+    ;(async () => {
+      const { data } = await Api.filterComic({
+        page: 1,
+        order: '更新时间'
+      })
+      carousel.list = data.slice(0, 3)
+    })()
+
     return {
       carousel,
       onCarouselChanged,
       carouselComp,
-      changeCarousel
+      changeCarousel,
+      toComicMain
     }
   }
 })
@@ -82,10 +91,17 @@ export default defineComponent({
       height: 100%;
       .el-carousel__item {
         height: 100%;
-        background: linear-gradient(94deg, #333, #def);
         img {
           width: 100%;
           height: 100%;
+        }
+        span {
+          position: absolute;
+          left: 30px;
+          bottom: 16px;
+          font-size: 40px;
+          font-weight: 800;
+          color: var(--font-color);
         }
       }
     }

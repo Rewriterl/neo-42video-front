@@ -17,7 +17,7 @@ type ParentProvide<T> = T & {
 }
 
 export function useParent<T>(key: string | symbol): {
-  parent: Any
+  parent: any
   index: Ref<number>
 } {
   const parent = inject<ParentProvide<T> | null>(key, null)

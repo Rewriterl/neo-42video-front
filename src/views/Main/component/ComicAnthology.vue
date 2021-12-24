@@ -67,7 +67,7 @@ export default defineComponent({
   ul {
     display: flex;
     width: 100%;
-    white-space: nowrap;
+    flex-wrap: wrap;
     li {
       display: flex;
       align-items: center;

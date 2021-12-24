@@ -1,6 +1,8 @@
 <template>
   <div v-if="detail" class="comic-card" @click="toComicMain(detail!.id)">
-    <BaseImg :src="detail.cover" />
+    <div class="cover">
+      <BaseImg :src="detail.cover" />
+    </div>
     <div class="info">{{ detail.title }}</div>
   </div>
 </template>
@@ -33,12 +35,23 @@ export default defineComponent({
   width: 100%;
   height: 100%;
   cursor: pointer;
-  img {
+  &:hover {
+    img {
+      transform: scale(1.2) translateX(5%);
+    }
+  }
+  .cover {
     width: 80%;
     aspect-ratio: 1/1.4;
     border-radius: 6px;
-    background: #def;
+    overflow: hidden;
+    img {
+      width: 100%;
+      background: #def;
+      transition: all 0.25s;
+    }
   }
+
   .info {
     flex: 1;
     display: flex;
