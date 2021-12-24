@@ -33,9 +33,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, onDeactivated, reactive, ref } from 'vue'
 import AwVideo from '@comps/AwVideo/AwVideo.vue'
-import ComicAnthology from './component/ComicAnthology.vue'
+import ComicAnthology, { Option } from './component/ComicAnthology.vue'
 import * as Api from '@apis/index'
 import * as Type from './types/index.type'
 import { getEl } from '@/utils/adLoadsh'
@@ -65,37 +65,43 @@ export default defineComponent({
       url: ''
     })
 
-    const changeAnthology = async (key: string) => {
-      anthology.current = key
+    const changeAnthology = async ({ value, name }: Option) => {
+      anthology.current = value
       anthology.isPending = true
+
+      const notifyTitle = `${comicName.value} - ${name}`
       const notify = ElNotification({
-        title: '播放源',
+        title: notifyTitle,
         message: '播放地址获取中...',
         type: 'warning',
         duration: 0,
         showClose: false
       })
-      const data = await getEl(Api.getVideoUrl.bind(null, key), 5)
+
+      const data = await getEl(Api.getVideoUrl.bind(null, value), 5)
       if (!data) {
         anthology.current = ''
-        anthology.bads.push(key)
+        anthology.bads.push(value)
       } else {
         player.url = data
       }
+
       notify.close()
       ElNotification({
-        title: '播放源',
+        title: notifyTitle,
         message: data
           ? '地址获取成功，正在载入视频'
           : '地址获取失败，请选择其他播放源',
         type: data ? 'success' : 'error'
       })
+
       anthology.isPending = false
     }
     const init = async () => {
       if (playlist.value.length > 0) {
-        anthology.current = playlist.value[0].value[0].value
-        changeAnthology(anthology.current)
+        const item = playlist.value[0].value[0]
+        anthology.current = item.value
+        changeAnthology(item)
       }
     }
 
@@ -107,6 +113,10 @@ export default defineComponent({
         init()
       }
     })()
+
+    onDeactivated(() => {
+      //
+    })
 
     return {
       playlist,

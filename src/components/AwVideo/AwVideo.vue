@@ -102,34 +102,12 @@ import { fullscreen, sToMs, throttle } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
 // import { getVideoScreenshot } from '@/utils/media'
 
-type FlvInstance = flvjs.Player | null
-interface Player {
-  /** 当前进度 */
-  currentTime: number
-  /** 总进度 */
-  duration: number
-  /** 音量 0-100 */
-  volume: number
-  /** 实际使用的音量 0-1 */
-  realVolume: number
-  /** 状态 -2无状态 -1加载失败 0加载中 1播放中 2暂停中  */
-  status: -2 | -1 | 0 | 1 | 2
-  /** 全屏 */
-  fullScreen: boolean
-  /** 是否静音 */
-  isMute: boolean
-  /** 进度预览图 */
-  preview: string
-  /** 是否已经进行监听 */
-  isListened: boolean
-}
-export interface Quality {
-  name: string
-  value: string | number
-}
+import * as Type from './type'
 
-function flvModule(player: Player) {
-  const flvInstance = ref<FlvInstance>(null)
+export * from './type'
+
+function flvModule(player: Type.Player) {
+  const flvInstance = ref<Type.FlvInstance>(null)
 
   const play = () => {
     if (flvInstance.value) {
@@ -176,15 +154,15 @@ function flvModule(player: Player) {
   }
 }
 
-function qualityModule(quality: Quality[], { emit }: SetupContext) {
-  const currentQuality = ref<Quality['value']>(-1)
+function qualityModule(quality: Type.Quality[], { emit }: SetupContext) {
+  const currentQuality = ref<Type.Quality['value']>(-1)
   const qualitySelectVisible = ref(false)
   const currentQualityName = computed(
     () =>
       quality.find((item) => item.value === currentQuality.value)?.name || '-'
   )
 
-  const changeQuality = (value: Quality['value']) => {
+  const changeQuality = (value: Type.Quality['value']) => {
     currentQuality.value = value
     qualitySelectVisible.value = false
     emit('changeQuality', value)
@@ -210,7 +188,7 @@ export default defineComponent({
       default: ''
     },
     quality: {
-      type: Array as PropType<Quality[]>,
+      type: Array as PropType<Type.Quality[]>,
       default: () => []
       // [
       //   {
@@ -232,7 +210,7 @@ export default defineComponent({
     const videoEl = ref<HTMLVideoElement>()
     const selfEl = ref<HTMLElement>()
 
-    const player = reactive<Player>({
+    const player = reactive<Type.Player>({
       currentTime: 0,
       duration: 0,
       status: -2,
@@ -339,11 +317,12 @@ export default defineComponent({
     const changeProgress = (val: number) => {
       videoEl.value!.currentTime = val
     }
-    const computedPreview = throttle(async (val: number) => {
-      // player.preview = await getVideoScreenshot(props.src, val)
-      // console.log(val, player.preview)
-      // todo 画布污染
-    }, 2000)
+    // const computedPreview = throttle(async (val: number) => {
+    //   player.preview = await getVideoScreenshot(props.src, val)
+    //   console.log(val, player.preview)
+    //   // todo 画布污染
+    // }, 2000)
+    const computedPreview = () => false
 
     onMounted(() => {
       init(props.src)
@@ -355,6 +334,7 @@ export default defineComponent({
       player.isListened = false
     })
     watch(() => props.src, init)
+
     // useEventListener('keydown', (e) => {
     // esc
     // if ((e as KeyboardEvent).code === 'Escape') {

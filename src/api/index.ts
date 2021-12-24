@@ -71,7 +71,7 @@ export async function getComicMain(
  * @param key
  * @returns
  */
-export async function getVideoUrl(key: string) {
+export async function getVideoUrl(key: string | number) {
   try {
     const { data: data } = await getax(`api/getVideo?link=${key}`)
     if (data.vurl) {

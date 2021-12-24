@@ -6,7 +6,7 @@
         v-for="{ name, value } in list"
         :key="value"
         :class="{ active: active === value, disable: isBad(value) }"
-        @click="liClick(value)"
+        @click="liClick({ name, value })"
       >
         {{ name }}
       </li>
@@ -45,9 +45,9 @@ export default defineComponent({
   emits: ['change'],
   setup(props, { emit }) {
     const isBad = (value: Option['value']) => props.badAnthology.includes(value)
-    const liClick = (value: Option['value']) => {
-      if (isBad(value)) return
-      emit('change', value)
+    const liClick = (item: Option) => {
+      if (isBad(item.value)) return
+      emit('change', item)
     }
     return {
       isBad,
