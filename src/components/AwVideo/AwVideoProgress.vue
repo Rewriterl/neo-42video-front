@@ -27,7 +27,8 @@ import {
   defineComponent,
   onMounted,
   reactive,
-  ref
+  ref,
+  nextTick
 } from 'vue'
 import { sToMs, wait } from '@/utils/adLoadsh'
 import { onWindowSizeChange } from '@/utils/vant/useWindowSize'
@@ -44,8 +45,8 @@ export default defineComponent({
     }
   },
   emits: {
-    timeChange: (val: number) => val,
-    timePreview: (val: number) => val
+    timeChange: (val: number) => true,
+    timePreview: (val: number) => true
   },
   setup(props, { emit }) {
     const selfDom = ref<HTMLElement>()
@@ -74,10 +75,11 @@ export default defineComponent({
       return time | 0
     })
 
-    const onMouseMove = (e: MouseEvent) => {
+    const onMouseMove = async (e: MouseEvent) => {
       if (!hasCurListenlist.value) return
       const { offsetX } = e
       mouse.x = offsetX
+      await nextTick()
       emit('timePreview', tooltipTime.value)
     }
     const initStyle = async () => {

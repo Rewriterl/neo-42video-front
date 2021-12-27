@@ -22,12 +22,12 @@
         @timeChange="changeProgress"
         @timePreview="computedPreview"
       >
-        <!-- <template #tooltip="{ time }">
+        <template #tooltip="{ time }">
           <div class="preview">
-            <img :src="player.preview" alt="" />
+            <img v-if="player.preview" :src="player.preview" alt="" />
             <span>{{ time }}</span>
           </div>
-        </template> -->
+        </template>
       </AwVideoProgress>
       <Icon
         class="control-icon control-icon__play"
@@ -98,9 +98,9 @@ import {
 import flvjs from 'flv.js'
 import AwVideoProgress from './AwVideoProgress.vue'
 import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
-import { fullscreen, sToMs, throttle } from '@/utils/adLoadsh'
+import { debounce, fullscreen, sToMs, throttle } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
-// import { getVideoScreenshot } from '@/utils/media'
+import { getVideoScreenshot } from '@/utils/media'
 
 import * as Type from './type'
 
@@ -235,55 +235,8 @@ export default defineComponent({
       if (!flv) return
       flv.load()
       player.status = 2
-      listeners()
     }
-    const listeners = () => {
-      if (!videoEl.value || player.isListened) return
-      /** 可播放监听 */
-      useEventListener(
-        'canplay',
-        (e) => {
-          const { duration } = e.target as HTMLVideoElement
-          player.duration = duration
-          // console.log('in')
-        },
-        {
-          target: videoEl.value
-        }
-      )
-      /** 进度监听 */
-      useEventListener(
-        'timeupdate',
-        (e) => {
-          const { currentTime } = e.target as HTMLVideoElement
-          player.currentTime = currentTime
-        },
-        {
-          target: videoEl.value
-        }
-      )
-      /** 结束监听 */
-      useEventListener(
-        'end',
-        () => {
-          player.status = 2
-        },
-        {
-          target: videoEl.value
-        }
-      )
-      /** 暂停监听 */
-      useEventListener(
-        'pause',
-        () => {
-          // player.status = 2
-        },
-        {
-          target: videoEl.value
-        }
-      )
-      player.isListened = true
-    }
+
     const playHandler = () => {
       switch (player.status) {
         case 0: {
@@ -317,13 +270,55 @@ export default defineComponent({
     const changeProgress = (val: number) => {
       videoEl.value!.currentTime = val
     }
-    // const computedPreview = throttle(async (val: number) => {
-    //   player.preview = await getVideoScreenshot(props.src, val)
-    //   console.log(val, player.preview)
-    //   // todo 画布污染
-    // }, 2000)
-    const computedPreview = () => false
+    const computedPreview = debounce(async (val: number) => {
+      player.preview = await getVideoScreenshot(props.src, val)
+    }, 300)
 
+    ;(() => {
+      /** 可播放监听 */
+      useEventListener(
+        'canplay',
+        (e) => {
+          const { duration } = e.target as HTMLVideoElement
+          player.duration = duration
+        },
+        {
+          target: videoEl
+        }
+      )
+      /** 进度监听 */
+      useEventListener(
+        'timeupdate',
+        (e) => {
+          const { currentTime } = e.target as HTMLVideoElement
+          player.currentTime = currentTime
+        },
+        {
+          target: videoEl
+        }
+      )
+      /** 结束监听 */
+      useEventListener(
+        'end',
+        () => {
+          player.status = 2
+        },
+        {
+          target: videoEl
+        }
+      )
+      /** 暂停监听 */
+      useEventListener(
+        'pause',
+        () => {
+          // player.status = 2
+        },
+        {
+          target: videoEl
+        }
+      )
+      player.isListened = true
+    })()
     onMounted(() => {
       init(props.src)
     })

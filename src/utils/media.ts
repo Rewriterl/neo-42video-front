@@ -18,9 +18,10 @@ export async function getVideoScreenshot(videoUrl: string, time: number) {
   try {
     const video = document.createElement('video')
     video.src = videoUrl
+    video.crossOrigin = '*'
     await new Promise((resolve) => (video.oncanplay = resolve))
     video.currentTime = time
-    await wait(1000)
+    await wait(300)
 
     const canvas = document.createElement('canvas')
     canvas.width = 1920
