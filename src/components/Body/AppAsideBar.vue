@@ -31,12 +31,17 @@ export default defineComponent({
         name: '搜索',
         routeName: 'Search',
         icon: 'search'
-      }
+      },
       // {
       //   name: '用户',
       //   routeName: 'User',
       //   icon: 'user'
       // }
+      {
+        name: '设置',
+        routeName: 'Setting',
+        icon: 'setting1'
+      }
     ]
     const sliderStyle = computed(() => {
       const routeIndex = routeList.findIndex(

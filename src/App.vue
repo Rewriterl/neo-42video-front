@@ -40,6 +40,7 @@ export default defineComponent({
   display: flex;
   align-items: center;
   background: var(--bg-color);
+  color: var(--font-color);
   &__aside {
     display: flex;
     flex-direction: column;

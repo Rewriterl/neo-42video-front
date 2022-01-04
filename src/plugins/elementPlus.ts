@@ -10,7 +10,8 @@ import {
   ElProgress,
   ElSlider,
   ElTabs,
-  ElTabPane
+  ElTabPane,
+  ElColorPicker
 } from 'element-plus'
 const comps = [
   ElCarousel,
@@ -20,7 +21,8 @@ const comps = [
   ElProgress,
   ElSlider,
   ElTabs,
-  ElTabPane
+  ElTabPane,
+  ElColorPicker
 ]
 const plugins = [ElLoading, ElNotification]
 export function elementPlusInit(app: App<Element>) {
