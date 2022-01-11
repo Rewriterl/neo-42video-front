@@ -1,5 +1,5 @@
 import { getax } from '@/common/request/index'
-import { wait } from '@/utils/adLoadsh'
+import { getVal, wait } from '@/utils/adLoadsh'
 import * as ApiReturns from './type'
 export * from './type'
 
@@ -73,13 +73,17 @@ export async function getComicMain(
  */
 export async function getVideoUrl(key: string | number) {
   try {
-    const { data: data } = await getax(`api/getVideo?link=${key}`)
+    // const { data: { data } } = await getax(`api/getVideo?link=${key}`)
+    const {
+      data: { data }
+    } = await getax(`api/getVideo?link=/play/2020-1-1.html`)
     if (data.vurl) {
       return data.vurl
     } else {
       throw newError()
     }
   } catch {
+    console.log('bad')
     return null
   }
 }
@@ -117,16 +121,23 @@ export async function getVideoUrl(key: string | number) {
  */
 export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null> {
   try {
-    const {
-      data: { data }
-    } = await getax('api/getIndex')
+    const { data } = await getax('api/getIndex')
+    console.log(data)
+
     return {
-      perday: Object.entries(data.perday || {}).map(([k, v]): any => ({
-        name: `星期${+k}`,
-        value: v
-      })),
-      perweek: data.perweek || [],
-      latest: data.latest || []
+      // perday: Object.entries(data.perday || {}).map(([k, v]): any => ({
+      //   name: `星期${+k}`,
+      //   value: v
+      // })),
+      perweek: [],
+      latest: getVal<any[]>(() => data.data.latest.results, [])
+        .slice(0, 10)
+        .map((item) => ({
+          cover: '',
+          id: item.id,
+          season: `${item.date}  ${item.season}`,
+          title: item.title
+        }))
     }
     // return
   } catch {

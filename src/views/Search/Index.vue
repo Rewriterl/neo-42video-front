@@ -325,6 +325,7 @@ export default defineComponent({
         box-sizing: border-box;
         &-col {
           flex: 1;
+          max-height: 34%;
           width: 100%;
           display: flex;
           gap: 16px;

@@ -416,10 +416,20 @@ export async function getEl(
   return data || curCount > count ? data : getEl(callback, count, curCount)
 }
 
-// export function getVal(obj: any, path: string, dfVal = null) {
-//   const res: any = obj == null ? undefined : f(obj, path)
-//   return res === undefined ? dfVal : res
-// }
+/**
+ * 取值
+ * @param fn 回调
+ * @param df 默认值
+ * @returns
+ */
+export function getVal<T>(fn: () => T, df = []) {
+  try {
+    return fn()
+  } catch (e) {
+    // console.error(e)
+    return df
+  }
+}
 
 // export function fillArr<T extends Array<T>>(
 //   list: T,

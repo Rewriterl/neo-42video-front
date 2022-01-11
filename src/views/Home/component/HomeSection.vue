@@ -70,7 +70,7 @@ export default defineComponent({
           cover: item.cover,
           title: item.title,
           id: item.id,
-          desc: item.status
+          desc: item.season
         }))
       }[tabs.active]
     })
@@ -82,7 +82,9 @@ export default defineComponent({
     ;(async () => {
       const data = await Api.getHomeMixData()
       if (data) {
-        const { perday, perweek, latest } = data
+        console.log(data, 123)
+
+        const { perweek, latest } = data
         // comic.perday = perday
         comic.perweek = perweek
         comic.latest = latest

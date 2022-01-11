@@ -2,10 +2,7 @@
   <div class="comic-main">
     <div class="comic-main__inner">
       <div class="comic-main__video">
-        <!-- <AwVideo :src="player.url" /> -->
-        <AwVideo
-          src="https://kol-fans.fp.ps.netease.com/file/616401cd2135947b86771cbaqHU8cUtU03"
-        />
+        <AwVideo :src="player.url" />
       </div>
       <div class="comic-main__box">
         <el-tabs>

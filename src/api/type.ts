@@ -4,9 +4,7 @@ type Page<T> = {
 }
 
 export interface ComicPageList {
-  category: string[]
   cover: string
-  description: string
   id: string
   season: string
   title: string
@@ -36,12 +34,12 @@ export type FilterComicReturn = Page<ComicPageList[]>
 
 export interface GetHomeMixData {
   /** 每天排行 */
-  perday: { name: string; value: { title: string; episode: string }[] }[]
+  // perday: { name: string; value: { title: string; episode: string }[] }[]
   /** 每周排行 */
   perweek: {
     cover: string
     id: string
-    status: string
+    season: string
     title: string
   }[]
   /** 最新 */
