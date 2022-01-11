@@ -11,17 +11,22 @@
       <div class="home-header__else"></div>
     </header>
     <main class="home-main">
-      <HomeBanner />
-      <HomeSection />
+      <HomeBanner :is-init="isInit" :banner="comic.banner" />
+      <HomeSection
+        :is-init="isInit"
+        :hots="comic.hots"
+        :latest="comic.latest"
+      />
     </main>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, reactive, ref } from 'vue'
 import HomeBanner from './component/HomeBanner.vue'
 import HomeSection from './component/HomeSection.vue'
 import * as Api from '@apis/index'
+import * as Type from './types/homeSection.type'
 
 export default defineComponent({
   name: 'Home',
@@ -30,7 +35,29 @@ export default defineComponent({
     HomeSection
   },
   setup() {
-    return {}
+    const isInit = ref(false)
+    const comic = reactive<Type.Comic>({
+      // perday: [],
+      hots: [],
+      latest: [],
+      banner: []
+    })
+
+    ;(async () => {
+      const data = await Api.getHomeMixData()
+      if (data) {
+        const { hots, latest, banner } = data
+        comic.banner = banner
+        comic.hots = hots
+        comic.latest = latest
+        isInit.value = true
+      }
+    })()
+
+    return {
+      comic,
+      isInit
+    }
   }
 })
 </script>

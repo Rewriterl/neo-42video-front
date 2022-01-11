@@ -1,5 +1,8 @@
 <template>
   <div class="comic-main">
+    <div class="comic-main__break">
+      <Icon name="delete2" @click="$router.go(-1)" />
+    </div>
     <div class="comic-main__inner">
       <div class="comic-main__video">
         <AwVideo :src="player.url" />
@@ -13,7 +16,7 @@
                 class="comic-main__anthology-loading"
               ></div>
               <ComicAnthology
-                v-for="(item, index) in playlist"
+                v-for="(item, index) in comic.playlist"
                 :key="index"
                 :active="anthology.current"
                 :label="item.name"
@@ -24,7 +27,27 @@
             </div>
           </el-tab-pane>
           <el-tab-pane label="详情" lazy>
-            {{ comicName }}
+            <div class="comic-main__info">
+              <div class="cover">
+                <BaseImg :src="comic.cover" alt />
+              </div>
+              <div class="message">
+                <h1>{{ comic.title }}</h1>
+                <ul class="message-tags">
+                  <li v-for="item in comicTags" :key="item.label">
+                    <span>{{ item.label }}</span>
+                    <b>{{ item.value }}</b>
+                  </li>
+                </ul>
+                <ul class="message-cates">
+                  <li v-for="item in comic.cates" :key="item">{{ item }}</li>
+                </ul>
+                <div class="message-desc">
+                  <b>声优：</b>
+                  <p>{{ comic.voiceActors.join('、') }}</p>
+                </div>
+              </div>
+            </div>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -33,19 +56,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onDeactivated, reactive, ref } from 'vue'
+import { computed, defineComponent, onDeactivated, reactive, ref } from 'vue'
 import AwVideo from '@comps/AwVideo/AwVideo.vue'
 import ComicAnthology, { Option } from './component/ComicAnthology.vue'
 import * as Api from '@apis/index'
 import * as Type from './types/index.type'
 import { getEl } from '@/utils/adLoadsh'
 import { ElNotification } from 'element-plus'
+import { GetComicMainReturn } from '@apis/index'
+import BaseImg from '@/components/Global/BaseImg.vue'
 
 export default defineComponent({
   name: 'ComicMain',
   components: {
     AwVideo,
-    ComicAnthology
+    ComicAnthology,
+    BaseImg
   },
   props: {
     id: {
@@ -54,8 +80,19 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const playlist = ref<Type.Playlist>([])
-    const comicName = ref<Type.ComicName>('')
+    const comic = reactive<GetComicMainReturn>({
+      title: '',
+      season: '',
+      region: '',
+      rank: '',
+      master: '',
+      lang: '',
+      firstDate: '',
+      cover: '',
+      voiceActors: [],
+      cates: [],
+      playlist: []
+    })
     const anthology = reactive<Type.Anthology>({
       current: '',
       bads: [],
@@ -65,11 +102,38 @@ export default defineComponent({
       url: ''
     })
 
+    const comicTags = computed(() => [
+      {
+        label: '评分',
+        value: comic.rank
+      },
+      {
+        label: '地区',
+        value: comic.region
+      },
+      {
+        label: '状态',
+        value: comic.season
+      },
+      {
+        label: '作者',
+        value: comic.master
+      },
+      {
+        label: '语言',
+        value: comic.lang
+      },
+      {
+        label: '首播时间',
+        value: comic.firstDate
+      }
+    ])
+
     const changeAnthology = async ({ value, name }: Option) => {
       anthology.current = value
       anthology.isPending = true
 
-      const notifyTitle = `${comicName.value} - ${name}`
+      const notifyTitle = `${comic.title} - ${name}`
       const notify = ElNotification({
         title: notifyTitle,
         message: '播放地址获取中...',
@@ -98,8 +162,8 @@ export default defineComponent({
       anthology.isPending = false
     }
     const init = async () => {
-      if (playlist.value.length > 0) {
-        const item = playlist.value[0].value[0]
+      if (comic.playlist.length > 0) {
+        const item = comic.playlist[0].value[0]
         anthology.current = item.value
         changeAnthology(item)
       }
@@ -108,8 +172,12 @@ export default defineComponent({
     ;(async () => {
       const data = await Api.getComicMain(props.id)
       if (data) {
-        playlist.value = data.playlist
-        comicName.value = data.title
+        comic.playlist = data.playlist
+        ;(Object.keys(comic) as (keyof GetComicMainReturn)[]).forEach((k) => {
+          if (typeof data[k] !== 'undefined') {
+            comic[k] = data[k] as any
+          }
+        })
         init()
       }
     })()
@@ -119,8 +187,8 @@ export default defineComponent({
     })
 
     return {
-      playlist,
-      comicName,
+      comic,
+      comicTags,
       changeAnthology,
       anthology,
       player
@@ -139,6 +207,27 @@ export default defineComponent({
   border-top-left-radius: 24px;
   overflow-y: auto;
   overflow-x: hidden;
+  &__break {
+    position: sticky;
+    top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    margin-left: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.25s;
+    i {
+      color: var(--font-color);
+      font-size: 30px;
+    }
+    &:hover {
+      transform: rotate(180deg);
+    }
+  }
   &__inner {
     width: 90%;
     margin: 0 auto;
@@ -186,6 +275,76 @@ export default defineComponent({
       width: 100%;
       height: 100%;
       z-index: 3;
+    }
+  }
+  &__info {
+    display: flex;
+    width: 100%;
+    margin-top: 10px;
+    .cover {
+      width: 200px;
+      aspect-ratio: 1.4/2;
+      border-radius: 8px;
+      box-shadow: rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .message {
+      padding-left: 30px;
+      flex: 1;
+      box-sizing: border-box;
+      &-tags {
+        margin-top: 20px;
+        height: 46px;
+        li {
+          display: inline-flex;
+          height: 100%;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: flex-start;
+          border-right: 1px solid var(--font-color);
+          padding-right: 16px;
+          font-size: 12px;
+          margin-right: 16px;
+          &:last-child {
+            border: none;
+          }
+          span {
+            opacity: 0.6;
+          }
+          b {
+            margin-top: 6px;
+            font-size: 18px;
+            opacity: 0.85;
+          }
+        }
+      }
+      &-cates {
+        margin-top: 16px;
+        opacity: 0.9;
+        li {
+          font-size: 12px;
+          display: inline-block;
+          vertical-align: middle;
+          height: 20px;
+          padding: 0 4px;
+          margin: 4px 0;
+          margin-right: 10px;
+          line-height: 20px;
+          border: 1px solid var(--font-color);
+          border-radius: 3px;
+        }
+      }
+      &-desc {
+        display: flex;
+        align-items: flex-end;
+        width: 100%;
+        margin-top: 16px;
+        font-size: 14px;
+      }
     }
   }
 }

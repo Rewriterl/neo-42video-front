@@ -1,7 +1,9 @@
 <template>
   <div class="home-banner">
     <div class="home-banner__header"></div>
-    <div class="home-banner__main">
+
+    <div v-show="!isInit" class="home-banner__main aw-skeleton"></div>
+    <div v-show="isInit" class="home-banner__main">
       <ul class="home-banner__main-indicator">
         <li
           v-for="(item, index) in carousel.list"
@@ -34,22 +36,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { computed, defineComponent, PropType, reactive, ref } from 'vue'
 import { ElCarousel } from 'element-plus'
-import * as Api from '@apis/index'
+
+import * as Type from '../types/homeSection.type'
 import { toComicMain } from '@/hooks/router'
 
 export default defineComponent({
   name: 'HomeBanner',
-  setup() {
+  props: {
+    banner: {
+      type: Array as PropType<Type.Comic['banner']>,
+      default: () => []
+    },
+    isInit: {
+      type: Boolean,
+      default: false
+    }
+  },
+  setup(props) {
     const carouselComp = ref<typeof ElCarousel>()
 
-    const carousel = reactive<{
-      index: number
-      list: Api.FilterComicReturn['data']
-    }>({
+    const carousel = reactive({
       index: 0,
-      list: []
+      list: computed(() => props.banner.slice(0, 3))
     })
     const onCarouselChanged = (index: any) => {
       carousel.index = index
@@ -57,14 +67,6 @@ export default defineComponent({
     const changeCarousel = (index: number) => {
       carouselComp.value!.setActiveItem(index)
     }
-
-    ;(async () => {
-      const { data } = await Api.filterComic({
-        page: 1,
-        order: '更新时间'
-      })
-      carousel.list = data.slice(0, 3)
-    })()
 
     return {
       carousel,

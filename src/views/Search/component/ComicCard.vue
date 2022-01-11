@@ -40,6 +40,8 @@ export default defineComponent({
   cursor: pointer;
   transition: all 0.25s;
   overflow: hidden;
+  padding: 4px 8px;
+  box-sizing: border-box;
   &:hover {
     width: calc(100% / v-bind(size) * 2);
     .info {

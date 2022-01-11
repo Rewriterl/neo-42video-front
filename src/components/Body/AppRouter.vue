@@ -15,7 +15,7 @@ export default defineComponent({
   name: 'AppRouter',
   setup() {
     const $route = useRoute()
-    const routeNames = ['Home', 'Search', 'ComicMain']
+    const routeNames = ['Home', 'Search', 'ComicMain', 'Setting']
     const transition = ref('')
 
     watch(

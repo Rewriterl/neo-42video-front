@@ -233,10 +233,11 @@ export default defineComponent({
 <style lang="less" scoped>
 @import '~styles/var';
 #search {
+  @rootGap: 30px;
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: @rootGap;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -318,7 +319,7 @@ export default defineComponent({
       &__content {
         @padding: 30px;
         width: 100%;
-        height: calc(100vh - @frameTop - @headerHeight);
+        height: calc(100vh - @frameTop - @headerHeight - @rootGap);
         padding: 30px;
         display: flex;
         flex-direction: column;
@@ -328,7 +329,6 @@ export default defineComponent({
           max-height: 34%;
           width: 100%;
           display: flex;
-          gap: 16px;
           overflow: hidden;
         }
       }
@@ -347,8 +347,8 @@ export default defineComponent({
       position: absolute;
       left: 0;
       right: 0;
+      bottom: 0;
       margin: 0 auto;
-      bottom: 6px;
       width: max-content;
       padding: 12px 16px;
       background: #fff;
@@ -356,7 +356,7 @@ export default defineComponent({
       box-shadow: 0 0 16px rgba(255, 255, 255, 0.1);
       transition: all 0.25s;
       opacity: 0.2;
-      transform: translateY(90%);
+      transform: translateY(70%);
       &:hover {
         opacity: 1;
         transform: translateY(0);

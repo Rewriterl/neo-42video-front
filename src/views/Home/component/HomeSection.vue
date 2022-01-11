@@ -1,30 +1,46 @@
 <template>
   <section class="home-section">
-    <div class="home-section__header">
-      <ul class="home-section__tabs">
-        <li
-          v-for="{ name, key } in tabs.list"
-          :key="key"
-          :class="{ active: key === tabs.active }"
-          @click="changeTab(key)"
-        >
-          {{ name }}
-        </li>
-      </ul>
-    </div>
-    <TransUl tag="div" class="home-section__main">
-      <div v-for="item in currentComic" :key="item.id">
-        <HomeSectionCard :detail="item" />
+    <template v-if="!isInit">
+      <div class="home-section__header">
+        <ul class="home-section__tabs">
+          <li class="active aw-skeleton">xxx</li>
+        </ul>
       </div>
-    </TransUl>
+      <div class="home-section__main">
+        <div
+          v-for="item in 5"
+          :key="item"
+          class="aw-skeleton"
+          style="border-radius: 12px"
+        ></div>
+      </div>
+    </template>
+    <template v-else>
+      <div class="home-section__header">
+        <ul class="home-section__tabs">
+          <li
+            v-for="{ name, key } in tabs.list"
+            :key="key"
+            :class="{ active: key === tabs.active }"
+            @click="changeTab(key)"
+          >
+            {{ name }}
+          </li>
+        </ul>
+      </div>
+      <TransUl tag="div" class="home-section__main">
+        <div v-for="item in currentComic" :key="item.id">
+          <HomeSectionCard :detail="item" />
+        </div>
+      </TransUl>
+    </template>
   </section>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from 'vue'
+import { computed, defineComponent, PropType, reactive } from 'vue'
 import HomeSectionCard from './HomeSectionCard.vue'
 import TransUl from '@comps/Animate/TransUl.vue'
-import * as Api from '@apis/index'
 import * as Type from '../types/homeSection.type'
 
 export default defineComponent({
@@ -33,40 +49,49 @@ export default defineComponent({
     HomeSectionCard,
     TransUl
   },
-  setup() {
-    type ComicKey = keyof typeof comic
+  props: {
+    hots: {
+      type: Array as PropType<Type.Comic['hots']>,
+      default: () => []
+    },
+    latest: {
+      type: Array as PropType<Type.Comic['latest']>,
+      default: () => []
+    },
+    isInit: {
+      type: Boolean,
+      default: false
+    }
+  },
+  setup(props) {
+    type ComicKey = 'hots' | 'latest'
 
-    const comic = reactive<Type.Comic>({
-      // perday: [],
-      perweek: [],
-      latest: []
-    })
     const tabs = reactive<Type.Tabs<ComicKey>>({
-      active: 'latest',
+      active: 'hots',
       list: [
-        {
-          name: '最新更新',
-          key: 'latest'
-        },
         // {
         //   name: '日排行',
         //   key: 'perday'
         // },
         {
-          name: '周排行',
-          key: 'perweek'
+          name: '热门',
+          key: 'hots'
+        },
+        {
+          name: '最新更新',
+          key: 'latest'
         }
       ]
     })
     const currentComic = computed(() => {
       return {
-        latest: comic.latest.slice(0, 5).map((item) => ({
+        latest: props.latest.slice(0, 5).map((item) => ({
           cover: item.cover,
           title: item.title,
           id: item.id,
           desc: item.season
         })),
-        perweek: comic.perweek.slice(0, 5).map((item) => ({
+        hots: props.hots.slice(0, 5).map((item) => ({
           cover: item.cover,
           title: item.title,
           id: item.id,
@@ -78,18 +103,6 @@ export default defineComponent({
     const changeTab = (key: ComicKey) => {
       tabs.active = key
     }
-
-    ;(async () => {
-      const data = await Api.getHomeMixData()
-      if (data) {
-        console.log(data, 123)
-
-        const { perweek, latest } = data
-        // comic.perday = perday
-        comic.perweek = perweek
-        comic.latest = latest
-      }
-    })()
 
     return {
       tabs,

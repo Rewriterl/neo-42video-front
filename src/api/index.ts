@@ -48,7 +48,7 @@ export async function getComicMain(
     const {
       data: { data }
     } = await getax(`api/getAnime/${id}`)
-    const list = Object.entries(data.playlist || {})
+    const playlist = Object.entries(data.playlist || {})
       .map(([k, v]) => ({
         name: `播放源 - ${k}`,
         value: (v as any[]).map((item) => ({
@@ -58,8 +58,17 @@ export async function getComicMain(
       }))
       .filter((item) => item.value.length > 0)
     return {
-      playlist: list,
-      title: data.title
+      playlist,
+      title: data.title,
+      season: data.season || '未知',
+      region: data.region || '未知',
+      rank: data.rank || '',
+      master: data.master || '未知',
+      lang: data.lang || '未知',
+      firstDate: data.first_date || '未知',
+      cover: data.cover || '',
+      voiceActors: data.actors || [],
+      cates: data.categories || []
     }
   } catch {
     return null
@@ -73,10 +82,9 @@ export async function getComicMain(
  */
 export async function getVideoUrl(key: string | number) {
   try {
-    // const { data: { data } } = await getax(`api/getVideo?link=${key}`)
     const {
       data: { data }
-    } = await getax(`api/getVideo?link=/play/2020-1-1.html`)
+    } = await getax(`api/getVideo?link=${key}`)
     if (data.vurl) {
       return data.vurl
     } else {
@@ -122,14 +130,18 @@ export async function getVideoUrl(key: string | number) {
 export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null> {
   try {
     const { data } = await getax('api/getIndex')
-    console.log(data)
-
+    // console.log(data)
     return {
-      // perday: Object.entries(data.perday || {}).map(([k, v]): any => ({
+      // perweek: Object.entries(data.perday || {}).map(([k, v]): any => ({
       //   name: `星期${+k}`,
       //   value: v
-      // })),
-      perweek: [],
+      // })),hots
+      hots: getVal<any[]>(() => data.data.hots.results, []).map((item) => ({
+        cover: item.cover,
+        id: item.id,
+        season: item.season,
+        title: item.title
+      })),
       latest: getVal<any[]>(() => data.data.latest.results, [])
         .slice(0, 10)
         .map((item) => ({
@@ -137,7 +149,12 @@ export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null
           id: item.id,
           season: `${item.date}  ${item.season}`,
           title: item.title
-        }))
+        })),
+      banner: getVal<any[]>(() => data.data.banner, []).map((item) => ({
+        cover: item.cover,
+        id: item.id || -1,
+        title: item.title || '未知'
+      }))
     }
     // return
   } catch {
@@ -158,30 +175,34 @@ export async function filterComic(param: {
   order: string | number
   page: number
 }): Promise<ApiReturns.FilterComicReturn> {
-  try {
-    const api =
-      'api/filter?' +
-      Object.entries(param)
-        .filter(([k, v]) => v !== '')
-        .map(([k, v]) => `${k}=${v}`)
-        .join('&')
-    const {
-      data: {
-        data: { results, pagetotal }
-      }
-    } = await getax(api)
-    if (results instanceof Array) {
-      return {
-        data: results,
-        total: (pagetotal || 0) * 24
-      }
-    } else {
-      throw newError()
-    }
-  } catch {
-    return {
-      data: [],
-      total: 0
-    }
+  // try {
+  //   const api =
+  //     'api/filter?' +
+  //     Object.entries(param)
+  //       .filter(([k, v]) => v !== '')
+  //       .map(([k, v]) => `${k}=${v}`)
+  //       .join('&')
+  //   const {
+  //     data: {
+  //       data: { results, pagetotal }
+  //     }
+  //   } = await getax(api)
+  //   if (results instanceof Array) {
+  //     return {
+  //       data: results,
+  //       total: (pagetotal || 0) * 24
+  //     }
+  //   } else {
+  //     throw newError()
+  //   }
+  // } catch {
+  //   return {
+  //     data: [],
+  //     total: 0
+  //   }
+  // }
+  return {
+    data: [],
+    total: 0
   }
 }
