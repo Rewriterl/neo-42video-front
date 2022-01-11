@@ -19,7 +19,7 @@ import { defineComponent, PropType } from 'vue'
 
 export interface Option {
   name: string | number
-  value: string | number
+  value: string
 }
 
 export default defineComponent({

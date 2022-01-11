@@ -48,15 +48,19 @@ export async function getComicMain(
     const {
       data: { data }
     } = await getax(`api/getAnime/${id}`)
-    const playlist = Object.entries(data.playlist || {})
-      .map(([k, v]) => ({
-        name: `播放源 - ${k}`,
-        value: (v as any[]).map((item) => ({
-          name: item.title || '-',
-          value: item.link
-        }))
-      }))
-      .filter((item) => item.value.length > 0)
+    // const playlist = Object.entries(data.playlist || {}).map(([k, v]) => ({
+    //   name: `播放源 - ${k}`,
+    //   value: (v as any[]).map((item) => ({
+    //     name: item.title || '-',
+    //     value: item.link
+    //   }))
+    // }))
+    const playlist = getVal<any[]>(() => data.playlist[0], []).map(
+      (item, index) => ({
+        name: String(item.title),
+        value: index
+      })
+    )
     return {
       playlist,
       title: data.title,
@@ -80,19 +84,20 @@ export async function getComicMain(
  * @param key
  * @returns
  */
-export async function getVideoUrl(key: string | number) {
+export async function getVideoUrl(
+  key: string | number
+): Promise<ApiReturns.GetVideoUrlReturn> {
   try {
     const {
-      data: { data }
-    } = await getax(`api/getVideo?link=${key}`)
-    if (data.vurl) {
-      return data.vurl
-    } else {
-      throw newError()
-    }
+      data: { data = {} }
+    } = await getax(`api/getVideo/${key}`)
+    return Object.entries(data).map(([k, v]) => ({
+      key: +k,
+      value: (v instanceof Array ? v : []) as string[]
+    }))
   } catch {
     console.log('bad')
-    return null
+    return []
   }
 }
 

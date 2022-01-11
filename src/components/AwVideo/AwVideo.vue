@@ -14,6 +14,10 @@
       <img src="~static/img/video-bad.png" alt="" />
       <span>加载失败了，好耶！</span>
     </div>
+    <div v-if="!src" class="aw-video__bad">
+      <img src="~static/img/video-empty.png" alt="" />
+      <span>暂无播放内容~</span>
+    </div>
 
     <div class="aw-video__control">
       <AwVideoProgress
@@ -77,7 +81,6 @@
       <Icon class="control-icon" />
       <Icon class="control-icon" @click="fullScreen" />
     </div>
-
     <video ref="videoEl" />
   </div>
 </template>
@@ -98,7 +101,7 @@ import {
 import flvjs from 'flv.js'
 import AwVideoProgress from './AwVideoProgress.vue'
 import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
-import { debounce, fullscreen, sToMs, throttle } from '@/utils/adLoadsh'
+import { debounce, fullscreen, sToMs } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
 import { getVideoScreenshot } from '@/utils/media'
 
@@ -226,7 +229,7 @@ export default defineComponent({
     const { flvInit, destroy, play, pause, ...flvModuleArgs } =
       flvModule(player)
 
-    const isBad = computed(() => !props.src || player.status === -1)
+    const isBad = computed(() => player.status === -1)
 
     const init = (url: string) => {
       if (!url) return
@@ -275,47 +278,66 @@ export default defineComponent({
     }, 300)
 
     ;(() => {
-      /** 可播放监听 */
+      const op = {
+        target: videoEl
+      }
+      /** 可播放 监听 */
       useEventListener(
         'canplay',
         (e) => {
           const { duration } = e.target as HTMLVideoElement
           player.duration = duration
         },
-        {
-          target: videoEl
-        }
+        op
       )
-      /** 进度监听 */
+      /** 进度 监听 */
       useEventListener(
         'timeupdate',
         (e) => {
           const { currentTime } = e.target as HTMLVideoElement
           player.currentTime = currentTime
         },
-        {
-          target: videoEl
-        }
+        op
       )
-      /** 结束监听 */
+      /** 结束 监听 */
       useEventListener(
         'end',
         () => {
           player.status = 2
         },
-        {
-          target: videoEl
-        }
+        op
       )
-      /** 暂停监听 */
+      /** 暂停 监听 */
       useEventListener(
         'pause',
         () => {
           // player.status = 2
         },
-        {
-          target: videoEl
-        }
+        op
+      )
+      /** 错误 监听 */
+      useEventListener(
+        'error',
+        (e) => {
+          console.log('error', e)
+        },
+        op
+      )
+      /** 缓冲开始 监听 */
+      useEventListener(
+        'waiting',
+        () => {
+          player.status = 0
+        },
+        op
+      )
+      /** 缓冲结束 监听 */
+      useEventListener(
+        'playing',
+        () => {
+          player.status = 1
+        },
+        op
       )
       player.isListened = true
     })()
@@ -421,9 +443,14 @@ export default defineComponent({
   &__loading {
     .mask;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 15;
+    background: rgb(0 0 0 / 25%);
+    span {
+      margin-top: 30px;
+    }
   }
   &__control {
     @padding: 16px;

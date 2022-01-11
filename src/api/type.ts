@@ -13,12 +13,16 @@ export interface ComicPageList {
 export type SearchComicReturn = Page<ComicPageList[]>
 
 export interface GetComicMainReturn {
+  // playlist: {
+  //   name: string
+  //   value: {
+  //     name: string
+  //     value: string
+  //   }[]
+  // }[]
   playlist: {
     name: string
-    value: {
-      name: string
-      value: string
-    }[]
+    value: number
   }[]
   /** 名称 */
   title: string
@@ -69,3 +73,8 @@ export interface GetHomeMixData {
     title: string
   }[]
 }
+
+export type GetVideoUrlReturn = {
+  key: number
+  value: string[]
+}[]
