@@ -422,7 +422,7 @@ export async function getEl(
  * @param df 默认值
  * @returns
  */
-export function getVal<T>(fn: () => T, df = []) {
+export function getVal<T>(fn: () => T, df: any): T {
   try {
     return fn()
   } catch (e) {
