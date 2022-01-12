@@ -21,6 +21,9 @@ export interface Option {
   name: string | number
   value: string
 }
+export type ChangeReturns = Option & {
+  orgId: string
+}
 
 export default defineComponent({
   name: 'ComicAnthology',
@@ -40,6 +43,10 @@ export default defineComponent({
     badAnthology: {
       type: Array as PropType<Option['value'][]>,
       default: () => []
+    },
+    orgId: {
+      type: String,
+      default: ''
     }
   },
   emits: ['change'],
@@ -47,7 +54,10 @@ export default defineComponent({
     const isBad = (value: Option['value']) => props.badAnthology.includes(value)
     const liClick = (item: Option) => {
       if (isBad(item.value)) return
-      emit('change', item)
+      emit('change', {
+        ...item,
+        orgId: props.orgId
+      } as ChangeReturns)
     }
     return {
       isBad,

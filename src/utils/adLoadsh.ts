@@ -386,13 +386,13 @@ export function timeToMs(time: string) {
 
 /**
  * json转对象
- * @param str json字符串
+ * @param val
  * @param df 失败时的默认值
  * @returns
  */
-export function jsonParse(str: string, df: any) {
+export function jsonParse(val: any, df: any) {
   try {
-    return JSON.parse(str)
+    return JSON.parse(val)
   } catch (e) {
     return df || []
   }

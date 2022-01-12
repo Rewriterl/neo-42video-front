@@ -11,11 +11,11 @@
       <LoadingBlockRun />
     </div>
     <div v-show="isBad" class="aw-video__bad">
-      <img src="~static/img/video-bad.png" alt="" />
+      <img src="~static/img/video-bad.png" />
       <span>加载失败了，好耶！</span>
     </div>
     <div v-if="!src" class="aw-video__bad">
-      <img src="~static/img/video-empty.png" alt="" />
+      <img src="~static/img/video-empty.png" />
       <span>暂无播放内容~</span>
     </div>
 
@@ -28,7 +28,7 @@
       >
         <template #tooltip="{ time }">
           <div class="preview">
-            <img v-if="player.preview" :src="player.preview" alt="" />
+            <img v-if="player.preview" :src="player.preview" />
             <span>{{ time }}</span>
           </div>
         </template>
@@ -40,7 +40,8 @@
       />
       <!-- <i class="control-icon"></i> -->
       <div class="control-time">
-        {{ sToMs(player.currentTime) }} <span>/</span>
+        {{ sToMs(player.currentTime) }}
+        <span>/</span>
         {{ sToMs(player.duration) }}
       </div>
 
@@ -49,9 +50,9 @@
         v-click-outside="() => (qualitySelectVisible = false)"
         class="control-quality"
       >
-        <span @click="qualitySelectVisible = !qualitySelectVisible">{{
-          currentQualityName
-        }}</span>
+        <span @click="qualitySelectVisible = !qualitySelectVisible">
+          {{ currentQualityName }}
+        </span>
         <ul v-show="qualitySelectVisible">
           <li
             v-for="{ name, value } in quality"
@@ -81,7 +82,8 @@
       <Icon class="control-icon" />
       <Icon class="control-icon" @click="fullScreen" />
     </div>
-    <video ref="videoEl" />
+    <AwVideoMsg ref="awVideoMsgComp" />
+    <video ref="videoEl" v-bind="$attrs" :mute="mute" />
   </div>
 </template>
 
@@ -99,8 +101,11 @@ import {
   watch
 } from 'vue'
 import flvjs from 'flv.js'
+
 import AwVideoProgress from './AwVideoProgress.vue'
 import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
+import AwVideoMsg, { NotifyItem } from './AwVideoMsg.vue'
+
 import { debounce, fullscreen, sToMs } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
 import { getVideoScreenshot } from '@/utils/media'
@@ -108,6 +113,8 @@ import { getVideoScreenshot } from '@/utils/media'
 import * as Type from './type'
 
 export * from './type'
+
+type Ctx = SetupContext<('canplay' | 'changeQuality')[]>
 
 function flvModule(player: Type.Player) {
   const flvInstance = ref<Type.FlvInstance>(null)
@@ -143,6 +150,7 @@ function flvModule(player: Type.Player) {
     } catch (err) {
       player.status = -1
       console.log(err, 'init')
+      return null
     }
   }
 
@@ -157,7 +165,7 @@ function flvModule(player: Type.Player) {
   }
 }
 
-function qualityModule(quality: Type.Quality[], { emit }: SetupContext) {
+function qualityModule(quality: Type.Quality[], { emit }: Ctx) {
   const currentQuality = ref<Type.Quality['value']>(-1)
   const qualitySelectVisible = ref(false)
   const currentQualityName = computed(
@@ -183,8 +191,10 @@ export default defineComponent({
   name: 'AwVideo',
   components: {
     AwVideoProgress,
-    LoadingBlockRun
+    LoadingBlockRun,
+    AwVideoMsg
   },
+  inheritAttrs: true,
   props: {
     src: {
       type: String,
@@ -207,9 +217,15 @@ export default defineComponent({
       //     value: -1
       //   }
       // ]
+    },
+    mute: {
+      type: Boolean,
+      default: false
     }
   },
+  emits: ['canplay', 'changeQuality'],
   setup(props, ctx) {
+    const awVideoMsgComp = ref<typeof AwVideoMsg>()
     const videoEl = ref<HTMLVideoElement>()
     const selfEl = ref<HTMLElement>()
 
@@ -222,7 +238,7 @@ export default defineComponent({
         return this.volume / 100
       },
       fullScreen: false,
-      isMute: false,
+      isMute: props.mute,
       preview: '',
       isListened: false
     })
@@ -238,6 +254,7 @@ export default defineComponent({
       if (!flv) return
       flv.load()
       player.status = 2
+      ctx.emit('canplay', flv)
     }
 
     const playHandler = () => {
@@ -276,6 +293,9 @@ export default defineComponent({
     const computedPreview = debounce(async (val: number) => {
       player.preview = await getVideoScreenshot(props.src, val)
     }, 300)
+    const notify = (item: NotifyItem) => {
+      awVideoMsgComp.value!.notify(item)
+    }
 
     ;(() => {
       const op = {
@@ -369,6 +389,7 @@ export default defineComponent({
     return {
       videoEl,
       selfEl,
+      awVideoMsgComp,
       player,
       playHandler,
       sToMs,
@@ -378,6 +399,7 @@ export default defineComponent({
       changeProgress,
       computedPreview,
       isBad,
+      notify,
       ...qualityModule(props.quality, ctx),
       ...flvModuleArgs
     }

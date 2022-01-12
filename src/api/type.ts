@@ -75,6 +75,6 @@ export interface GetHomeMixData {
 }
 
 export type GetVideoUrlReturn = {
-  key: number
+  key: string
   value: string[]
 }[]

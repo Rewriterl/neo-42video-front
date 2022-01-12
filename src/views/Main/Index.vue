@@ -5,7 +5,7 @@
     </div>
     <div class="comic-main__inner">
       <div class="comic-main__video">
-        <AwVideo :src="anthology.current" />
+        <AwVideo ref="awVideoComp" :src="anthology.current" autoplay />
       </div>
       <div class="comic-main__box">
         <el-tabs>
@@ -14,10 +14,11 @@
               <!-- <div
                 v-show="anthology.isPending"
                 class="comic-main__anthology-loading"
-              ></div> -->
+              ></div>-->
               <ComicAnthology
                 v-for="(item, index) in anthology.list"
                 :key="index"
+                :org-id="item.orgId"
                 :active="anthology.current"
                 :label="item.name"
                 :list="item.values"
@@ -56,14 +57,85 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onDeactivated, reactive, ref } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, reactive, ref } from 'vue'
+
 import AwVideo from '@comps/AwVideo/AwVideo.vue'
-import ComicAnthology, { Option } from './component/ComicAnthology.vue'
+import ComicAnthology, { ChangeReturns } from './component/ComicAnthology.vue'
+import BaseImg from '@/components/Global/BaseImg.vue'
+import { ElNotification } from 'element-plus'
+
 import * as Api from '@apis/index'
 import * as Type from './types/index.type'
 import { GetComicMainReturn } from '@apis/index'
-import BaseImg from '@/components/Global/BaseImg.vue'
-import { getVal } from '@/utils/adLoadsh'
+import { getVal, sToMs } from '@/utils/adLoadsh'
+import { usePlayProgressCache } from '@/hooks/user'
+
+/**
+ * 动漫信息模块
+ * @param comicId 动漫id
+ * @param init 信息请求完成后的回调
+ */
+function comicInfoModule(comicId: number, init: () => void) {
+  const comic = reactive<GetComicMainReturn>({
+    title: '',
+    season: '',
+    region: '',
+    rank: '',
+    master: '',
+    lang: '',
+    firstDate: '',
+    cover: '',
+    voiceActors: [],
+    cates: [],
+    playlist: []
+  })
+  const comicUrls = ref<Api.GetVideoUrlReturn>([])
+  const comicTags = computed(() => [
+    {
+      label: '评分',
+      value: comic.rank
+    },
+    {
+      label: '地区',
+      value: comic.region
+    },
+    {
+      label: '状态',
+      value: comic.season
+    },
+    {
+      label: '作者',
+      value: comic.master
+    },
+    {
+      label: '语言',
+      value: comic.lang
+    },
+    {
+      label: '首播时间',
+      value: comic.firstDate
+    }
+  ])
+  ;(async () => {
+    comicUrls.value = await Api.getVideoUrl(comicId)
+    const data = await Api.getComicMain(comicId)
+
+    if (data) {
+      comic.playlist = data.playlist
+      ;(Object.keys(comic) as (keyof GetComicMainReturn)[]).forEach((k) => {
+        if (typeof data[k] !== 'undefined') {
+          comic[k] = data[k] as any
+        }
+      })
+      init()
+    }
+  })()
+  return {
+    comic,
+    comicUrls,
+    comicTags
+  }
+}
 
 export default defineComponent({
   name: 'ComicMain',
@@ -79,26 +151,61 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const comic = reactive<GetComicMainReturn>({
-      title: '',
-      season: '',
-      region: '',
-      rank: '',
-      master: '',
-      lang: '',
-      firstDate: '',
-      cover: '',
-      voiceActors: [],
-      cates: [],
-      playlist: []
-    })
-    const comicUrls = ref<Api.GetVideoUrlReturn>([])
-    const anthology = reactive<Type.Anthology>({
+    const awVideoComp = ref<typeof AwVideo>()
+    const playProgressCache = usePlayProgressCache()
+
+    const { comic, comicUrls, ...comicInfoModuleArgs } = comicInfoModule(
+      +props.id,
+      async () => {
+        const cache = playProgressCache.getLatestCache(+props.id)
+        if (cache) {
+          const list = anthology.list.find((item) => item.orgId === cache.orgId)
+          if (!list) return
+          const value = list.values.find((item) => item.name === cache.name)
+          if (value) {
+            changeAnthology(
+              {
+                ...value,
+                orgId: ''
+              },
+              false
+            )
+            awVideoComp.value!.changeProgress(cache.progress)
+            awVideoComp.value!.notify({
+              content: `已为您定位到 ${value.name} ${sToMs(cache.progress)}`,
+              duration: 3000
+            })
+          }
+        } else {
+          const item = getVal(() => anthology.list[0].values[0], null)
+          const isBad =
+            item &&
+            !changeAnthology(
+              {
+                ...item,
+                orgId: ''
+              },
+              false
+            )
+          isBad &&
+            ElNotification({
+              type: 'error',
+              title: '动漫加载',
+              message: '默认加载失败，请手动选择源'
+            })
+        }
+      }
+    )
+    const anthology = reactive<
+      Type.Anthology & { currentItem: ChangeReturns | null }
+    >({
       current: '',
+      currentItem: null,
       bads: [],
       list: computed(() =>
         comicUrls.value.map((item) => ({
           name: `播放源-${item.key}`,
+          orgId: item.key,
           values: item.value.map((url, index) => ({
             name: getVal(() => comic.playlist[index].name, '未知'),
             value: url
@@ -107,73 +214,41 @@ export default defineComponent({
       )
     })
 
-    const comicTags = computed(() => [
-      {
-        label: '评分',
-        value: comic.rank
-      },
-      {
-        label: '地区',
-        value: comic.region
-      },
-      {
-        label: '状态',
-        value: comic.season
-      },
-      {
-        label: '作者',
-        value: comic.master
-      },
-      {
-        label: '语言',
-        value: comic.lang
-      },
-      {
-        label: '首播时间',
-        value: comic.firstDate
-      }
-    ])
-
-    const changeAnthology = async ({ value }: Option) => {
+    const changeAnthology = (item: ChangeReturns, isAddCache = true) => {
+      const { value } = item
+      // 错误地址判断
       if (['kol-fans.fp.ps', '.m3u8'].some((key) => value.includes(key))) {
         anthology.bads.push(value)
+        return false
       } else {
+        anthology.currentItem = item
+        isAddCache && saveCache(item)
         anthology.current = value
+        return true
       }
     }
-    const init = async () => {
-      // if (comic.playlist.length > 0) {
-      // const item = comic.playlist[0].value[0]
-      // anthology.current = item.value
-      // changeAnthology(item)
-      // }
+    const saveCache = (item: ChangeReturns | null) => {
+      if (!item) return
+      playProgressCache.add({
+        orgId: item.orgId,
+        name: String(item.name),
+        progress: getVal(() => awVideoComp.value!.player.currentTime, 0),
+        comicId: +props.id
+      })
     }
 
-    ;(async () => {
-      comicUrls.value = await Api.getVideoUrl(props.id)
-      const data = await Api.getComicMain(props.id)
-
-      if (data) {
-        comic.playlist = data.playlist
-        ;(Object.keys(comic) as (keyof GetComicMainReturn)[]).forEach((k) => {
-          if (typeof data[k] !== 'undefined') {
-            comic[k] = data[k] as any
-          }
-        })
-        init()
-      }
-    })()
-
-    onDeactivated(() => {
-      //
+    onBeforeUnmount(() => {
+      saveCache(anthology.currentItem)
+      playProgressCache.saveStore()
     })
 
     return {
+      ...comicInfoModuleArgs,
       comic,
-      comicTags,
       comicUrls,
       changeAnthology,
-      anthology
+      anthology,
+      awVideoComp
     }
   }
 })

@@ -92,7 +92,7 @@ export async function getVideoUrl(
       data: { data = {} }
     } = await getax(`api/getVideo/${key}`)
     return Object.entries(data).map(([k, v]) => ({
-      key: +k,
+      key: k,
       value: (v instanceof Array ? v : []) as string[]
     }))
   } catch {

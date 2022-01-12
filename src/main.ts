@@ -6,9 +6,11 @@ import { elementPlusInit } from './plugins/elementPlus'
 import { createVueInit } from '@/utils/vue/index'
 import { directs } from '@/utils/vue/directs'
 import { createPreloadCdn } from '@/plugins/preloadCdn.class'
+import { createPlayProgress } from '@/class/playProgress.class'
 
 createPreloadCdn()
 createTheme()
+createPlayProgress().getStore()
 
 const app = createApp(App)
 elementPlusInit(app)
