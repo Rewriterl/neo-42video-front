@@ -44,10 +44,7 @@ export default defineComponent({
       default: 0
     }
   },
-  emits: {
-    timeChange: (val: number) => true,
-    timePreview: (val: number) => true
-  },
+  emits: ['timeChange', 'timePreview'],
   setup(props, { emit }) {
     const selfDom = ref<HTMLElement>()
 

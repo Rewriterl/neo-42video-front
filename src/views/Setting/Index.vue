@@ -37,6 +37,9 @@ export default defineComponent({
 <style lang="less" scoped>
 #setting {
   position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   .setting-box {
     width: 100%;
     background: var(--box-bg-color);

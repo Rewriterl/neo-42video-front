@@ -5,7 +5,12 @@
     </div>
     <div class="comic-main__inner">
       <div class="comic-main__video">
-        <AwVideo ref="awVideoComp" :src="anthology.current" autoplay />
+        <AwVideo
+          ref="awVideoComp"
+          :src="anthology.current"
+          autoplay
+          @ended="onVideoEnded"
+        />
       </div>
       <div class="comic-main__box">
         <el-tabs>
@@ -166,7 +171,7 @@ export default defineComponent({
             changeAnthology(
               {
                 ...value,
-                orgId: ''
+                orgId: list.orgId
               },
               false
             )
@@ -236,6 +241,28 @@ export default defineComponent({
         comicId: +props.id
       })
     }
+    const onVideoEnded = () => {
+      if (!anthology.currentItem) return
+      const oldItem = anthology.currentItem!
+      const list = anthology.list.find((item) => item.orgId === oldItem.orgId)!
+      const oldIndex = list.values.findIndex(
+        (item) => item.name === oldItem.name
+      )
+      if (oldIndex !== anthology.list.length - 1) {
+        const value = list.values[oldIndex + 1]
+        changeAnthology(
+          {
+            ...value,
+            orgId: list.orgId
+          },
+          false
+        )
+        awVideoComp.value!.notify({
+          content: `正在为您播放下一集`,
+          duration: 3000
+        })
+      }
+    }
 
     onBeforeUnmount(() => {
       saveCache(anthology.currentItem)
@@ -248,7 +275,8 @@ export default defineComponent({
       comicUrls,
       changeAnthology,
       anthology,
-      awVideoComp
+      awVideoComp,
+      onVideoEnded
     }
   }
 })

@@ -313,7 +313,6 @@ export default defineComponent({
       .box;
       position: relative;
       flex: 1;
-      overflow: hidden;
       border-top-left-radius: @radius;
       overflow-y: auto;
       &__content {

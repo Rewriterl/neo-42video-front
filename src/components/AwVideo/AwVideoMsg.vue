@@ -41,12 +41,16 @@ export default defineComponent({
         ...notifyItem,
         key
       })
-      setTimeout(() => {
-        removeNotify(key)
-      }, notifyItem.duration)
+      if (notifyItem.duration !== 0) {
+        setTimeout(() => {
+          removeNotify(key)
+        }, notifyItem.duration)
+      }
+      return key
     }
     return {
       notify,
+      removeNotify,
       notifys
     }
   }

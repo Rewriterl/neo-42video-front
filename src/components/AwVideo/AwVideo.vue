@@ -114,7 +114,7 @@ import * as Type from './type'
 
 export * from './type'
 
-type Ctx = SetupContext<('canplay' | 'changeQuality')[]>
+type Ctx = SetupContext<('canplay' | 'changeQuality' | 'ended')[]>
 
 function flvModule(player: Type.Player) {
   const flvInstance = ref<Type.FlvInstance>(null)
@@ -122,13 +122,11 @@ function flvModule(player: Type.Player) {
   const play = () => {
     if (flvInstance.value) {
       flvInstance.value.play()
-      player.status = 1
     }
   }
   const pause = () => {
     if (flvInstance.value) {
       flvInstance.value.pause()
-      player.status = 2
     }
   }
   const destroy = () => {
@@ -223,7 +221,7 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ['canplay', 'changeQuality'],
+  emits: ['canplay', 'changeQuality', 'ended'],
   setup(props, ctx) {
     const awVideoMsgComp = ref<typeof AwVideoMsg>()
     const videoEl = ref<HTMLVideoElement>()
@@ -307,6 +305,10 @@ export default defineComponent({
         (e) => {
           const { duration } = e.target as HTMLVideoElement
           player.duration = duration
+          notify({
+            content: '电波获取完成~',
+            duration: 3000
+          })
         },
         op
       )
@@ -319,11 +321,24 @@ export default defineComponent({
         },
         op
       )
-      /** 结束 监听 */
+      /** 播放结束 监听 */
       useEventListener(
-        'end',
+        'ended',
         () => {
           player.status = 2
+          notify({
+            content: '本集已播放完成~',
+            duration: 5000
+          })
+          ctx.emit('ended')
+        },
+        op
+      )
+      /** 播放 监听 */
+      useEventListener(
+        'play',
+        () => {
+          player.status = 1
         },
         op
       )
@@ -331,7 +346,7 @@ export default defineComponent({
       useEventListener(
         'pause',
         () => {
-          // player.status = 2
+          player.status = 2
         },
         op
       )
@@ -340,6 +355,10 @@ export default defineComponent({
         'error',
         (e) => {
           console.log('error', e)
+          notify({
+            content: '视频加载错误，emmm~',
+            duration: 5000
+          })
         },
         op
       )
@@ -348,6 +367,10 @@ export default defineComponent({
         'waiting',
         () => {
           player.status = 0
+          notify({
+            content: '电波获取中，请稍后~',
+            duration: 3000
+          })
         },
         op
       )
@@ -433,7 +456,7 @@ export default defineComponent({
   &__play {
     position: absolute;
     right: 30px;
-    bottom: 4px;
+    bottom: 16px;
     font-size: 50px;
     cursor: pointer;
     text-shadow: 0 4px 16px rgb(0 0 0 / 25%);
