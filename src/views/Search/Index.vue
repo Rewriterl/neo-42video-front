@@ -106,7 +106,7 @@ function filterModule() {
       options: SEARCH_FILTER.STATUS
     },
     {
-      label: '发布时间',
+      label: '地区',
       key: 'region',
       rightCancle: true,
       options: SEARCH_FILTER.CITY
@@ -182,6 +182,7 @@ export default defineComponent({
       // push(0)
     }
     const searchByName = async (clear = true) => {
+      if (!filter.name) return
       isFetchingSearch.value = true
       mainContentEl.value!.scrollTop = 0
       clear && resetFilter()

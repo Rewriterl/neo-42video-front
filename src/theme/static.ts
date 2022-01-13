@@ -33,9 +33,9 @@ export const DF_SYSTEM_COLOR: ThemeColorVar[] = [
   },
   {
     prop: 'primary',
-    value: '#7270fe',
+    value: 'rgba(104, 198, 189, 1)',
     var: '--primary-color',
-    descr: '主颜色'
+    descr: '醒目颜色'
   },
   {
     prop: 'warning',

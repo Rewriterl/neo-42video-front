@@ -42,7 +42,7 @@ export default defineComponent({
   },
   setup(props) {
     const daysUpdate = reactive({
-      active: '0',
+      active: String(new Date().getDay() - 1),
       list: computed<Option[]>(() =>
         props.perweek.map((item) => ({
           name: item.name,
@@ -87,6 +87,7 @@ export default defineComponent({
       gap: 12px;
       margin-top: 14px;
       flex-wrap: wrap;
+      align-content: flex-start;
       li {
         padding: 0 8px;
         height: 46px;

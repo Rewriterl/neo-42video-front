@@ -58,7 +58,6 @@ export default defineComponent({
       width: 100%;
       aspect-ratio: 2/1;
       font-size: 30px;
-      color: #fff;
     }
   }
   &__main {
