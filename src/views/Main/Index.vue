@@ -1,7 +1,7 @@
 <template>
   <div class="comic-main">
     <div class="comic-main__break">
-      <Icon name="delete2" @click="$router.go(-1)" />
+      <Icon name="arrow" @click="$router.go(-1)" />
     </div>
     <div class="comic-main__inner">
       <div class="comic-main__video">
@@ -307,10 +307,11 @@ export default defineComponent({
     transition: all 0.25s;
     i {
       color: var(--font-color);
-      font-size: 30px;
+      font-size: 24px;
+      transform: rotateY(180deg);
     }
     &:hover {
-      transform: rotate(180deg);
+      transform: scale(0.8);
     }
   }
   &__inner {

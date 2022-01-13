@@ -7,6 +7,7 @@
     >
       <el-color-picker
         v-model="colors[item.prop]"
+        show-alpha
         @change="onColorChanged(item)"
       />
       <span>{{ item.descr }}</span>

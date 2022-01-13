@@ -55,8 +55,16 @@ export type GetDaysWeek = {
 export type FilterComicReturn = Page<ComicPageList[]>
 
 export interface GetHomeMixData {
-  /** 每天排行 */
-  // perday: { name: string; value: { title: string; episode: string }[] }[]
+  /** 每日更新 */
+  perweek: {
+    name: string
+    key: string
+    value: {
+      title: string
+      season: string
+      id: string
+    }[]
+  }[]
   /** 热门 */
   hots: {
     cover: string

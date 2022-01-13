@@ -135,12 +135,7 @@ export async function getVideoUrl(
 export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null> {
   try {
     const { data } = await getax('api/getIndex')
-    // console.log(data)
     return {
-      // perweek: Object.entries(data.perday || {}).map(([k, v]): any => ({
-      //   name: `星期${+k}`,
-      //   value: v
-      // })),hots
       hots: getVal<any[]>(() => data.data.hots.results, []).map((item) => ({
         cover: item.cover,
         id: item.id,
@@ -152,14 +147,25 @@ export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null
         .map((item) => ({
           cover: '',
           id: item.id,
-          season: `${item.date}  ${item.season}`,
+          season: `${item.season} ${item.date}`,
           title: item.title
         })),
       banner: getVal<any[]>(() => data.data.banner, []).map((item) => ({
         cover: item.cover,
         id: item.id || -1,
         title: item.title || '未知'
-      }))
+      })),
+      perweek: Object.entries(getVal<any>(() => data.data.perweek, {})).map(
+        ([k, v]) => ({
+          name: `周${['一', '二', '三', '四', '五', '六', '日'][+k]}`,
+          key: k,
+          value: ((v || []) as any[]).map((e) => ({
+            id: e.id,
+            season: e.season || '未知',
+            title: e.title || '未知'
+          }))
+        })
+      )
     }
     // return
   } catch {

@@ -424,7 +424,8 @@ export async function getEl(
  */
 export function getVal<T>(fn: () => T, df: any): T {
   try {
-    return fn()
+    const res = fn()
+    return res
   } catch (e) {
     // console.error(e)
     return df

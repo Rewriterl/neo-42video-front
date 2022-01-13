@@ -5,6 +5,7 @@ export interface Comic {
   hots: Api.GetHomeMixData['hots']
   latest: Api.GetHomeMixData['latest']
   banner: Api.GetHomeMixData['banner']
+  perweek: Api.GetHomeMixData['perweek']
 }
 
 export interface Tabs<T> {

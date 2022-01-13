@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "10330627",
+      "name": "full-screen",
+      "font_class": "full-screen",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    },
+    {
+      "icon_id": "10330628",
+      "name": "exit-full-screen",
+      "font_class": "exit-full-screen",
+      "unicode": "e65a",
+      "unicode_decimal": 58970
+    },
+    {
+      "icon_id": "5452530",
+      "name": "arrow",
+      "font_class": "arrow",
+      "unicode": "e627",
+      "unicode_decimal": 58919
+    },
+    {
       "icon_id": "1393657",
       "name": "filter",
       "font_class": "filter",

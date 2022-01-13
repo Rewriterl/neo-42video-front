@@ -79,8 +79,12 @@
           />
         </div>
       </div>
-      <Icon class="control-icon" />
-      <Icon class="control-icon" @click="fullScreen" />
+      <!-- <Icon class="control-icon" /> -->
+      <Icon
+        class="control-icon"
+        :name="player.fullScreen ? 'exit-full-screen' : 'full-screen'"
+        @click="fullScreen"
+      />
     </div>
     <AwVideoMsg ref="awVideoMsgComp" />
     <video ref="videoEl" v-bind="$attrs" :mute="mute" />
@@ -504,19 +508,19 @@ export default defineComponent({
     bottom: 0;
     margin: 0 @padding;
     padding-top: 6px;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     width: calc(100% - @padding*2);
     display: flex;
     align-items: center;
     color: #fff;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 8;
     height: @controlHeight;
     user-select: none;
     transition: all 0.25s;
     opacity: 0;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
 
     &:hover {
       opacity: 1;

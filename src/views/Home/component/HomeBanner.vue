@@ -87,15 +87,23 @@ export default defineComponent({
   }
   &__main {
     .up-block-main;
-    border-radius: 24px;
+    border-radius: 18px;
     ::v-deep(.el-carousel) {
       width: 100%;
       height: 100%;
       .el-carousel__item {
         height: 100%;
+        cursor: pointer;
+        &:hover {
+          img {
+            transform: scale(1.2);
+            filter: brightness(0.6);
+          }
+        }
         img {
           width: 100%;
           height: 100%;
+          transition: all 0.25s;
         }
         span {
           position: absolute;

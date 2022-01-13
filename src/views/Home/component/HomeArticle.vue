@@ -1,0 +1,112 @@
+<template>
+  <article class="home-article">
+    <div v-show="!isInit" class="home-article__inner aw-skeleton"></div>
+    <div v-show="isInit" class="home-article__inner">
+      <h3>新番动态</h3>
+      <AwRadio v-model="daysUpdate.active" :options="daysUpdate.list" />
+      <ul>
+        <li
+          v-for="item in daysUpdate.current"
+          :key="item.id"
+          @click="toComicMain(item.id)"
+        >
+          <p>{{ item.title }}</p>
+          <span>{{ item.season }}</span>
+        </li>
+      </ul>
+    </div>
+  </article>
+</template>
+
+<script lang="ts">
+import { computed, defineComponent, PropType, reactive } from 'vue'
+import AwRadio, { Option } from '@comps/Form/AwRadio.vue'
+import * as SectionType from '../types/homeSection.type'
+import { getVal } from '@/utils/adLoadsh'
+import { toComicMain } from '@/hooks/router'
+
+export default defineComponent({
+  name: 'HomeArticle',
+  components: {
+    AwRadio
+  },
+  props: {
+    perweek: {
+      type: Array as PropType<SectionType.Comic['perweek']>,
+      default: () => []
+    },
+    isInit: {
+      type: Boolean,
+      default: false
+    }
+  },
+  setup(props) {
+    const daysUpdate = reactive({
+      active: '0',
+      list: computed<Option[]>(() =>
+        props.perweek.map((item) => ({
+          name: item.name,
+          value: item.key
+        }))
+      ),
+      get current() {
+        return getVal(
+          () => props.perweek.find((item) => item.key === this.active)!.value,
+          []
+        )
+      }
+    })
+    return {
+      daysUpdate,
+      toComicMain
+    }
+  }
+})
+</script>
+<style lang="less" scoped>
+.home-article {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-color);
+  border-radius: 18px;
+  overflow: hidden;
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    h3 {
+      padding-bottom: 12px;
+    }
+    ul {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+      li {
+        padding: 0 8px;
+        height: 46px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: var(--box-bg-color);
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.25s;
+        span {
+          font-size: 12px;
+          color: var(--font-unactive-color);
+        }
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+}
+</style>
