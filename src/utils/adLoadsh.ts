@@ -312,6 +312,26 @@ export function fullscreen(el: HTMLElement, type: 'to' | 'exit') {
 }
 
 /**
+ * 判断浏览器当前是否为全屏状态
+ * @returns
+ */
+export function checkFullscreen() {
+  // const el = document as any
+  // const wd = window as any
+  // const isFull =
+  //   el.fullscreenEnabled ||
+  //   wd.fullScreen ||
+  //   el.webkitIsFullScreen ||
+  //   el.msFullscreenEnabled
+  // if (typeof isFull === 'undefined') {
+  //   return false
+  // } else {
+  //   return isFull
+  // }
+  return (document as any).webkitIsFullScreen
+}
+
+/**
  * 获取地址的query参数
  * @param key 参数名称
  * @returns 结果，找不到返回null

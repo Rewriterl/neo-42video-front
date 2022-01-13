@@ -110,7 +110,13 @@ import AwVideoProgress from './AwVideoProgress.vue'
 import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
 import AwVideoMsg, { NotifyItem } from './AwVideoMsg.vue'
 
-import { debounce, fullscreen, sToMs } from '@/utils/adLoadsh'
+import {
+  checkFullscreen,
+  debounce,
+  fullscreen,
+  sToMs,
+  wait
+} from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
 import { getVideoScreenshot } from '@/utils/media'
 
@@ -386,6 +392,10 @@ export default defineComponent({
         },
         op
       )
+      // 全屏下无法监听keydown等
+      useEventListener('resize', () => {
+        !checkFullscreen() && (player.fullScreen = false)
+      })
       player.isListened = true
     })()
     onMounted(() => {
@@ -398,20 +408,6 @@ export default defineComponent({
       player.isListened = false
     })
     watch(() => props.src, init)
-
-    // useEventListener('keydown', (e) => {
-    // esc
-    // if ((e as KeyboardEvent).code === 'Escape') {
-    //   player.fullScreen && (player.fullScreen = false)
-    // }
-    // })
-
-    // watch(
-    //   () => player.fullScreen,
-    //   (xx) => {
-    //     console.log(xx, 'xx')
-    //   }
-    // )
 
     return {
       videoEl,
@@ -449,6 +445,7 @@ export default defineComponent({
     width: 100%;
     height: 100%;
     z-index: 1;
+    opacity: 0;
   }
   .mask(@height: 100%) {
     position: absolute;
