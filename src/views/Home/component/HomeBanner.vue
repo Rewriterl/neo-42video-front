@@ -81,7 +81,9 @@ export default defineComponent({
 <style lang="less" scoped>
 @import '../style/home-main';
 .home-banner {
-  .up-block;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   &__header {
     .up-block-header;
   }

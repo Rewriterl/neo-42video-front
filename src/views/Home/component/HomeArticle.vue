@@ -65,8 +65,8 @@ export default defineComponent({
 </script>
 <style lang="less" scoped>
 .home-article {
-  width: 100%;
-  height: 100%;
+  width: 800px;
+  aspect-ratio: 2.6/1;
   background: var(--bg-color);
   border-radius: 18px;
   overflow: hidden;

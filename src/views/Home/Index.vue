@@ -11,14 +11,17 @@
       <div class="home-header__else"></div>
     </header>
     <main class="home-main">
-      <HomeBanner :is-init="isInit" :banner="comic.banner" />
-      <HomeSection
-        :is-init="isInit"
-        :hots="comic.hots"
-        :latest="comic.latest"
-      />
-      <HomeArticle :perweek="comic.perweek" :is-init="isInit" />
-      <div></div>
+      <div class="home-main__col">
+        <HomeBanner :is-init="isInit" :banner="comic.banner" />
+        <HomeSection
+          :is-init="isInit"
+          :hots="comic.hots"
+          :latest="comic.latest"
+        />
+      </div>
+      <div class="home-main__col">
+        <HomeArticle :perweek="comic.perweek" :is-init="isInit" />
+      </div>
     </main>
   </div>
 </template>
@@ -115,15 +118,17 @@ export default defineComponent({
     }
     &-main {
       flex: 1;
-      overflow: hidden;
       background: var(--box-bg-color);
       border-top-left-radius: 24px;
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      grid-template-rows: 2fr 1fr;
-      gap: 40px;
       padding: 30px 50px;
       box-sizing: border-box;
+      overflow-y: auto;
+      &__col {
+        display: flex;
+        width: 100%;
+        gap: 40px;
+        margin-bottom: 40px;
+      }
     }
   }
 }

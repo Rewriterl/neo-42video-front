@@ -22,4 +22,21 @@
     }
   }
 
+  .fade-in {
+    animation: fade 0.5s linear;
+  }
+
+  .fade-out {
+    animation: fade 0.5s linear reverse;
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
 }

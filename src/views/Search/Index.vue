@@ -20,17 +20,19 @@
         @click="filterVisible = !filterVisible"
       />
     </header>
-    <article v-show="filterVisible" class="search-filter">
-      <AwRadio
-        v-for="{ label, key, options, rightCancle } in filterConfig"
-        :key="key"
-        v-model="filter[key]"
-        :label="label"
-        :options="options"
-        :right-cancle="rightCancle"
-        @change="searchByFilter"
-      />
-    </article>
+    <transition enter-active-class="fade-in">
+      <article v-show="filterVisible" class="search-filter">
+        <AwRadio
+          v-for="{ label, key, options, rightCancle } in filterConfig"
+          :key="key"
+          v-model="filter[key]"
+          :label="label"
+          :options="options"
+          :right-cancle="rightCancle"
+          @change="searchByFilter"
+        />
+      </article>
+    </transition>
     <main class="search-main">
       <transition
         enter-active-class="animate__fadeIn"
@@ -309,6 +311,7 @@ export default defineComponent({
       box-sizing: border-box;
       border-top-left-radius: @radius;
       border-bottom-left-radius: @radius;
+      user-select: none;
     }
     &-main {
       .box;
@@ -321,12 +324,8 @@ export default defineComponent({
         width: 100%;
         height: calc(100vh - @frameTop - @headerHeight - @rootGap);
         padding: 30px;
-        display: flex;
-        flex-direction: column;
         box-sizing: border-box;
         &-col {
-          flex: 1;
-          max-height: 34%;
           width: 100%;
           display: flex;
           overflow: hidden;

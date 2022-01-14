@@ -38,21 +38,21 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-  transition: all 0.25s;
   overflow: hidden;
-  padding: 4px 8px;
+  padding: 6px 12px;
   box-sizing: border-box;
   &:hover {
-    width: calc(100% / v-bind(size) * 2);
-    .info {
-      text-align: left;
+    .cover {
+      filter: brightness(0.5);
     }
   }
   .cover {
     flex: 1;
     width: 100%;
+    aspect-ratio: 1/1.4;
     border-radius: 6px;
     overflow: hidden;
+    transition: all 0.25s;
     img {
       width: 100%;
       height: 100%;

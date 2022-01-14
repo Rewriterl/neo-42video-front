@@ -115,7 +115,7 @@ export default defineComponent({
 <style lang="less" scoped>
 @import '../style/home-main';
 .home-section {
-  .up-block;
+  width: 440px;
   &__header {
     .up-block-header;
   }
@@ -124,6 +124,7 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     gap: 14px;
+    height: 400px;
     & > div {
       flex: 1;
       overflow: hidden;
