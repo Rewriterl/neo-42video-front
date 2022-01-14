@@ -1,6 +1,8 @@
 import flvjs from 'flv.js'
 
 export type FlvInstance = flvjs.Player | null
+
+/** 播放器信息 */
 export interface Player {
   /** 当前进度 */
   currentTime: number
@@ -22,6 +24,8 @@ export interface Player {
   isListened: boolean
 }
 export interface Quality {
+  /** 画质名称 */
   name: string
+  /** 画质key */
   value: string | number
 }

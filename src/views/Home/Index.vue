@@ -21,6 +21,7 @@
       </div>
       <div class="home-main__col">
         <HomeArticle :perweek="comic.perweek" :is-init="isInit" />
+        <HomeTv :tv="comic.tv" :is-init="isInit" />
       </div>
     </main>
   </div>
@@ -32,6 +33,7 @@ import { defineComponent, reactive, ref } from 'vue'
 import HomeBanner from './component/HomeBanner.vue'
 import HomeSection from './component/HomeSection.vue'
 import HomeArticle from './component/HomeArticle.vue'
+import HomeTv from './component/HomeTv.vue'
 
 import * as Api from '@apis/index'
 import * as Type from './types/homeSection.type'
@@ -41,7 +43,8 @@ export default defineComponent({
   components: {
     HomeBanner,
     HomeSection,
-    HomeArticle
+    HomeArticle,
+    HomeTv
   },
   setup() {
     const isInit = ref(false)
@@ -49,17 +52,19 @@ export default defineComponent({
       perweek: [],
       hots: [],
       latest: [],
-      banner: []
+      banner: [],
+      tv: []
     })
 
     ;(async () => {
       const data = await Api.getHomeMixData()
       if (data) {
-        const { hots, latest, banner, perweek } = data
+        const { hots, latest, banner, perweek, tv } = data
         comic.banner = banner
         comic.hots = hots
         comic.latest = latest
         comic.perweek = perweek
+        comic.tv = tv
         isInit.value = true
       }
     })()

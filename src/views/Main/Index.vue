@@ -10,6 +10,7 @@
           :src="anthology.current"
           autoplay
           @ended="onVideoEnded"
+          @error="onVideoError"
         />
       </div>
       <div class="comic-main__box">
@@ -89,6 +90,7 @@ import { usePlayProgressCache } from '@/hooks/user'
  * @param init 信息请求完成后的回调
  */
 function comicInfoModule(comicId: number, init: () => void) {
+  /** 动漫信息 */
   const comic = reactive<GetComicMainReturn>({
     title: '',
     season: '',
@@ -102,7 +104,9 @@ function comicInfoModule(comicId: number, init: () => void) {
     cates: [],
     playlist: []
   })
+  /** 动漫地址集 */
   const comicUrls = ref<Api.GetVideoUrlReturn>([])
+  /** 动漫tags */
   const comicTags = computed(() => [
     {
       label: '评分',
@@ -129,6 +133,7 @@ function comicInfoModule(comicId: number, init: () => void) {
       value: comic.master
     }
   ])
+  /** 数据获取 */
   ;(async () => {
     comicUrls.value = await Api.getVideoUrl(comicId)
     const data = await Api.getComicMain(comicId)
@@ -170,10 +175,13 @@ export default defineComponent({
     const { comic, comicUrls, ...comicInfoModuleArgs } = comicInfoModule(
       +props.id,
       async () => {
+        // 获取对应缓存
         const cache = playProgressCache.getLatestCache(+props.id)
         if (cache) {
+          // 查找缓存对应源
           const list = anthology.list.find((item) => item.orgId === cache.orgId)
           if (!list) return
+          // 查找缓存对应集
           const value = list.values.find((item) => item.name === cache.name)
           if (value) {
             changeAnthology(
@@ -183,6 +191,7 @@ export default defineComponent({
               },
               false
             )
+            // 定位缓存进度
             awVideoComp.value!.changeProgress(cache.progress)
             awVideoComp.value!.notify({
               content: `已为您定位到 ${value.name} ${sToMs(cache.progress)}`,
@@ -190,6 +199,7 @@ export default defineComponent({
             })
           }
         } else {
+          // 默认选择第一个源下的第一集
           const item = getVal(() => anthology.list[0].values[0], null)
           const isBad =
             item &&
@@ -209,8 +219,12 @@ export default defineComponent({
         }
       }
     )
+    /** 选集 */
     const anthology = reactive<
-      Type.Anthology & { currentItem: ChangeReturns | null }
+      Type.Anthology & {
+        /** 当前选中的集信息 */
+        currentItem: ChangeReturns | null
+      }
     >({
       current: '',
       currentItem: null,
@@ -227,6 +241,11 @@ export default defineComponent({
       )
     })
 
+    /**
+     * 修改选集
+     * @param item 选择集信息
+     * @param isAddCache 是否添加到播放缓存
+     */
     const changeAnthology = (item: ChangeReturns, isAddCache = true) => {
       const { value } = item
       // 错误地址判断
@@ -234,12 +253,17 @@ export default defineComponent({
         anthology.bads.push(value)
         return false
       } else {
+        anthology.current = value
         anthology.currentItem = item
         isAddCache && saveCache(item)
-        anthology.current = value
         return true
       }
     }
+    /**
+     * 保存播放缓存
+     * @param item 集信息
+     * @param item
+     */
     const saveCache = (item: ChangeReturns | null) => {
       if (!item) return
       playProgressCache.add({
@@ -249,6 +273,9 @@ export default defineComponent({
         comicId: +props.id
       })
     }
+    /**
+     * AwVideo-ended事件
+     */
     const onVideoEnded = () => {
       if (!anthology.currentItem) return
       const oldItem = anthology.currentItem!
@@ -271,7 +298,17 @@ export default defineComponent({
         })
       }
     }
+    /**
+     * AwVideo-error事件
+     */
+    const onVideoError = async () => {
+      // 重置当前选集
+      anthology.bads.push(anthology.current)
+      anthology.current = ''
+      anthology.currentItem = null
+    }
 
+    /** 销毁前预处理 */
     onBeforeUnmount(() => {
       saveCache(anthology.currentItem)
       playProgressCache.saveStore()
@@ -284,7 +321,8 @@ export default defineComponent({
       changeAnthology,
       anthology,
       awVideoComp,
-      onVideoEnded
+      onVideoEnded,
+      onVideoError
     }
   }
 })

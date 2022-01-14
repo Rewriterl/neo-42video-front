@@ -80,7 +80,7 @@ export async function getComicMain(
 }
 
 /**
- * 获取视频地址
+ * 获取视频地址集
  * @param key
  * @returns
  */
@@ -135,6 +135,13 @@ export async function getVideoUrl(
 export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null> {
   try {
     const { data } = await getax('api/getIndex')
+    const listFormt = (list: any[]) =>
+      list.slice(0, 10).map((item) => ({
+        cover: item.cover,
+        id: item.id,
+        season: item.season,
+        title: item.title
+      }))
     return {
       hots: getVal<any[]>(() => data.data.hots.results, []).map((item) => ({
         cover: item.cover,
@@ -142,14 +149,7 @@ export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null
         season: item.season,
         title: item.title
       })),
-      latest: getVal<any[]>(() => data.data.latest.results, [])
-        .slice(0, 10)
-        .map((item) => ({
-          cover: '',
-          id: item.id,
-          season: `${item.season} ${item.date}`,
-          title: item.title
-        })),
+      latest: listFormt(getVal<any[]>(() => data.data.latest, [])),
       banner: getVal<any[]>(() => data.data.banner, []).map((item) => ({
         cover: item.cover,
         id: item.id || -1,
@@ -165,10 +165,14 @@ export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null
             title: e.title || '未知'
           }))
         })
-      )
+      ),
+      tv: listFormt(getVal<any[]>(() => data.data.theatre_comic, [])),
+      endJp: listFormt(getVal<any[]>(() => data.data.japancomic, [])),
+      cn: listFormt(getVal<any[]>(() => data.data.chinese_comic, []))
     }
     // return
-  } catch {
+  } catch (e) {
+    console.error(e)
     return null
   }
 }

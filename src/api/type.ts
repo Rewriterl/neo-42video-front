@@ -66,14 +66,15 @@ export interface GetHomeMixData {
     }[]
   }[]
   /** 热门 */
-  hots: {
-    cover: string
-    id: string
-    season: string
-    title: string
-  }[]
+  hots: ComicPageList[]
   /** 最新 */
   latest: ComicPageList[]
+  /** 剧场版 */
+  tv: ComicPageList[]
+  /** 完结日漫 */
+  endJp: ComicPageList[]
+  /** 国漫 */
+  cn: ComicPageList[]
   /** 轮播 */
   banner: {
     cover: string

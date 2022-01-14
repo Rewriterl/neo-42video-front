@@ -110,13 +110,7 @@ import AwVideoProgress from './AwVideoProgress.vue'
 import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
 import AwVideoMsg, { NotifyItem } from './AwVideoMsg.vue'
 
-import {
-  checkFullscreen,
-  debounce,
-  fullscreen,
-  sToMs,
-  wait
-} from '@/utils/adLoadsh'
+import { checkFullscreen, debounce, fullscreen, sToMs } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
 import { getVideoScreenshot } from '@/utils/media'
 
@@ -124,8 +118,9 @@ import * as Type from './type'
 
 export * from './type'
 
-type Ctx = SetupContext<('canplay' | 'changeQuality' | 'ended')[]>
+type Ctx = SetupContext<('canplay' | 'changeQuality' | 'ended' | 'error')[]>
 
+/** flvjs封装模块 */
 function flvModule(player: Type.Player) {
   const flvInstance = ref<Type.FlvInstance>(null)
 
@@ -153,6 +148,9 @@ function flvModule(player: Type.Player) {
         url
       })
       flvInstance.value.attachMediaElement(el)
+      flvInstance.value.on(flvjs.Events.RECOVERED_EARLY_EOF, (e) => {
+        console.log(e, '123')
+      })
       flvInstance.value.volume = player.realVolume
       return flvInstance.value
     } catch (err) {
@@ -173,6 +171,7 @@ function flvModule(player: Type.Player) {
   }
 }
 
+/** 画质切换模块 */
 function qualityModule(quality: Type.Quality[], { emit }: Ctx) {
   const currentQuality = ref<Type.Quality['value']>(-1)
   const qualitySelectVisible = ref(false)
@@ -231,7 +230,7 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ['canplay', 'changeQuality', 'ended'],
+  emits: ['canplay', 'changeQuality', 'ended', 'error'],
   setup(props, ctx) {
     const awVideoMsgComp = ref<typeof AwVideoMsg>()
     const videoEl = ref<HTMLVideoElement>()
@@ -255,6 +254,10 @@ export default defineComponent({
 
     const isBad = computed(() => player.status === -1)
 
+    /**
+     * 视频载入初始化
+     * @param url 视频地址
+     */
     const init = (url: string) => {
       if (!url) return
       destroy()
@@ -264,7 +267,7 @@ export default defineComponent({
       player.status = 2
       ctx.emit('canplay', flv)
     }
-
+    /** 播放切换 */
     const playHandler = () => {
       switch (player.status) {
         case 0: {
@@ -283,28 +286,48 @@ export default defineComponent({
         }
       }
     }
+    /** 全屏切换 */
     const fullScreen = () => {
       player.fullScreen = !player.fullScreen
       fullscreen(selfEl.value!, player.fullScreen ? 'to' : 'exit')
     }
+    /** 静音切换 */
     const volumeCutover = () => {
       player.isMute = !player.isMute
       changeVolume(player.isMute ? 0 : player.realVolume)
     }
+    /**
+     * 音量修改
+     * @param val 0-100
+     */
     const changeVolume = (val: number) => {
       player.isMute = val === 0
       videoEl.value && (videoEl.value.volume = val)
     }
+    /**
+     * 进度修改
+     * @param val ms
+     */
     const changeProgress = (val: number) => {
       videoEl.value!.currentTime = val
     }
+    /**
+     * 计算进度预览图
+     */
     const computedPreview = debounce(async (val: number) => {
       player.preview = await getVideoScreenshot(props.src, val)
     }, 300)
+    /**
+     * 消息提示
+     * @param item
+     */
     const notify = (item: NotifyItem) => {
       awVideoMsgComp.value!.notify(item)
     }
 
+    watch(() => props.src, init)
+
+    /** 监听 */
     ;(() => {
       const op = {
         target: videoEl
@@ -364,7 +387,8 @@ export default defineComponent({
       useEventListener(
         'error',
         (e) => {
-          console.log('error', e)
+          console.error(e)
+          ctx.emit('error')
           notify({
             content: '视频加载错误，emmm~',
             duration: 5000
@@ -398,6 +422,7 @@ export default defineComponent({
       })
       player.isListened = true
     })()
+
     onMounted(() => {
       init(props.src)
     })
@@ -407,7 +432,6 @@ export default defineComponent({
     onDeactivated(() => {
       player.isListened = false
     })
-    watch(() => props.src, init)
 
     return {
       videoEl,
