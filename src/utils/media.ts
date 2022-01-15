@@ -24,8 +24,8 @@ export async function getVideoScreenshot(videoUrl: string, time: number) {
     await wait(300)
 
     const canvas = document.createElement('canvas')
-    canvas.width = 1920
-    canvas.height = 1080
+    canvas.width = 192
+    canvas.height = 108
     canvas.getContext('2d')!.drawImage(video, 0, 0, canvas.width, canvas.height)
     return canvas.toDataURL('image/png')
   } catch (e) {

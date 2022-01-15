@@ -6,12 +6,7 @@
     @mousemove="onMouseMove"
     @click="changProgress"
   >
-    <el-progress
-      :percentage="curArea"
-      color="#7270fe"
-      :show-text="false"
-      class="progress"
-    />
+    <el-slider :model-value="curArea" :show-tooltip="false" v-bind="$attrs" />
     <div class="aw-video__progress-tooltip" :style="tooltipStyle">
       <slot name="tooltip" :time="sToMs(tooltipTime)">
         <span>{{ sToMs(tooltipTime) }}</span>
@@ -49,7 +44,8 @@ export default defineComponent({
     const selfDom = ref<HTMLElement>()
 
     const self = reactive({
-      width: 0
+      width: 0,
+      offsetX: 0
     })
     const mouse = reactive({
       x: 0
@@ -74,14 +70,15 @@ export default defineComponent({
 
     const onMouseMove = async (e: MouseEvent) => {
       if (!hasCurListenlist.value) return
-      const { offsetX } = e
-      mouse.x = offsetX
+      const { pageX } = e
+      mouse.x = pageX - self.offsetX
       await nextTick()
       emit('timePreview', tooltipTime.value)
     }
     const initStyle = async () => {
       await wait(2000)
       self.width = selfDom.value!.clientWidth
+      self.offsetX = selfDom.value!.getBoundingClientRect().left
     }
     const changProgress = () => {
       if (!hasCurListenlist.value) return
@@ -117,15 +114,17 @@ export default defineComponent({
       opacity: 1;
     }
   }
-  ::v-deep(.el-progress) {
-    overflow: hidden;
-    .el-progress-bar__outer {
-      background: #ebeef53d;
-      border-radius: 0;
+  ::v-deep(.el-slider) {
+    .el-slider__runway {
+      margin: 0;
+      background: #eee3;
+      .el-slider__bar {
+        background: linear-gradient(to left, #1aafe8, #df6edc);
+      }
     }
-    .el-progress-bar__inner {
-      transition: unset;
-      border-radius: 0;
+    .el-slider__button {
+      border-radius: 4px;
+      height: 14px;
     }
   }
   .progress {

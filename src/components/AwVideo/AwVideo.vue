@@ -25,6 +25,7 @@
         :current-time="player.currentTime"
         @timeChange="changeProgress"
         @timePreview="computedPreview"
+        @input="onProgressChange"
       >
         <template #tooltip="{ time }">
           <div class="preview">
@@ -316,7 +317,7 @@ export default defineComponent({
      */
     const computedPreview = debounce(async (val: number) => {
       player.preview = await getVideoScreenshot(props.src, val)
-    }, 300)
+    }, 100)
     /**
      * 消息提示
      * @param item
@@ -324,6 +325,10 @@ export default defineComponent({
     const notify = (item: NotifyItem) => {
       awVideoMsgComp.value!.notify(item)
     }
+    const onProgressChange = debounce((val: number) => {
+      const realTime = player.duration * (val / 100)
+      changeProgress(realTime)
+    }, 100)
 
     watch(() => props.src, init)
 
@@ -447,6 +452,7 @@ export default defineComponent({
       computedPreview,
       isBad,
       notify,
+      onProgressChange,
       ...qualityModule(props.quality, ctx),
       ...flvModuleArgs
     }
@@ -521,6 +527,11 @@ export default defineComponent({
       margin-top: 30px;
     }
   }
+  &:hover {
+    .aw-video__control {
+      opacity: 1;
+    }
+  }
   &__control {
     @padding: 16px;
     position: absolute;
@@ -538,13 +549,10 @@ export default defineComponent({
     height: @controlHeight;
     user-select: none;
     transition: all 0.25s;
-    opacity: 0;
+    opacity: 1;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 
-    &:hover {
-      opacity: 1;
-    }
     .control {
       &-icon {
         display: flex;
@@ -657,7 +665,7 @@ export default defineComponent({
     .preview {
       position: relative;
       width: 100px;
-      height: 50px;
+      aspect-ratio: 1.7/1;
       img {
         width: 100%;
         height: 100%;
