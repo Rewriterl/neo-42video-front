@@ -87,3 +87,12 @@ export type GetVideoUrlReturn = {
   key: string
   value: string[]
 }[]
+
+export type GetComicFilterConfig = {
+  id: number
+  name: string
+  value: {
+    name: string
+    value: string
+  }[]
+}[]

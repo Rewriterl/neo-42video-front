@@ -102,33 +102,6 @@ export async function getVideoUrl(
 }
 
 /**
- * 获取最新更新动漫
- * @returns
- */
-// export async function getLatestComic(): Promise<ApiReturns.GetLatestComic | null> {
-//   try {
-//     const {
-//       data: {
-//         data: { results, pagetotal }
-//       }
-//     } = await getax('api/latest')
-//     if (results instanceof Array) {
-//       return {
-//         data: results,
-//         total: (pagetotal || 0) * 24
-//       }
-//     } else {
-//       throw newError()
-//     }
-//   } catch {
-//     return {
-//       data: [],
-//       total: 0
-//     }
-//   }
-// }
-
-/**
  * 获取每日更新动漫
  * @returns
  */
@@ -178,46 +151,55 @@ export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null
 }
 
 export async function filterComic(param: {
+  /** 分类 */
+  type?: number
   /** 类型 */
-  label?: string
-  /** 地区 */
-  region?: string
-  /** 年份 */
-  year?: string
-  /** 状态 */
-  status?: string
+  category?: string
   /** 排序 */
-  order: string | number
+  order?: string
+  /** 字母 */
+  letter?: string
+  /** 年份 */
+  year?: number
   page: number
 }): Promise<ApiReturns.FilterComicReturn> {
-  // try {
-  //   const api =
-  //     'api/filter?' +
-  //     Object.entries(param)
-  //       .filter(([k, v]) => v !== '')
-  //       .map(([k, v]) => `${k}=${v}`)
-  //       .join('&')
-  //   const {
-  //     data: {
-  //       data: { results, pagetotal }
-  //     }
-  //   } = await getax(api)
-  //   if (results instanceof Array) {
-  //     return {
-  //       data: results,
-  //       total: (pagetotal || 0) * 24
-  //     }
-  //   } else {
-  //     throw newError()
-  //   }
-  // } catch {
-  //   return {
-  //     data: [],
-  //     total: 0
-  //   }
-  // }
+  try {
+    const api =
+      'api/filter?' +
+      Object.entries(param)
+        .filter(([k, v]) => v !== '')
+        .map(([k, v]) => `${k}=${v}`)
+        .join('&')
+    const { data } = await getax(api)
+    console.log(data)
+  } catch {
+    return {
+      data: [],
+      total: 0
+    }
+  }
   return {
     data: [],
     total: 0
+  }
+}
+
+/**
+ * 获取动漫筛选条件
+ * @returns
+ */
+export async function getComicFilterConfig(): Promise<ApiReturns.GetComicFilterConfig> {
+  try {
+    const { data } = await getax('api/getConfig')
+    return getVal<any[]>(() => data.data.filtersConfig, []).map((item) => ({
+      id: item.id,
+      name: item.name,
+      value: (item.categories || []).map((key: any) => ({
+        name: key.classname,
+        value: key.classid
+      }))
+    }))
+  } catch {
+    return []
   }
 }

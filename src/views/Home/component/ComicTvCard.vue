@@ -2,7 +2,7 @@
   <div v-if="detail" class="comic-tv-card">
     <img :src="detail.cover" />
     <div class="info">
-      <div class="info-play">
+      <div class="info-play" @click="toComicMain(detail!.id)">
         <Icon name="play" />
       </div>
       <p>{{ detail.title }}</p>
@@ -12,8 +12,10 @@
 </template>
 
 <script lang="ts">
+import { toComicMain } from '@/hooks/router'
 import { defineComponent, PropType } from 'vue'
 import * as SectionType from '../types/homeSection.type'
+
 export default defineComponent({
   name: 'ComicTvCard',
   props: {
@@ -23,7 +25,9 @@ export default defineComponent({
     }
   },
   setup() {
-    return {}
+    return {
+      toComicMain
+    }
   }
 })
 </script>
@@ -33,7 +37,7 @@ export default defineComponent({
   flex: 1;
   aspect-ratio: 2/3;
   background: #fff;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   user-select: none;
   img {

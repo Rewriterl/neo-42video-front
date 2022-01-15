@@ -19,7 +19,7 @@
       <span>暂无播放内容~</span>
     </div>
 
-    <div class="aw-video__control">
+    <div v-show="src && !isBad" class="aw-video__control">
       <AwVideoProgress
         :duration="player.duration"
         :current-time="player.currentTime"
@@ -49,7 +49,7 @@
       <div
         v-if="quality.length > 0"
         v-click-outside="() => (qualitySelectVisible = false)"
-        class="control-quality"
+        class="control-select quality"
       >
         <span @click="qualitySelectVisible = !qualitySelectVisible">
           {{ currentQualityName }}
@@ -65,6 +65,26 @@
           </li>
         </ul>
       </div>
+      <div
+        v-click-outside="() => (playbackRate.visible = false)"
+        class="control-select playback-rate"
+      >
+        <span @click="playbackRate.visible = !playbackRate.visible">
+          {{ playbackRate.current }}
+        </span>
+        <ul v-show="playbackRate.visible">
+          <li
+            v-for="item in playbackRate.list"
+            :key="item.value"
+            :class="{ active: playbackRate.current === item.name }"
+            @click="changePlayBackRate(item)"
+          >
+            {{ item.name }}
+          </li>
+        </ul>
+      </div>
+      <Icon class="control-icon" name="rotate_b" />
+      <Icon class="control-icon" name="rotate_b" />
       <div class="control-icon control-volume">
         <Icon
           :name="player.isMute ? 'mute' : 'volume'"
@@ -80,7 +100,6 @@
           />
         </div>
       </div>
-      <!-- <Icon class="control-icon" /> -->
       <Icon
         class="control-icon"
         :name="player.fullScreen ? 'exit-full-screen' : 'full-screen'"
@@ -101,6 +120,7 @@ import {
   onUnmounted,
   PropType,
   reactive,
+  Ref,
   ref,
   SetupContext,
   watch
@@ -192,6 +212,40 @@ function qualityModule(quality: Type.Quality[], { emit }: Ctx) {
     currentQualityName,
     changeQuality,
     qualitySelectVisible
+  }
+}
+/** 播放倍数模块 */
+function playbackRateModule(videoEl: Ref<HTMLVideoElement | undefined>) {
+  const playbackRate = reactive({
+    visible: false,
+    current: '1.0x',
+    list: [
+      {
+        name: '2.0x',
+        value: 2
+      },
+      {
+        name: '1.5x',
+        value: 1.5
+      },
+      {
+        name: '1.0x',
+        value: 1
+      },
+      {
+        name: '0.5x',
+        value: 0.5
+      }
+    ]
+  })
+  const changePlayBackRate = (item: typeof playbackRate['list'][0]) => {
+    playbackRate.current = item.name
+    videoEl.value!.playbackRate = item.value
+    playbackRate.visible = false
+  }
+  return {
+    changePlayBackRate,
+    playbackRate
   }
 }
 
@@ -393,6 +447,7 @@ export default defineComponent({
         'error',
         (e) => {
           console.error(e)
+          player.status = -1
           ctx.emit('error')
           notify({
             content: '视频加载错误，emmm~',
@@ -453,6 +508,7 @@ export default defineComponent({
       isBad,
       notify,
       onProgressChange,
+      ...playbackRateModule(videoEl),
       ...qualityModule(props.quality, ctx),
       ...flvModuleArgs
     }
@@ -549,7 +605,7 @@ export default defineComponent({
     height: @controlHeight;
     user-select: none;
     transition: all 0.25s;
-    opacity: 1;
+    opacity: 0;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 
@@ -580,12 +636,17 @@ export default defineComponent({
           margin: 0 6px;
         }
       }
-      &-quality {
+      &-select {
         position: relative;
         margin-left: auto;
         margin-right: 8px;
-        width: 100px;
         text-align: center;
+        &.quality {
+          width: 100px;
+        }
+        &.playback-rate {
+          width: 60px;
+        }
         span {
           display: inline-block;
           cursor: pointer;
@@ -623,7 +684,6 @@ export default defineComponent({
         }
       }
       &-volume {
-        margin-left: auto;
         &:hover {
           .control-volume__inner {
             opacity: 1;

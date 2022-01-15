@@ -85,10 +85,7 @@ function styleModule(childrenEls: ComputedRef<HTMLElement[]>, slider: Slider) {
     if (key === 'left') {
       return slider.active !== 0
     } else if (key === 'right') {
-      return (
-        innerWidth.value - innerOffsetX.value >
-        slider.perScreenChildcount * childStyle.width
-      )
+      return slider.active < childrenEls.value.length - 1
     } else {
       return true
     }

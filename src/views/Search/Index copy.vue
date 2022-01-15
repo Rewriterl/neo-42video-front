@@ -23,38 +23,13 @@
     <transition enter-active-class="fade-in">
       <article v-show="filterVisible" class="search-filter">
         <AwRadio
-          v-model="filter.cate"
-          label="分类"
-          :options="filterConfig.cate"
-          :right-cancle="false"
-        />
-        <AwRadio
-          v-model="filter.type"
-          label="类型"
-          :options="filterConfig.cateInfo"
-          :right-cancle="false"
-          @change="searchByFilter(true)"
-        />
-        <AwRadio
-          v-model="filter.order"
-          label="排序"
-          :options="SEARCH_FILTER.ORDER"
-          :right-cancle="false"
-          @change="searchByFilter(true)"
-        />
-        <AwRadio
-          v-model="filter.year"
-          label="年份"
-          :options="SEARCH_FILTER.RELEASE_TIME"
-          :right-cancle="false"
-          @change="searchByFilter(true)"
-        />
-        <AwRadio
-          v-model="filter.letter"
-          label="字母"
-          :options="SEARCH_FILTER.LETTER"
-          right-cancle
-          @change="searchByFilter(true)"
+          v-for="{ label, key, options, rightCancle } in filterConfig"
+          :key="key"
+          v-model="filter[key]"
+          :label="label"
+          :options="options"
+          :right-cancle="rightCancle"
+          @change="searchByFilter"
         />
       </article>
     </transition>
@@ -92,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref } from 'vue'
+import { computed, defineComponent, onMounted, reactive, ref } from 'vue'
 
 import AwRadio from '@comps/Form/AwRadio.vue'
 import ComicCard from './component/ComicCard.vue'
@@ -101,37 +76,56 @@ import LoadingCodeRun from '@comps/Loading/LoadingCodeRun.vue'
 import { SEARCH_FILTER } from './statics/form'
 import * as Api from '@/api'
 import * as Type from './types/index.type'
-import { arrAvgSplit, getVal } from '@/utils/adLoadsh'
+import { arrAvgSplit } from '@/utils/adLoadsh'
 
-function filterModule(init: () => void) {
+function filterModule() {
   const filter = reactive({
     name: '',
-    cate: -1,
-    type: '',
-    order: 'time',
-    letter: '',
-    year: 0
+    year: '',
+    status: '',
+    label: '',
+    region: '',
+    sort: '',
+    order: SEARCH_FILTER.ORDER[0].value
   })
-  const filterConfig = reactive({
-    org: [] as Api.GetComicFilterConfig,
-    get cate() {
-      return this.org.map((item) => ({
-        name: item.name,
-        value: item.id
-      }))
+  const filterConfig: Type.FilterConfig<typeof filter>[] = [
+    {
+      label: '发布时间',
+      key: 'year',
+      rightCancle: true,
+      options: SEARCH_FILTER.RELEASE_TIME
     },
-    get cateInfo() {
-      const info = this.org.find((item) => item.id === filter.cate)
-      return !info ? [] : info.value
+    {
+      label: '分类',
+      key: 'label',
+      rightCancle: true,
+      options: SEARCH_FILTER.CATE
+    },
+    {
+      label: '状态',
+      key: 'status',
+      rightCancle: true,
+      options: SEARCH_FILTER.STATUS
+    },
+    {
+      label: '地区',
+      key: 'region',
+      rightCancle: true,
+      options: SEARCH_FILTER.CITY
+    },
+    {
+      label: '排序',
+      key: 'order',
+      rightCancle: false,
+      options: SEARCH_FILTER.ORDER
     }
-  })
-
+  ]
   const pager = reactive({
     currnet: 1,
     size: 24,
     total: 0
   })
-  const filterVisible = ref(false)
+  const filterVisible = ref(true)
 
   const resetPager = () => {
     pager.currnet = 1
@@ -147,15 +141,12 @@ function filterModule(init: () => void) {
   }
   const resetName = () => {
     resetPager()
+    filter.name = ''
   }
 
   ;(async () => {
-    filterConfig.org = await Api.getComicFilterConfig()
-    if (filterConfig.org.length > 0) {
-      filter.cate = filterConfig.org[0].id
-      filter.type = getVal(() => filterConfig.org[0].value[0].value, '')
-    }
-    init()
+    const data = await Api.getComicFilterConfig()
+    console.log(data)
   })()
 
   return {
@@ -164,8 +155,7 @@ function filterModule(init: () => void) {
     pager,
     filterVisible,
     resetFilter,
-    resetName,
-    SEARCH_FILTER
+    resetName
   }
 }
 export default defineComponent({
@@ -180,9 +170,7 @@ export default defineComponent({
     const searchResult = ref<Api.ComicPageList[]>([])
     const isFetchingSearch = ref(false)
     const { filter, pager, resetName, resetFilter, ...filterModuleArgs } =
-      filterModule(() => {
-        // searchByFilter()
-      })
+      filterModule()
 
     const hasSearchKey = computed(() => filter.name !== '')
     const realSearchResult = computed(() => arrAvgSplit(searchResult.value, 8))
@@ -217,21 +205,21 @@ export default defineComponent({
       isFetchingSearch.value = true
       clear && resetName()
       const { data, total } = await Api.filterComic({
-        page: pager.currnet,
-        type: filter.cate,
-        category: filter.type,
-        order: filter.order,
+        page: pager.currnet - 1,
+        label: filter.label,
+        region: filter.region,
         year: filter.year,
-        letter: filter.letter
+        status: filter.status,
+        order: filter.order
       })
       setSearchResult(data)
       pager.total = total
       isFetchingSearch.value = false
     }
 
-    // onMounted(() => {
-    //   searchByFilter()
-    // })
+    onMounted(() => {
+      searchByFilter()
+    })
 
     return {
       mainContentEl,

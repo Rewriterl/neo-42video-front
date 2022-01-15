@@ -1,13 +1,6 @@
 import * as Api from '@apis/index'
 
-export interface Comic {
-  // perday: Api.GetHomeMixData['perday']
-  hots: Api.GetHomeMixData['hots']
-  latest: Api.GetHomeMixData['latest']
-  banner: Api.GetHomeMixData['banner']
-  perweek: Api.GetHomeMixData['perweek']
-  tv: Api.GetHomeMixData['tv']
-}
+export type Comic = Api.GetHomeMixData
 
 export interface Tabs<T> {
   active: T
