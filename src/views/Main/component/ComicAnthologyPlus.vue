@@ -10,7 +10,8 @@
         {{ name }}
       </li>
     </ul> -->
-    <AwSlideX class="card-content" @onChange="(e) => (awSlideXActive = e)">
+    <!-- to -->
+    <AwSlideX class="card-content">
       <AwSlideItem
         v-for="(item, index) in [
           'https://api.adicw.cn/uploads/StudyImg/6191d88725d2c.jpg',
