@@ -127,7 +127,7 @@ export default defineComponent({
      * 轮播改变事件
      * @param active 当前下标
      */
-    onChange: null
+    onChange: (e: number) => typeof e === 'number'
   },
   setup(props, { emit }) {
     const { children, childrenEls } = linkChild()

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div id="home">
     <header class="home-header">
       <div
@@ -137,4 +137,4 @@ export default defineComponent({
     }
   }
 }
-</style>
+</style> -->

@@ -147,8 +147,8 @@ export default defineComponent({
       }[tabs.active]
     })
 
-    const onCarouselChange = (e: number) => {
-      carousel.active = e
+    const onCarouselChange = (e: any) => {
+      carousel.active = +e
     }
     const changeTab = (key: ComicKey) => {
       tabs.active = key

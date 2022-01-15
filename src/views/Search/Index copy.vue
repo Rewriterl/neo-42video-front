@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div id="search">
     <header class="search-header">
       <div class="search-header__search">
@@ -368,4 +368,4 @@ export default defineComponent({
     }
   }
 }
-</style>
+</style> -->
