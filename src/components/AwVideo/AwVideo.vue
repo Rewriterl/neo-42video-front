@@ -83,8 +83,17 @@
           </li>
         </ul>
       </div>
-      <Icon class="control-icon" name="rotate_b" />
-      <Icon class="control-icon" name="rotate_b" />
+      <Icon
+        class="control-icon"
+        style="transform: rotateY(180deg)"
+        name="rotate_b"
+        @click="fastProgressChange(-15)"
+      />
+      <Icon
+        class="control-icon"
+        name="rotate_b"
+        @click="fastProgressChange(15)"
+      />
       <div class="control-icon control-volume">
         <Icon
           :name="player.isMute ? 'mute' : 'volume'"
@@ -129,7 +138,7 @@ import flvjs from 'flv.js'
 
 import AwVideoProgress from './AwVideoProgress.vue'
 import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
-import AwVideoMsg, { NotifyItem } from './AwVideoMsg.vue'
+import AwVideoMsg, { NotifyItem, NotifyReturns } from './AwVideoMsg.vue'
 
 import { checkFullscreen, debounce, fullscreen, sToMs } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
@@ -214,6 +223,7 @@ function qualityModule(quality: Type.Quality[], { emit }: Ctx) {
     qualitySelectVisible
   }
 }
+
 /** 播放倍数模块 */
 function playbackRateModule(videoEl: Ref<HTMLVideoElement | undefined>) {
   const playbackRate = reactive({
@@ -304,6 +314,12 @@ export default defineComponent({
       preview: '',
       isListened: false
     })
+    const notifys = reactive<{
+      [prop: string]: NotifyReturns | null
+    }>({
+      buffer: null,
+      canplay: null
+    })
     const { flvInit, destroy, play, pause, ...flvModuleArgs } =
       flvModule(player)
 
@@ -376,13 +392,23 @@ export default defineComponent({
      * 消息提示
      * @param item
      */
-    const notify = (item: NotifyItem) => {
-      awVideoMsgComp.value!.notify(item)
+    const notify = (item: NotifyItem): NotifyReturns => {
+      return awVideoMsgComp.value!.notify(item)
     }
+    /**
+     * 进度切换
+     */
     const onProgressChange = debounce((val: number) => {
       const realTime = player.duration * (val / 100)
       changeProgress(realTime)
     }, 100)
+    /**
+     * 进度快速切换
+     * @param limit
+     */
+    const fastProgressChange = (limit: number) => {
+      changeProgress(player.currentTime + limit)
+    }
 
     watch(() => props.src, init)
 
@@ -397,7 +423,8 @@ export default defineComponent({
         (e) => {
           const { duration } = e.target as HTMLVideoElement
           player.duration = duration
-          notify({
+          notifys.canplay && notifys.canplay.remove()
+          notifys.canplay = notify({
             content: '电波获取完成~',
             duration: 3000
           })
@@ -461,7 +488,7 @@ export default defineComponent({
         'waiting',
         () => {
           player.status = 0
-          notify({
+          notifys.buffer = notify({
             content: '电波获取中，请稍后~',
             duration: 3000
           })
@@ -473,12 +500,28 @@ export default defineComponent({
         'playing',
         () => {
           player.status = 1
+          notifys.buffer && notifys.buffer.remove()
         },
         op
       )
       // 全屏下无法监听keydown等
       useEventListener('resize', () => {
         !checkFullscreen() && (player.fullScreen = false)
+      })
+      useEventListener('keydown', (e) => {
+        const el = e as KeyboardEvent
+        if (checkFullscreen()) {
+          switch (el.key) {
+            case 'ArrowLeft': {
+              fastProgressChange(-10)
+              break
+            }
+            case 'ArrowRight': {
+              fastProgressChange(10)
+              break
+            }
+          }
+        }
       })
       player.isListened = true
     })()
@@ -508,6 +551,7 @@ export default defineComponent({
       isBad,
       notify,
       onProgressChange,
+      fastProgressChange,
       ...playbackRateModule(videoEl),
       ...qualityModule(props.quality, ctx),
       ...flvModuleArgs

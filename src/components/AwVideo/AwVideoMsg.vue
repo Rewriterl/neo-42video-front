@@ -25,6 +25,9 @@ export interface NotifyItem {
   content: string
   duration: number
 }
+export interface NotifyReturns {
+  remove: () => void
+}
 
 export default defineComponent({
   name: 'AwVideoMsg',
@@ -46,7 +49,11 @@ export default defineComponent({
           removeNotify(key)
         }, notifyItem.duration)
       }
-      return key
+      return {
+        remove() {
+          removeNotify(key)
+        }
+      }
     }
     return {
       notify,

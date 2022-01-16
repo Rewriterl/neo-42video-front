@@ -132,13 +132,13 @@ export default defineComponent({
 
     const currentComic = computed(() => {
       return {
-        latest: props.latest.slice(0, 5).map((item) => ({
+        latest: props.latest.map((item) => ({
           cover: item.cover,
           title: item.title,
           id: item.id,
           desc: item.season
         })),
-        hots: props.hots.slice(0, 5).map((item) => ({
+        hots: props.hots.map((item) => ({
           cover: item.cover,
           title: item.title,
           id: item.id,
@@ -272,8 +272,8 @@ export default defineComponent({
             user-select: none;
             font-weight: 800;
             &.active {
-              color: crimson;
-              border-bottom: 2px solid crimson;
+              color: var(--primary-color);
+              border-bottom: 2px solid var(--primary-color);
             }
           }
         }

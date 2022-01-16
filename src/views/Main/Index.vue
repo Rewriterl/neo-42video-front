@@ -81,7 +81,7 @@ import { ElNotification } from 'element-plus'
 import * as Api from '@apis/index'
 import * as Type from './types/index.type'
 import { GetComicMainReturn } from '@apis/index'
-import { getVal, sToMs } from '@/utils/adLoadsh'
+import { getVal, sToMs, wait } from '@/utils/adLoadsh'
 import { usePlayProgressCache } from '@/hooks/user'
 
 /**
@@ -191,6 +191,7 @@ export default defineComponent({
               },
               false
             )
+            await wait(2000)
             // 定位缓存进度
             awVideoComp.value!.changeProgress(cache.progress)
             awVideoComp.value!.notify({
@@ -206,7 +207,7 @@ export default defineComponent({
             !changeAnthology(
               {
                 ...item,
-                orgId: ''
+                orgId: anthology.list[0].orgId
               },
               false
             )

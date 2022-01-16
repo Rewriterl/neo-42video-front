@@ -47,7 +47,7 @@ export default defineComponent({
 <style lang="less" scoped>
 .home-section__card {
   position: relative;
-  width: 340px;
+  width: 380px;
   padding-right: 20px;
   box-sizing: border-box;
   background-clip: content-box;
@@ -137,7 +137,7 @@ export default defineComponent({
     &-inner {
       width: 40%;
       height: 100%;
-      background: crimson;
+      background: var(--primary-color);
       border-radius: 4px;
     }
   }
