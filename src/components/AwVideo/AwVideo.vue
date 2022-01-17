@@ -602,6 +602,7 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
     z-index: 16;
+    background: #000;
     img {
       width: 100px;
     }
