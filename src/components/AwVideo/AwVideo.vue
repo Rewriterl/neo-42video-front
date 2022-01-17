@@ -628,11 +628,11 @@ export default defineComponent({
       margin-top: 30px;
     }
   }
-  &:hover {
-    .aw-video__control {
-      opacity: 1;
-    }
-  }
+  // &:hover {
+  //   .aw-video__control {
+  //     opacity: 1;
+  //   }
+  // }
   &__control {
     @padding: 16px;
     position: absolute;
@@ -653,6 +653,9 @@ export default defineComponent({
     opacity: 0;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+    &:hover {
+      opacity: 1;
+    }
 
     .control {
       &-icon {
