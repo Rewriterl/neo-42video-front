@@ -1,5 +1,5 @@
 <template>
-  <div ref="selfEl" class="aw-video">
+  <div ref="selfEl" class="aw-video" @mousemove="controlBarVisibleHandler">
     <div class="aw-video__mask" :class="{ disable: !src }" @click="playHandler">
       <Icon
         v-show="player.status === 2"
@@ -19,7 +19,7 @@
       <span>暂无播放内容~</span>
     </div>
 
-    <div v-show="src && !isBad" class="aw-video__control">
+    <div v-show="src && !isBad && controlBar.visible" class="aw-video__control">
       <AwVideoProgress
         :duration="player.duration"
         :current-time="player.currentTime"
@@ -140,7 +140,13 @@ import AwVideoProgress from './AwVideoProgress.vue'
 import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
 import AwVideoMsg, { NotifyItem, NotifyReturns } from './AwVideoMsg.vue'
 
-import { checkFullscreen, debounce, fullscreen, sToMs } from '@/utils/adLoadsh'
+import {
+  checkFullscreen,
+  debounce,
+  fullscreen,
+  sToMs,
+  throttle
+} from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
 import { getVideoScreenshot } from '@/utils/media'
 
@@ -320,6 +326,11 @@ export default defineComponent({
       buffer: null,
       canplay: null
     })
+    const controlBar = reactive({
+      visible: false,
+      // todo 类型完善
+      timer: null as any
+    })
     const { flvInit, destroy, play, pause, ...flvModuleArgs } =
       flvModule(player)
 
@@ -407,8 +418,23 @@ export default defineComponent({
      * @param limit
      */
     const fastProgressChange = (limit: number) => {
-      changeProgress(player.currentTime + limit)
+      const num = player.currentTime + limit
+      if (num < 0 || num > player.duration) return
+      changeProgress(num)
     }
+    /** 控制bar显隐控制器 */
+    const controlBarVisibleHandler = throttle(() => {
+      if (controlBar.timer) {
+        clearTimeout(controlBar.timer)
+        controlBar.timer = null
+      } else {
+        controlBar.visible = true
+        controlBar.timer = setTimeout(() => {
+          controlBar.visible = false
+          controlBar.timer = null
+        }, 3000)
+      }
+    }, 100)
 
     watch(() => props.src, init)
 
@@ -510,16 +536,17 @@ export default defineComponent({
       })
       useEventListener('keydown', (e) => {
         const el = e as KeyboardEvent
-        if (checkFullscreen()) {
-          switch (el.key) {
-            case 'ArrowLeft': {
-              fastProgressChange(-10)
-              break
-            }
-            case 'ArrowRight': {
-              fastProgressChange(10)
-              break
-            }
+        // if (checkFullscreen()) {
+
+        // }
+        switch (el.key) {
+          case 'ArrowLeft': {
+            fastProgressChange(-10)
+            break
+          }
+          case 'ArrowRight': {
+            fastProgressChange(10)
+            break
           }
         }
       })
@@ -552,6 +579,8 @@ export default defineComponent({
       notify,
       onProgressChange,
       fastProgressChange,
+      controlBarVisibleHandler,
+      controlBar,
       ...playbackRateModule(videoEl),
       ...qualityModule(props.quality, ctx),
       ...flvModuleArgs
@@ -575,6 +604,7 @@ export default defineComponent({
     width: 100%;
     height: 100%;
     z-index: 1;
+    opacity: 0;
   }
   .mask(@height: 100%) {
     position: absolute;
@@ -650,12 +680,8 @@ export default defineComponent({
     height: @controlHeight;
     user-select: none;
     transition: all 0.25s;
-    opacity: 0;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
-    &:hover {
-      opacity: 1;
-    }
 
     .control {
       &-icon {

@@ -23,7 +23,7 @@ export default defineComponent({
     },
     isInit: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   setup() {

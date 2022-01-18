@@ -1,4 +1,5 @@
 import { jsonParse } from '@/utils/adLoadsh'
+import { ref } from 'vue'
 
 interface BaseCacheItem {
   /** 动漫id */
@@ -18,9 +19,13 @@ type CacheItem = BaseCacheItem & {
 const PLAY_PROGRESS_STORE_KEY = 'PLAY_PROGRESS_STORE'
 
 class PlayProgress {
-  private cache_: CacheItem[] = []
+  private cache_ = ref<CacheItem[]>([])
+  public get cache() {
+    return this.cache_.value
+  }
+
   private get cacheMap() {
-    return this.cache_.reduce(
+    return this.cache_.value.reduce(
       (totol, item) => {
         totol[this.cacheItemToName(item)] = item
         return totol
@@ -30,8 +35,9 @@ class PlayProgress {
       }
     )
   }
+
   private get latestCacheMap() {
-    return this.cache_.reduce((totol, item) => {
+    return this.cache_.value.reduce((totol, item) => {
       if (!totol[item.comicId]) {
         totol[item.comicId] = item
       } else if (item.date > totol[item.comicId].date) {
@@ -70,12 +76,12 @@ class PlayProgress {
       date: this.createDate()
     }
     if (!this.has(name)) {
-      this.cache_.push(cacheItem)
+      this.cache_.value.push(cacheItem)
     } else {
-      const index = this.cache_.findIndex(
+      const index = this.cache_.value.findIndex(
         (ca) => this.cacheItemToName(ca) === this.cacheItemToName(item)
       )
-      this.cache_.splice(index, 1, cacheItem)
+      this.cache_.value.splice(index, 1, cacheItem)
     }
   }
 
@@ -84,11 +90,11 @@ class PlayProgress {
    * @param item
    */
   public remove(item: BaseCacheItem) {
-    const index = this.cache_.findIndex(
+    const index = this.cache_.value.findIndex(
       (ca) => this.cacheItemToName(ca) === this.cacheItemToName(item)
     )
     if (index !== -1) {
-      this.cache_.splice(index, 1)
+      this.cache_.value.splice(index, 1)
     }
   }
 
@@ -106,13 +112,16 @@ class PlayProgress {
   }
 
   public saveStore() {
-    localStorage.setItem(PLAY_PROGRESS_STORE_KEY, JSON.stringify(this.cache_))
+    localStorage.setItem(
+      PLAY_PROGRESS_STORE_KEY,
+      JSON.stringify(this.cache_.value)
+    )
   }
 
   public getStore() {
     const data = jsonParse(localStorage.getItem(PLAY_PROGRESS_STORE_KEY), [])
     if (data instanceof Array) {
-      this.cache_ = data
+      this.cache_.value = data
     }
   }
 

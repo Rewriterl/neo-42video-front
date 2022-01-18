@@ -23,11 +23,17 @@ export const SEARCH_FILTER: {
       }))
   ],
   // 97
-  LETTER: nameToOption(
-    Array(26)
-      .fill(0)
-      .map((item, index) => String.fromCharCode(65 + index))
-  ),
+  LETTER: [
+    {
+      name: '全部',
+      value: ''
+    },
+    ...nameToOption(
+      Array(26)
+        .fill(0)
+        .map((item, index) => String.fromCharCode(65 + index))
+    )
+  ],
   ORDER: [
     {
       name: '更新时间',

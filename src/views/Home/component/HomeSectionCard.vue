@@ -55,6 +55,9 @@ export default defineComponent({
   transition: all 0.25s;
   &.active {
     filter: brightness(1);
+    .cover-play {
+      opacity: 1;
+    }
   }
   &:hover {
     .active;

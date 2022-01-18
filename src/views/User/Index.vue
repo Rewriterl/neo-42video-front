@@ -1,11 +1,17 @@
 <template>
-  <div id="user">User</div>
+  <div id="user">
+    <PlayHistory />
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import PlayHistory from './components/PlayHistory.vue'
 export default defineComponent({
   name: 'User',
+  components: {
+    PlayHistory
+  },
   setup() {
     return {}
   }
@@ -14,5 +20,8 @@ export default defineComponent({
 <style lang="less" scoped>
 #user {
   position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 </style>

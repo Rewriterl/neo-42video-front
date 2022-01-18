@@ -82,7 +82,7 @@ import * as Api from '@apis/index'
 import * as Type from './types/index.type'
 import { GetComicMainReturn } from '@apis/index'
 import { getVal, sToMs, wait } from '@/utils/adLoadsh'
-import { usePlayProgressCache } from '@/hooks/user'
+import { usePlayCache } from '@/hooks/user'
 
 /**
  * 动漫信息模块
@@ -170,7 +170,7 @@ export default defineComponent({
   },
   setup(props) {
     const awVideoComp = ref<typeof AwVideo>()
-    const playProgressCache = usePlayProgressCache()
+    const { playProgressCache, playHistoryCache } = usePlayCache()
 
     const { comic, comicUrls, ...comicInfoModuleArgs } = comicInfoModule(
       +props.id,
@@ -218,6 +218,11 @@ export default defineComponent({
               message: '默认加载失败，请手动选择源'
             })
         }
+        playHistoryCache.add({
+          id: +props.id,
+          name: comic.title,
+          cover: comic.cover
+        })
       }
     )
     /** 选集 */
@@ -256,7 +261,7 @@ export default defineComponent({
       } else {
         anthology.current = value
         anthology.currentItem = item
-        isAddCache && saveCache(item)
+        isAddCache && saveProgressCache(item)
         return true
       }
     }
@@ -265,7 +270,7 @@ export default defineComponent({
      * @param item 集信息
      * @param item
      */
-    const saveCache = (item: ChangeReturns | null) => {
+    const saveProgressCache = (item: ChangeReturns | null) => {
       if (!item) return
       playProgressCache.add({
         orgId: item.orgId,
@@ -311,8 +316,9 @@ export default defineComponent({
 
     /** 销毁前预处理 */
     onBeforeUnmount(() => {
-      saveCache(anthology.currentItem)
+      saveProgressCache(anthology.currentItem)
       playProgressCache.saveStore()
+      playHistoryCache.saveStore()
     })
 
     return {

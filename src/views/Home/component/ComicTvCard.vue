@@ -1,6 +1,6 @@
 <template>
   <div v-if="detail" class="comic-tv-card">
-    <img :src="detail.cover" />
+    <BaseImg :src="detail.cover" />
     <div class="info">
       <div class="info-play" @click="toComicMain(detail!.id)">
         <Icon name="play" />

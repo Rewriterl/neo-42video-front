@@ -7,10 +7,10 @@
     />
     <div class="home-main">
       <div class="home-main__col">
-        <HomeArticle :perweek="comic.perweek" :is-init="isInit" />
+        <HomeArticle :perweek="comic.perweek" />
       </div>
       <div class="home-main__col">
-        <HomeTv :tv="comic.tv" :is-init="isInit" />
+        <HomeTv :tv="comic.tv" />
       </div>
       <div class="home-main__col">
         <HomeBlockComic title="完结日漫" :list="comic.endJp" />

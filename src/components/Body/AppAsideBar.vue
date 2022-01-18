@@ -32,13 +32,13 @@ export default defineComponent({
         routeName: 'Search',
         icon: 'search'
       },
-      // {
-      //   name: '用户',
-      //   routeName: 'User',
-      //   icon: 'user'
-      // }
       {
-        name: '设置',
+        name: '关于我',
+        routeName: 'User',
+        icon: 'user'
+      },
+      {
+        name: '系统设置',
         routeName: 'Setting',
         icon: 'setting1'
       }

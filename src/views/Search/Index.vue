@@ -53,7 +53,7 @@
           v-model="filter.letter"
           label="字母"
           :options="SEARCH_FILTER.LETTER"
-          right-cancle
+          :right-cancle="false"
           @change="searchByFilter(true)"
         />
       </article>
