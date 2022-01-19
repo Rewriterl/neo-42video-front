@@ -55,7 +55,7 @@ export default defineComponent({
     display: flex;
     width: 100%;
     justify-content: flex-start;
-    gap: 30px 0;
+    gap: 30px 1.6%;
     flex-wrap: wrap;
     margin-top: 20px;
     .card {
@@ -69,7 +69,6 @@ export default defineComponent({
       box-shadow: 0 16px 18px #00000075;
       cursor: pointer;
       transition: all 0.25s;
-      margin-right: auto;
       &:hover {
         transform: translateY(-10%) scale(1.1);
         img {
@@ -99,6 +98,7 @@ export default defineComponent({
         p {
           font-size: 12px;
           color: rgba(255, 255, 255, 0.95);
+          text-align: center;
           &:last-child {
             transform: scale(0.9);
             color: rgba(255, 255, 255, 0.7);

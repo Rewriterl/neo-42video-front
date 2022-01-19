@@ -3,10 +3,14 @@
     ref="selfDom"
     class="aw-video__progress"
     :class="{ 'aw-video__progress-hide': !hasCurListenlist }"
-    @mousemove="onMouseMove"
-    @click="changProgress"
+    @mousemove="onMove"
+    @touchmove="onMove"
+    @mousedown="progressing"
+    @touchstart="progressing"
+    @mouseup="progressend"
+    @touchend="progressend"
   >
-    <el-slider :model-value="curArea" :show-tooltip="false" v-bind="$attrs" />
+    <el-slider v-model="sliderVal" :show-tooltip="false" v-bind="$attrs" />
     <div class="aw-video__progress-tooltip" :style="tooltipStyle">
       <slot name="tooltip" :time="sToMs(tooltipTime)">
         <span>{{ sToMs(tooltipTime) }}</span>
@@ -23,9 +27,10 @@ import {
   onMounted,
   reactive,
   ref,
-  nextTick
+  nextTick,
+  watch
 } from 'vue'
-import { sToMs, wait } from '@/utils/adLoadsh'
+import { sToMs } from '@/utils/adLoadsh'
 import { onWindowSizeChange } from '@/utils/vant/useWindowSize'
 export default defineComponent({
   name: 'AwVideoProgress',
@@ -39,7 +44,7 @@ export default defineComponent({
       default: 0
     }
   },
-  emits: ['timeChange', 'timePreview'],
+  emits: ['timeChange', 'timePreview', 'progressing', 'progressend'],
   setup(props, { emit }) {
     const selfDom = ref<HTMLElement>()
 
@@ -50,13 +55,8 @@ export default defineComponent({
     const mouse = reactive({
       x: 0
     })
+    const sliderVal = ref(0)
     const hasCurListenlist = computed(() => true)
-    const curArea = computed(() => {
-      const { currentTime, duration } = props
-      return currentTime === 0
-        ? 0
-        : +((currentTime / duration) * 100).toFixed(2)
-    })
     const tooltipStyle = computed(() => {
       return {
         transform: `translateX(${mouse.x - 20}px)`
@@ -68,37 +68,61 @@ export default defineComponent({
       return time | 0
     })
 
-    const onMouseMove = async (e: MouseEvent) => {
+    const progressing = () => emit('progressing')
+    const progressend = () => emit('progressend')
+    const onMove = async (e: MouseEvent | TouchEvent) => {
       if (!hasCurListenlist.value) return
-      const { pageX } = e
-      mouse.x = pageX - self.offsetX
-      await nextTick()
+      let x = 0
+      switch (e.type) {
+        case 'touchmove': {
+          x = (e as TouchEvent).changedTouches[0].pageX
+          break
+        }
+        case 'mousemove': {
+          x = (e as MouseEvent).pageX
+          break
+        }
+      }
+      mouse.x = x - self.offsetX
       emit('timePreview', tooltipTime.value)
     }
     const initStyle = async () => {
-      await wait(2000)
       self.width = selfDom.value!.clientWidth
       self.offsetX = selfDom.value!.getBoundingClientRect().left
     }
     const changProgress = () => {
       if (!hasCurListenlist.value) return
       emit('timeChange', tooltipTime.value)
-      // $store.commit('listenTimeHandler', tooltipTime.value)
     }
+    const computeCurArea = (currentTime: number) => {
+      const { duration } = props
+      return currentTime === 0
+        ? 0
+        : +((currentTime / duration) * 100).toFixed(2)
+    }
+
+    watch(
+      () => props.currentTime,
+      (val) => {
+        sliderVal.value = computeCurArea(val)
+      }
+    )
 
     onMounted(initStyle)
     onWindowSizeChange(initStyle)
 
     return {
-      curArea,
-      onMouseMove,
+      onMove,
       tooltipStyle,
       selfDom,
       tooltipTime,
       self,
       changProgress,
       sToMs,
-      hasCurListenlist
+      hasCurListenlist,
+      progressing,
+      progressend,
+      sliderVal
     }
   }
 })

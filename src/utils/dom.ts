@@ -3,7 +3,7 @@
  * @param el 监听的节点
  * @returns promise
  */
-export function domObserver(el: HTMLElement, callback: () => any) {
+export function domObserver(el: HTMLElement, callback: () => void) {
   const observer = new IntersectionObserver((entries, observer) => {
     const isIn = entries.some((entrie) => entrie.intersectionRatio > 0)
     if (isIn) {
@@ -38,7 +38,7 @@ export function getImgStatus(imgPath: string) {
  * @returns
  */
 export function getRealStyle(el: HTMLElement, styles = ['width', 'height']) {
-  const computedStyle: any = (window as any).getComputedStyle(el)
+  const computedStyle: any = window.getComputedStyle(el)
   const res: any = {}
   const numberStyles = ['width', 'height']
   styles.forEach((style: string) => {

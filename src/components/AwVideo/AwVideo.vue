@@ -1,5 +1,10 @@
 <template>
-  <div ref="selfEl" class="aw-video" @mousemove="controlBarVisibleHandler">
+  <div
+    ref="selfEl"
+    class="aw-video"
+    @mousemove="controlBarVisibleHandler"
+    @touchmove="controlBarVisibleHandler"
+  >
     <div class="aw-video__mask" :class="{ disable: !src }" @click="playHandler">
       <Icon
         v-show="player.status === 2"
@@ -19,13 +24,17 @@
       <span>暂无播放内容~</span>
     </div>
 
-    <div v-show="src && !isBad && controlBar.visible" class="aw-video__control">
+    <div
+      :class="{ show: src && !isBad && controlBar.visible }"
+      class="aw-video__control"
+    >
       <AwVideoProgress
         :duration="player.duration"
         :current-time="player.currentTime"
-        @timeChange="changeProgress"
         @timePreview="computedPreview"
-        @input="onProgressChange"
+        @change="onProgressChange"
+        @progressing="controlBar.isProgressing = true"
+        @progressend="controlBar.isProgressing = false"
       >
         <template #tooltip="{ time }">
           <div class="preview">
@@ -132,6 +141,7 @@ import {
   Ref,
   ref,
   SetupContext,
+  toRefs,
   watch
 } from 'vue'
 import flvjs from 'flv.js'
@@ -265,6 +275,49 @@ function playbackRateModule(videoEl: Ref<HTMLVideoElement | undefined>) {
   }
 }
 
+/** 进度模块 */
+function progressModule(
+  src: Ref<string>,
+  videoEl: Ref<HTMLVideoElement | undefined>,
+  player: Type.Player
+) {
+  /**
+   * 进度修改
+   * @param val ms
+   */
+  const changeProgress = (val: number) => {
+    videoEl.value!.currentTime = val
+  }
+  /**
+   * 计算进度预览图
+   */
+  const computedPreview = debounce(async (val: number) => {
+    player.preview = await getVideoScreenshot(src.value, val)
+  }, 100)
+  /**
+   * 进度切换
+   */
+  const onProgressChange = (val: any) => {
+    const realTime = player.duration * (+val / 100)
+    changeProgress(realTime)
+  }
+  /**
+   * 进度快速切换
+   * @param limit
+   */
+  const fastProgressChange = (limit: number) => {
+    const num = player.currentTime + limit
+    if (num < 0 || num > player.duration) return
+    changeProgress(num)
+  }
+  return {
+    changeProgress,
+    computedPreview,
+    onProgressChange,
+    fastProgressChange
+  }
+}
+
 export default defineComponent({
   name: 'AwVideo',
   components: {
@@ -329,12 +382,20 @@ export default defineComponent({
     const controlBar = reactive({
       visible: false,
       // todo 类型完善
-      timer: null as any
+      timer: null as any,
+      /** 是否在进度拖拽中 */
+      isProgressing: false
     })
+    const isBad = computed(() => player.status === -1)
+
     const { flvInit, destroy, play, pause, ...flvModuleArgs } =
       flvModule(player)
-
-    const isBad = computed(() => player.status === -1)
+    const {
+      changeProgress,
+      computedPreview,
+      onProgressChange,
+      fastProgressChange
+    } = progressModule(toRefs(props).src, videoEl, player)
 
     /**
      * 视频载入初始化
@@ -387,41 +448,13 @@ export default defineComponent({
       videoEl.value && (videoEl.value.volume = val)
     }
     /**
-     * 进度修改
-     * @param val ms
-     */
-    const changeProgress = (val: number) => {
-      videoEl.value!.currentTime = val
-    }
-    /**
-     * 计算进度预览图
-     */
-    const computedPreview = debounce(async (val: number) => {
-      player.preview = await getVideoScreenshot(props.src, val)
-    }, 100)
-    /**
      * 消息提示
      * @param item
      */
     const notify = (item: NotifyItem): NotifyReturns => {
       return awVideoMsgComp.value!.notify(item)
     }
-    /**
-     * 进度切换
-     */
-    const onProgressChange = debounce((val: number) => {
-      const realTime = player.duration * (val / 100)
-      changeProgress(realTime)
-    }, 100)
-    /**
-     * 进度快速切换
-     * @param limit
-     */
-    const fastProgressChange = (limit: number) => {
-      const num = player.currentTime + limit
-      if (num < 0 || num > player.duration) return
-      changeProgress(num)
-    }
+
     /** 控制bar显隐控制器 */
     const controlBarVisibleHandler = throttle(() => {
       if (controlBar.timer) {
@@ -461,6 +494,7 @@ export default defineComponent({
       useEventListener(
         'timeupdate',
         (e) => {
+          if (controlBar.isProgressing) return
           const { currentTime } = e.target as HTMLVideoElement
           player.currentTime = currentTime
         },
@@ -604,6 +638,7 @@ export default defineComponent({
     width: 100%;
     height: 100%;
     z-index: 1;
+    opacity: 0;
   }
   .mask(@height: 100%) {
     position: absolute;
@@ -675,13 +710,18 @@ export default defineComponent({
     align-items: center;
     color: #fff;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 8;
+    z-index: -1;
     height: @controlHeight;
     user-select: none;
     transition: all 0.25s;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
-
+    &.show {
+      z-index: 8;
+    }
+    i {
+      cursor: pointer;
+    }
     .control {
       &-icon {
         display: flex;
@@ -689,7 +729,6 @@ export default defineComponent({
         align-items: center;
         width: @controlHeight;
         height: 100%;
-        cursor: pointer;
         font-size: 18px;
         &__play {
           font-size: 24px;
