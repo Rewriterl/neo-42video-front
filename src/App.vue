@@ -1,7 +1,7 @@
 <template>
   <div class="app-contain">
     <aside class="app-contain__aside">
-      <b>Χαλαρό</b>
+      <b class="animate__jello">Χαλαρό</b>
       <AppAsideBar />
     </aside>
     <main class="app-contain__main">
@@ -41,6 +41,7 @@ export default defineComponent({
   align-items: center;
   background: var(--bg-color);
   color: var(--font-color);
+  @slideDruation: 0.625s;
   &__aside {
     display: flex;
     flex-direction: column;
@@ -50,7 +51,7 @@ export default defineComponent({
     border-radius: 24px;
     padding-left: @frameTop;
     box-sizing: border-box;
-    transform: translateX(-@frameTop);
+    animation: slide-in @slideDruation forwards;
     & > b {
       display: flex;
       justify-content: center;
@@ -58,6 +59,16 @@ export default defineComponent({
       width: 100%;
       aspect-ratio: 2/1;
       font-size: 30px;
+      animation-duration: 1.25s;
+      animation-delay: @slideDruation;
+    }
+    @keyframes slide-in {
+      from {
+        transform: translateX(-100%);
+      }
+      to {
+        transform: translateX(-@frameTop);
+      }
     }
   }
   &__main {
@@ -67,6 +78,13 @@ export default defineComponent({
     flex: 1;
     overflow: hidden;
     position: relative;
+    opacity: 0;
+    animation: fade-in 1s @slideDruation forwards;
+    @keyframes fade-in {
+      to {
+        opacity: 1;
+      }
+    }
   }
 }
 </style>

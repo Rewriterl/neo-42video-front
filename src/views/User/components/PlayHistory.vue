@@ -10,7 +10,9 @@
       >
         <BaseImg :src="item.cover" />
         <div class="card-info">
-          <p>{{ item.name }}</p>
+          <el-tooltip :content="item.name" placement="top">
+            <p>{{ item.name }}</p>
+          </el-tooltip>
           <p>
             <a v-if="item.playEpisode">{{
               `${item.playEpisode} ${item.playProgress}`
@@ -99,6 +101,9 @@ export default defineComponent({
           font-size: 12px;
           color: rgba(255, 255, 255, 0.95);
           text-align: center;
+          &:first-child {
+            .p-truncate;
+          }
           &:last-child {
             transform: scale(0.9);
             color: rgba(255, 255, 255, 0.7);

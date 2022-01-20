@@ -5,33 +5,41 @@
         height="100%"
         indicator-position="none"
         arrow="never"
+        :interval="6000"
         :pause-on-hover="false"
         @change="onCarouselChange"
       >
         <el-carousel-item v-for="(item, index) in banner" :key="index">
-          <BaseImg :src="item.cover" />
+          <BaseImg :src="item.cover" :lazy="false" />
         </el-carousel-item>
       </el-carousel>
     </div>
     <div class="home-banner__info">
       <div class="home-banner__info-msg">
-        <div v-if="carousel.current" class="inner">
-          <span>这是一段话</span>
-          <h1>{{ carousel.current.title }}</h1>
-          <p>
-            这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介
-          </p>
-          <div class="inner-rate">
-            <el-rate :value="5" disabled />
-            评分
-          </div>
-          <div class="inner-control">
-            <el-button type="warning" round>详细信息</el-button>
-            <el-button round plain @click="toComicMain(carousel.current.id)"
-              >播放</el-button
-            >
-          </div>
-        </div>
+        <template v-if="carousel.current">
+          <transition
+            enter-active-class="carousel-info-in"
+            leave-active-class="carousel-info-out"
+          >
+            <div v-show="carousel.infoVisible" class="inner">
+              <span>这是一段话</span>
+              <h1>{{ carousel.current.title }}</h1>
+              <p>
+                这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介
+              </p>
+              <div class="inner-rate">
+                <el-rate :value="5" disabled />
+                评分
+              </div>
+              <div class="inner-control">
+                <el-button type="warning" round>详细信息</el-button>
+                <el-button round plain @click="toComicMain(carousel.current.id)"
+                  >播放</el-button
+                >
+              </div>
+            </div>
+          </transition>
+        </template>
       </div>
       <div class="home-banner__info-section">
         <div class="tabs">
@@ -76,6 +84,7 @@ import HomeSectionCard from './HomeSectionCard.vue'
 
 import * as Type from '../types/homeSection.type'
 import { toComicMain } from '@/hooks/router'
+import { wait } from '@/utils/adLoadsh'
 
 export default defineComponent({
   name: 'HomeBanner',
@@ -108,6 +117,7 @@ export default defineComponent({
     const awSlideXActive = ref(0)
     const carousel = reactive({
       active: 0,
+      infoVisible: true,
       get current() {
         return props.banner[this.active]
       }
@@ -147,8 +157,11 @@ export default defineComponent({
       }[tabs.active]
     })
 
-    const onCarouselChange = (e: any) => {
+    const onCarouselChange = async (e: any) => {
+      carousel.infoVisible = false
+      await wait(500)
       carousel.active = +e
+      carousel.infoVisible = true
     }
     const changeTab = (key: ComicKey) => {
       tabs.active = key
@@ -215,6 +228,7 @@ export default defineComponent({
       h1 {
         padding-top: 6px;
         padding-bottom: 18px;
+        color: #fff;
       }
       p {
         font-size: 14px;
@@ -237,6 +251,24 @@ export default defineComponent({
         ::v-deep(.el-button--default) {
           background: unset;
           color: #fff;
+        }
+      }
+      .carousel-info {
+        &-in {
+          animation: slide 0.25s forwards;
+        }
+        &-out {
+          animation: slide 0.25s forwards reverse;
+        }
+        @keyframes slide {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
       }
     }

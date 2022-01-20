@@ -1,5 +1,15 @@
 import { ThemeColorVar } from './type'
 
+const DARK = [
+  '#1e1d2b',
+  '#2f3042',
+  '#222433',
+  '#fff',
+  '#ffffffa3',
+  'rgba(104, 198, 189, 1)',
+  '#f5073e'
+]
+
 export const DF_SYSTEM_COLOR: ThemeColorVar[] = [
   {
     prop: 'bg',
