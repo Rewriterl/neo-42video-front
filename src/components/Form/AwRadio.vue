@@ -83,7 +83,7 @@ export default defineComponent({
     color: var(--font-unactive-color);
     cursor: pointer;
     &.active {
-      color: var(--font-color);
+      color: #fff;
       background: var(--primary-color);
     }
     &:hover {

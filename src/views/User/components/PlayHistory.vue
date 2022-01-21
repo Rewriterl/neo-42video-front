@@ -67,8 +67,8 @@ export default defineComponent({
       min-width: 200px;
       aspect-ratio: 2/1.2;
       overflow: hidden;
-      border-radius: 12px;
-      box-shadow: 0 16px 18px #00000075;
+      border-radius: 8px;
+      // box-shadow: 0 16px 28px #00000042;
       cursor: pointer;
       transition: all 0.25s;
       &:hover {
@@ -94,7 +94,7 @@ export default defineComponent({
         box-sizing: border-box;
         background: rgba(179, 167, 167, 0.451);
         backdrop-filter: blur(20px);
-        border-radius: 12px;
+        border-radius: 8px;
         overflow: hidden;
         transition: all 0.25s;
         p {

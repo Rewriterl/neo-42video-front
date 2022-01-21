@@ -91,6 +91,9 @@ export default defineComponent({
 
     &.active {
       color: var(--font-color);
+      i {
+        color: #fff;
+      }
     }
     i {
       width: @fontSize;

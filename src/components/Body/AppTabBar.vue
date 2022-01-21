@@ -85,7 +85,7 @@ export default defineComponent({
 .app-tab__bar {
   position: fixed;
   right: 40px;
-  top: 20px;
+  top: 10px;
   display: flex;
   align-items: center;
   z-index: 8;
