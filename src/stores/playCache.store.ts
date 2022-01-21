@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia'
 import moment from 'moment'
 
-import { usePlayCache } from '@/hooks/user'
-const { playHistoryCache, playProgressCache } = usePlayCache()
 import { sToMs } from '@/utils/adLoadsh'
+import { getPlayHistoryInstance } from '@/class/playHistory.class'
+import { getPlayProgressInstance } from '@/class/playProgress.class'
 
 export const usePlayCacheStore = defineStore('playCache', {
   getters: {
     playHistory() {
-      return playHistoryCache.cache.map((item) => {
-        const cache = playProgressCache.cache.find(
+      return getPlayHistoryInstance().cache.map((item) => {
+        const cache = getPlayProgressInstance().cache.find(
           (cache) => cache.comicId === item.id
         )
         return {

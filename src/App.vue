@@ -4,6 +4,7 @@
       <b class="animate__jello">Χαλαρό</b>
       <AppAsideBar />
     </aside>
+    <AppTabBar />
     <main class="app-contain__main">
       <AppRouter />
     </main>
@@ -16,13 +17,15 @@ import '@/assets/icon/iconfont.css'
 import '@/assets/icon/iconfont.js'
 
 import AppAsideBar from '@comps/Body/AppAsideBar.vue'
+import AppTabBar from '@comps/Body/AppTabBar.vue'
 import AppRouter from '@comps/Body/AppRouter.vue'
 
 export default defineComponent({
   name: 'Comic',
   components: {
     AppAsideBar,
-    AppRouter
+    AppRouter,
+    AppTabBar
   },
   setup() {
     return {}
