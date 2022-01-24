@@ -4,7 +4,7 @@
   height: 100vh;
   overflow: hidden;
 
-  img{
+  img {
     object-fit: cover;
   }
 
@@ -42,5 +42,21 @@
     to {
       opacity: 1;
     }
+  }
+
+}
+
+
+
+// elementPlus 样式覆盖
+.el-input__inner {
+  color: #333 !important;
+}
+
+.el-notification {
+  background-color: var(--bg-color) !important;
+  border: unset !important;
+  .el-notification__title {
+    color: var(--font-color) !important;
   }
 }

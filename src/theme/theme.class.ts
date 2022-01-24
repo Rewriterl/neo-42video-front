@@ -51,6 +51,9 @@ class Theme {
       }))
     this.current_.value.forEach((item) => {
       document.documentElement.style.setProperty(item.var, item.value)
+      ;(item.elementPlusVars || []).forEach((el) => {
+        document.documentElement.style.setProperty(el, item.value, 'important')
+      })
     })
   }
 

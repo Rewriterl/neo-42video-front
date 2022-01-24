@@ -14,4 +14,6 @@ export interface ThemeColorVar {
   var: string
   /** 描述 */
   descr: string
+  /** elementPlus主题变量 */
+  elementPlusVars?: string[]
 }

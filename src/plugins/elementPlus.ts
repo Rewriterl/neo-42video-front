@@ -14,7 +14,10 @@ import {
   ElColorPicker,
   ElAffix,
   ElRate,
-  ElTooltip
+  ElTooltip,
+  ElForm,
+  ElFormItem,
+  ElInput
 } from 'element-plus'
 const comps = [
   ElCarousel,
@@ -28,7 +31,10 @@ const comps = [
   ElColorPicker,
   ElAffix,
   ElRate,
-  ElTooltip
+  ElTooltip,
+  ElForm,
+  ElFormItem,
+  ElInput
 ]
 const plugins = [ElLoading, ElNotification]
 export function elementPlusInit(app: App<Element>) {

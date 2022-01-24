@@ -19,6 +19,7 @@ import '@/assets/icon/iconfont.js'
 import AppAsideBar from '@comps/Body/AppAsideBar.vue'
 import AppTabBar from '@comps/Body/AppTabBar.vue'
 import AppRouter from '@comps/Body/AppRouter.vue'
+import { useSystemConfigStore } from './stores/systemConfig.store'
 
 export default defineComponent({
   name: 'Comic',
@@ -28,6 +29,8 @@ export default defineComponent({
     AppTabBar
   },
   setup() {
+    const systemConfigStore = useSystemConfigStore()
+    systemConfigStore.getServerIp()
     return {}
   }
 })

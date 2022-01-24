@@ -12,18 +12,32 @@
         <el-button type="primary" round @click="saveThemeColor">保存</el-button>
       </div>
     </div>
+    <div class="setting-box setting-config">
+      <div class="setting-box__title">参数配置</div>
+      <el-form ref="configFormComp" :model="config" :rules="configRules">
+        <el-form-item label="服务器地址" prop="serverIp">
+          <el-input v-model="config.serverIp" />
+        </el-form-item>
+      </el-form>
+
+      <div class="setting-box__control">
+        <el-button type="primary" round @click="saveConfig">保存</el-button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, reactive, ref } from 'vue'
 
 import { getThemeInstance } from '@/theme/theme.class'
 
 import ThemeColorEditor, {
   ThemeColorVar
 } from './components/ThemeColorEditor.vue'
-import { ElNotification } from 'element-plus'
+import { ElForm, ElNotification } from 'element-plus'
+import { useSystemConfigStore } from '@/stores/systemConfig.store'
+import { FormRulesMap } from 'element-plus/lib/components/form/src/form.type'
 
 function themeColorModule() {
   const themeColorEditorComp = ref<typeof ThemeColorEditor>()
@@ -55,6 +69,48 @@ function themeColorModule() {
   }
 }
 
+function configModule() {
+  const configFormComp = ref<InstanceType<typeof ElForm>>()
+  const systemConfigStore = useSystemConfigStore()
+
+  const config = reactive({
+    serverIp: systemConfigStore.serverIp
+  })
+  const configRules: FormRulesMap = reactive({
+    serverIp: [
+      {
+        trigger: 'blur',
+        validator(rule, value, callback) {
+          if (/\d+/.test(value)) {
+            callback()
+          } else {
+            callback(new Error('请检查地址格式'))
+          }
+        }
+      }
+    ]
+  })
+  const saveConfig = async () => {
+    try {
+      await configFormComp.value!.validate()
+      systemConfigStore.saveServerIp(config.serverIp)
+      ElNotification({
+        title: '参数配置',
+        message: '参数保存成功',
+        type: 'success'
+      })
+    } catch (e) {
+      // console.log(e)
+    }
+  }
+  return {
+    config,
+    configRules,
+    saveConfig,
+    configFormComp
+  }
+}
+
 export default defineComponent({
   name: 'Setting',
   components: {
@@ -62,7 +118,8 @@ export default defineComponent({
   },
   setup() {
     return {
-      ...themeColorModule()
+      ...themeColorModule(),
+      ...configModule()
     }
   }
 })
@@ -80,6 +137,7 @@ export default defineComponent({
     box-sizing: border-box;
     border-top-left-radius: 24px;
     border-bottom-left-radius: 24px;
+    margin-bottom: 30px;
     &__title {
       font-weight: 600;
       font-size: 20px;
@@ -91,6 +149,11 @@ export default defineComponent({
   }
   .setting-themecolor {
     // height: 400px;
+  }
+  .setting-config {
+    ::v-deep(.el-form) {
+      width: 400px;
+    }
   }
 }
 </style>

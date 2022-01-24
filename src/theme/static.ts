@@ -38,7 +38,8 @@ export const DF_SYSTEM_COLOR: ThemeColorVar[] = [
     prop: 'bg',
     value: '',
     var: '--bg-color',
-    descr: '整体背景色'
+    descr: '整体背景色',
+    elementPlusVars: []
   },
   {
     prop: 'asideBg',
@@ -56,7 +57,8 @@ export const DF_SYSTEM_COLOR: ThemeColorVar[] = [
     prop: 'font',
     value: '',
     var: '--font-color',
-    descr: '主字体颜色'
+    descr: '主字体颜色',
+    elementPlusVars: ['--el-text-color-regular']
   },
   {
     prop: 'font-unactive',
