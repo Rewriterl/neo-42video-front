@@ -100,7 +100,6 @@ import LoadingCodeRun from '@comps/Loading/LoadingCodeRun.vue'
 
 import { SEARCH_FILTER } from './statics/form'
 import * as Api from '@/api'
-import * as Type from './types/index.type'
 import { arrAvgSplit, getVal } from '@/utils/adLoadsh'
 
 function filterModule(init: () => void) {
