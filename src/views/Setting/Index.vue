@@ -40,7 +40,7 @@ import { useSystemConfigStore } from '@/stores/systemConfig.store'
 import { FormRulesMap } from 'element-plus/lib/components/form/src/form.type'
 
 function themeColorModule() {
-  const themeColorEditorComp = ref<typeof ThemeColorEditor>()
+  const themeColorEditorComp = ref<InstanceType<typeof ThemeColorEditor>>()
   const dfThemes = getThemeInstance()!.current
 
   const onColorChanged = (param: ThemeColorVar[]) => {
@@ -81,7 +81,7 @@ function configModule() {
       {
         trigger: 'blur',
         validator(rule, value, callback) {
-          if (/\d+/.test(value)) {
+          if (value) {
             callback()
           } else {
             callback(new Error('请检查地址格式'))
@@ -94,11 +94,12 @@ function configModule() {
     try {
       await configFormComp.value!.validate()
       systemConfigStore.saveServerIp(config.serverIp)
-      ElNotification({
-        title: '参数配置',
-        message: '参数保存成功',
-        type: 'success'
-      })
+      // ElNotification({
+      //   title: '参数配置',
+      //   message: '参数保存成功',
+      //   type: 'success'
+      // })
+      location.reload()
     } catch (e) {
       // console.log(e)
     }

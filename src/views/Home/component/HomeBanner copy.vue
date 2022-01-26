@@ -55,7 +55,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const carouselComp = ref<typeof ElCarousel>()
+    const carouselComp = ref<InstanceType<typeof ElCarousel>>()
 
     const carousel = reactive({
       index: 0,

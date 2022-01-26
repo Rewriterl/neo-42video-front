@@ -169,7 +169,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const awVideoComp = ref<typeof AwVideo>()
+    const awVideoComp = ref<InstanceType<typeof AwVideo>>()
     const { playProgressCache, playHistoryCache } = usePlayCache()
 
     const { comic, comicUrls, ...comicInfoModuleArgs } = comicInfoModule(

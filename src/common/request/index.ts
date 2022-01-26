@@ -1,13 +1,13 @@
 import axios, { AxiosPromise } from 'axios'
 import { BASE_URL, timeout } from './config'
-// import AxiosUtils from './axiosUtils.class'
+import AxiosUtils from './axiosUtils.class'
 
 // 创建公共实例
 const instance = axios.create({
   baseURL: BASE_URL,
   timeout
 })
-// new AxiosUtils(instance)
+new AxiosUtils(instance)
 
 /**
  * 请求 - get

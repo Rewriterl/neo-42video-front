@@ -356,7 +356,7 @@ export default defineComponent({
   },
   emits: ['canplay', 'changeQuality', 'ended', 'error'],
   setup(props, ctx) {
-    const awVideoMsgComp = ref<typeof AwVideoMsg>()
+    const awVideoMsgComp = ref<InstanceType<typeof AwVideoMsg>>()
     const videoEl = ref<HTMLVideoElement>()
     const selfEl = ref<HTMLElement>()
 
