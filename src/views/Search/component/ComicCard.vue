@@ -1,7 +1,7 @@
 <template>
   <div v-if="detail" class="comic-card" @click="toComicMain(detail!.id)">
     <div class="cover">
-      <BaseImg :src="detail.cover" />
+      <HoverImgCard :src="detail.cover" />
     </div>
     <div class="info">{{ detail.title }}</div>
   </div>
@@ -11,16 +11,16 @@
 import { defineComponent, PropType } from 'vue'
 import * as Api from '@/api'
 import { toComicMain } from '@/hooks/router'
+import HoverImgCard from '@/components/Transition/HoverImgCard.vue'
 export default defineComponent({
   name: 'ComicCard',
+  components: {
+    HoverImgCard
+  },
   props: {
     detail: {
       type: Object as PropType<Api.SearchComicReturn['data'][0] | null>,
       default: null
-    },
-    size: {
-      type: Number,
-      default: 8
     }
   },
   setup() {
@@ -33,32 +33,17 @@ export default defineComponent({
 <style lang="less" scoped>
 .comic-card {
   position: relative;
-  width: calc(100% / v-bind(size));
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-  overflow: hidden;
-  padding: 6px 12px;
   box-sizing: border-box;
-  &:hover {
-    .cover {
-      filter: brightness(0.5);
-    }
-  }
   .cover {
     flex: 1;
     width: 100%;
     aspect-ratio: 1/1.4;
     border-radius: 6px;
-    overflow: hidden;
-    transition: all 0.25s;
-    img {
-      width: 100%;
-      height: 100%;
-      background: #def;
-      transition: all 0.25s;
-    }
   }
 
   .info {

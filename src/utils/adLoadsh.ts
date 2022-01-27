@@ -453,11 +453,3 @@ export function getVal<T>(fn: () => T, df: any): T {
     return df
   }
 }
-
-// export function fillArr<T extends Array<T>>(
-//   list: T,
-//   size: number,
-//   fill: () => T
-// ) {
-//   return [...list, Array(size - list.length).fill(fill())]
-// }

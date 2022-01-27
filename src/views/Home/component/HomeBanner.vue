@@ -22,17 +22,17 @@
             leave-active-class="carousel-info-out"
           >
             <div v-show="carousel.infoVisible" class="inner">
-              <span>这是一段话</span>
+              <!-- <span>这是一段话</span> -->
               <h1>{{ carousel.current.title }}</h1>
-              <p>
+              <!-- <p>
                 这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介
-              </p>
-              <div class="inner-rate">
+              </p> -->
+              <!-- <div class="inner-rate">
                 <el-rate :value="5" disabled />
                 评分
-              </div>
+              </div> -->
               <div class="inner-control">
-                <el-button type="warning" round>详细信息</el-button>
+                <!-- <el-button type="warning" round>详细信息</el-button> -->
                 <el-button round plain @click="toComicMain(carousel.current.id)"
                   >播放</el-button
                 >
@@ -186,8 +186,9 @@ export default defineComponent({
 </script>
 <style lang="less" scoped>
 .home-banner {
+  position: relative;
   width: 100%;
-  height: calc(100vh - 40px);
+  aspect-ratio: 16/9;
   overflow: hidden;
   &__bg {
     position: absolute;

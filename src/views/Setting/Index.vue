@@ -16,7 +16,10 @@
       <div class="setting-box__title">参数配置</div>
       <el-form ref="configFormComp" :model="config" :rules="configRules">
         <el-form-item label="服务器地址" prop="serverIp">
-          <el-input v-model="config.serverIp" />
+          <el-input
+            v-model="config.serverIp"
+            placeholder="如：http://192.169.1.19:8002/"
+          />
         </el-form-item>
       </el-form>
 

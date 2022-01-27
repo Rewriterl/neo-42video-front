@@ -36,7 +36,7 @@
           <el-tab-pane label="详情" lazy>
             <div class="comic-main__info">
               <div class="cover">
-                <BaseImg :src="comic.cover" alt />
+                <HoverImgCard :src="comic.cover" />
               </div>
               <div class="message">
                 <h1>{{ comic.title }}</h1>
@@ -75,7 +75,7 @@ import { computed, defineComponent, onBeforeUnmount, reactive, ref } from 'vue'
 
 import AwVideo from '@comps/AwVideo/AwVideo.vue'
 import ComicAnthology, { ChangeReturns } from './component/ComicAnthology.vue'
-import BaseImg from '@/components/Global/BaseImg.vue'
+import HoverImgCard from '@/components/Transition/HoverImgCard.vue'
 import { ElNotification } from 'element-plus'
 
 import * as Api from '@apis/index'
@@ -160,7 +160,7 @@ export default defineComponent({
   components: {
     AwVideo,
     ComicAnthology,
-    BaseImg
+    HoverImgCard
   },
   props: {
     id: {
@@ -402,6 +402,9 @@ export default defineComponent({
           color: var(--font-color);
         }
       }
+      .el-tabs__content {
+        overflow: unset;
+      }
     }
   }
   &__anthology {
@@ -419,23 +422,11 @@ export default defineComponent({
   &__info {
     display: flex;
     width: 100%;
-    margin-top: 10px;
+    padding-top: 10px;
     .cover {
       width: 200px;
       aspect-ratio: 1.4/2;
       border-radius: 8px;
-      box-shadow: rgba(0, 0, 0, 0.2);
-      overflow: hidden;
-      img {
-        width: 100%;
-        height: 100%;
-        transition: all 0.25s;
-      }
-      &:hover {
-        img {
-          transform: scale(1.1);
-        }
-      }
     }
     .message {
       padding-left: 30px;

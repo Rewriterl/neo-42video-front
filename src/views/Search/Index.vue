@@ -68,13 +68,11 @@
         </div>
       </transition>
       <div ref="mainContentEl" class="search-main__content">
-        <div
-          v-for="(item, index) in realSearchResult"
-          :key="index"
-          class="search-main__content-col"
-        >
-          <ComicCard v-for="comic in item" :key="comic.id" :detail="comic" />
-        </div>
+        <ComicCard
+          v-for="comic in searchResult"
+          :key="comic.id"
+          :detail="comic"
+        />
       </div>
     </main>
     <el-pagination
@@ -336,15 +334,24 @@ export default defineComponent({
       border-top-left-radius: @radius;
       overflow-y: auto;
       &__content {
-        @padding: 30px;
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 16px 24px;
         width: 100%;
-        height: calc(100vh - @frameTop - @headerHeight - @rootGap);
         padding: 30px;
         box-sizing: border-box;
-        &-col {
-          width: 100%;
-          display: flex;
-          overflow: hidden;
+
+        @media screen and (max-width: 1600px) {
+          grid-template-columns: repeat(6, 1fr);
+        }
+        @media screen and (max-width: 1200px) {
+          grid-template-columns: repeat(4, 1fr);
+        }
+        @media screen and (min-width: 2300px) {
+          grid-template-columns: repeat(10, 1fr);
+        }
+        @media screen and (min-width: 3000px) {
+          grid-template-columns: repeat(14, 1fr);
         }
       }
       &__loading {
