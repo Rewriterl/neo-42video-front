@@ -60,8 +60,8 @@ export default defineComponent({
     }))
 
     const handleMouseMove = (e: MouseEvent) => {
-      mouse.x = e.pageX - self.x - self.width / 2
-      mouse.y = e.pageY - self.y - self.height / 2
+      mouse.x = e.offsetX - self.width / 2
+      mouse.y = e.offsetY - self.height / 2
     }
     const handleMouseEnter = () => {
       mouse.leaveDelay && clearTimeout(mouse.leaveDelay)
@@ -86,6 +86,7 @@ export default defineComponent({
 
     return {
       selfEl,
+      styleInit,
       mousePX,
       mousePY,
       cardStyle,
@@ -139,6 +140,7 @@ export default defineComponent({
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
+    background-color: #def;
     transition: 1s @returnEasing, opacity 5s 1s @returnEasing;
     pointer-events: none;
   }

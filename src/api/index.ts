@@ -1,5 +1,5 @@
 import { getax } from '@/common/request/index'
-import { getVal, wait } from '@/utils/adLoadsh'
+import { getVal } from '@/utils/adLoadsh'
 import * as ApiReturns from './type'
 export * from './type'
 
@@ -171,16 +171,20 @@ export async function filterComic(param: {
         .map(([k, v]) => `${k}=${v}`)
         .join('&')
     const { data } = await getax(api)
-    console.log(data)
+    return {
+      data: getVal<any[]>(() => data.data, []).map((item) => ({
+        cover: item.cover,
+        id: item.id,
+        season: item.season,
+        title: item.title
+      })),
+      total: 0
+    }
   } catch {
     return {
       data: [],
       total: 0
     }
-  }
-  return {
-    data: [],
-    total: 0
   }
 }
 

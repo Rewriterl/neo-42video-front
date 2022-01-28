@@ -58,7 +58,7 @@
         />
       </article>
     </transition>
-    <main class="search-main">
+    <main ref="searchMainEl" class="search-main">
       <transition
         enter-active-class="animate__fadeIn"
         leave-active-class="animate__fadeOut"
@@ -67,7 +67,7 @@
           <LoadingCodeRun text="电波获取中，请稍后" />
         </div>
       </transition>
-      <div ref="mainContentEl" class="search-main__content">
+      <div class="search-main__content">
         <ComicCard
           v-for="comic in searchResult"
           :key="comic.id"
@@ -173,12 +173,12 @@ export default defineComponent({
     LoadingCodeRun
   },
   setup() {
-    const mainContentEl = ref<HTMLElement>()
+    const searchMainEl = ref<HTMLElement>()
     const searchResult = ref<Api.ComicPageList[]>([])
     const isFetchingSearch = ref(false)
     const { filter, pager, resetName, resetFilter, ...filterModuleArgs } =
       filterModule(() => {
-        // searchByFilter()
+        searchByFilter()
       })
 
     const hasSearchKey = computed(() => filter.name !== '')
@@ -200,7 +200,7 @@ export default defineComponent({
     const searchByName = async (clear = true) => {
       if (!filter.name) return
       isFetchingSearch.value = true
-      mainContentEl.value!.scrollTop = 0
+      searchMainEl.value!.scrollTop = 0
       clear && resetFilter()
       const { data, total } = await Api.searchComic({
         name: filter.name,
@@ -212,6 +212,7 @@ export default defineComponent({
     }
     const searchByFilter = async (clear = true) => {
       isFetchingSearch.value = true
+      searchMainEl.value!.scrollTop = 0
       clear && resetName()
       const { data, total } = await Api.filterComic({
         page: pager.currnet,
@@ -231,7 +232,7 @@ export default defineComponent({
     // })
 
     return {
-      mainContentEl,
+      searchMainEl,
       filter,
       pager,
       isFetchingSearch,
