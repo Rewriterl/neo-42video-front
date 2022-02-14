@@ -10,8 +10,8 @@
           :key="anthology.current"
           :src="anthology.current"
           autoplay
-          @next="nextAnthology"
-          @ended="onVideoEnded"
+          @next="nextAnthology(false)"
+          @ended="nextAnthology(true)"
           @error="onVideoError"
         />
       </div>
@@ -268,7 +268,7 @@ export default defineComponent({
       }
     }
     /** 下一集 */
-    const nextAnthology = () => {
+    const nextAnthology = (hasToolTip = false) => {
       if (!anthology.currentItem) return
       const org = anthology.list.find(
         (item) => item.orgId === anthology.currentItem!.orgId
@@ -289,6 +289,11 @@ export default defineComponent({
         ...org.values[index],
         orgId: org.orgId
       })
+      hasToolTip &&
+        awVideoComp.value!.notify({
+          content: `正在为您播放下一集`,
+          duration: 3000
+        })
     }
     /**
      * 保存播放缓存
@@ -303,31 +308,6 @@ export default defineComponent({
         progress: getVal(() => awVideoComp.value!.player.currentTime, 0),
         comicId: +props.id
       })
-    }
-    /**
-     * AwVideo-ended事件
-     */
-    const onVideoEnded = () => {
-      if (!anthology.currentItem) return
-      const oldItem = anthology.currentItem!
-      const list = anthology.list.find((item) => item.orgId === oldItem.orgId)!
-      const oldIndex = list.values.findIndex(
-        (item) => item.name === oldItem.name
-      )
-      if (oldIndex !== anthology.list.length - 1) {
-        const value = list.values[oldIndex + 1]
-        changeAnthology(
-          {
-            ...value,
-            orgId: list.orgId
-          },
-          false
-        )
-        awVideoComp.value!.notify({
-          content: `正在为您播放下一集`,
-          duration: 3000
-        })
-      }
     }
     /**
      * AwVideo-error事件
@@ -353,7 +333,6 @@ export default defineComponent({
       changeAnthology,
       anthology,
       awVideoComp,
-      onVideoEnded,
       onVideoError,
       nextAnthology
     }
@@ -502,10 +481,13 @@ export default defineComponent({
       }
       &-desc {
         display: flex;
-        align-items: flex-end;
+        align-items: flex-start;
         width: 100%;
         margin-top: 16px;
         font-size: 14px;
+        b {
+          width: 60px;
+        }
         a {
           margin-right: 8px;
           color: var(--primary-color);

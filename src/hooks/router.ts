@@ -5,8 +5,11 @@ import router from '../router/index'
  * @param id
  * @returns
  */
-export function toComicMain(id: number | string) {
-  return router.push({
+export function toComicMain(
+  id: number | string,
+  type = 'push' as 'push' | 'replace'
+) {
+  return router[type]({
     name: 'ComicMain',
     params: {
       id

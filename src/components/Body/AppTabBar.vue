@@ -23,7 +23,9 @@
                 v-for="k in playHistory"
                 :key="k.id"
                 class="card"
-                @click=";[toComicMain(k.id), (historyVisible = false)]"
+                @click="
+                  ;[toComicMain(k.id, 'replace'), (historyVisible = false)]
+                "
               >
                 <BaseImg :src="k.cover" />
                 <div class="card-info">
