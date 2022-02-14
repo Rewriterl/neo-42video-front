@@ -7,8 +7,10 @@
       <div class="comic-main__video">
         <AwVideo
           ref="awVideoComp"
+          :key="anthology.current"
           :src="anthology.current"
           autoplay
+          @next="nextAnthology"
           @ended="onVideoEnded"
           @error="onVideoError"
         />
@@ -255,7 +257,7 @@ export default defineComponent({
     const changeAnthology = (item: ChangeReturns, isAddCache = true) => {
       const { value } = item
       // 错误地址判断
-      if (['kol-fans.fp.ps', '.m3u8'].some((key) => value.includes(key))) {
+      if (['kol-fans.fp.ps'].some((key) => value.includes(key))) {
         anthology.bads.push(value)
         return false
       } else {
@@ -264,6 +266,29 @@ export default defineComponent({
         isAddCache && saveProgressCache(item)
         return true
       }
+    }
+    /** 下一集 */
+    const nextAnthology = () => {
+      if (!anthology.currentItem) return
+      const org = anthology.list.find(
+        (item) => item.orgId === anthology.currentItem!.orgId
+      )
+      if (!org) return
+      const index =
+        org.values.findIndex(
+          (item) => item.value === anthology.currentItem!.value
+        ) + 1
+      if (index >= org.values.length) {
+        awVideoComp.value!.notify({
+          content: `已经是最后一个了~`,
+          duration: 3000
+        })
+        return
+      }
+      changeAnthology({
+        ...org.values[index],
+        orgId: org.orgId
+      })
     }
     /**
      * 保存播放缓存
@@ -329,7 +354,8 @@ export default defineComponent({
       anthology,
       awVideoComp,
       onVideoEnded,
-      onVideoError
+      onVideoError,
+      nextAnthology
     }
   }
 })

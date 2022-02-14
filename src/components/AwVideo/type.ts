@@ -1,6 +1,6 @@
-import flvjs from 'flv.js'
+import { VideoJsPlayer } from 'video.js'
 
-export type FlvInstance = flvjs.Player | null
+export type FlvInstance = VideoJsPlayer | null
 
 /** 播放器信息 */
 export interface Player {

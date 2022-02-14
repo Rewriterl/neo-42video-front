@@ -10,14 +10,15 @@
     "axios": "^0.21.1",
     "better-scroll": "^2.4.2",
     "element-plus": "^1.1.0-beta.24",
-    "flv.js": "^1.6.2",
     "moment": "^2.29.1",
     "path": "^0.12.7",
     "pinia": "^2.0.9",
+    "video.js": "^7.17.0",
     "vue": "^3.0.5",
     "vue-router": "^4.0.8"
   },
   "devDependencies": {
+    "@types/video.js": "^7.3.31",
     "@typescript-eslint/eslint-plugin": "^5.8.0",
     "@typescript-eslint/parser": "^5.8.0",
     "@vitejs/plugin-vue": "^1.2.3",

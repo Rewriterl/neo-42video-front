@@ -48,7 +48,11 @@
         :name="player.status === 1 ? 'pause' : 'play'"
         @click="playHandler"
       />
-      <!-- <i class="control-icon"></i> -->
+      <Icon
+        class="control-icon control-icon__next"
+        name="iconfontsvgnext"
+        @click="$emit('next')"
+      />
       <div class="control-time">
         {{ sToMs(player.currentTime) }}
         <span>/</span>
@@ -125,7 +129,7 @@
       />
     </div>
     <AwVideoMsg ref="awVideoMsgComp" />
-    <video ref="videoEl" v-bind="$attrs" :mute="mute" />
+    <video ref="videoEl" v-bind="$attrs" :muted="muted" />
   </div>
 </template>
 
@@ -141,10 +145,9 @@ import {
   Ref,
   ref,
   SetupContext,
-  toRefs,
-  watch
+  toRefs
 } from 'vue'
-import flvjs from 'flv.js'
+import videojs from 'video.js'
 
 import AwVideoProgress from './AwVideoProgress.vue'
 import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
@@ -164,41 +167,64 @@ import * as Type from './type'
 
 export * from './type'
 
-type Ctx = SetupContext<('canplay' | 'changeQuality' | 'ended' | 'error')[]>
+type Ctx = SetupContext<
+  ('canplay' | 'changeQuality' | 'ended' | 'error' | 'next')[]
+>
 
-/** flvjs封装模块 */
-function flvModule(player: Type.Player) {
-  const flvInstance = ref<Type.FlvInstance>(null)
+/** video插件封装模块 */
+function videoModule(player: Type.Player) {
+  const videoInstance = ref<Type.FlvInstance>(null)
 
   const play = () => {
-    if (flvInstance.value) {
-      flvInstance.value.play()
+    if (videoInstance.value) {
+      videoInstance.value.play()
     }
   }
   const pause = () => {
-    if (flvInstance.value) {
-      flvInstance.value.pause()
+    if (videoInstance.value) {
+      videoInstance.value.pause()
     }
   }
   const destroy = () => {
-    flvInstance.value && flvInstance.value.destroy()
+    videoInstance.value && videoInstance.value.dispose()
   }
-  const addEvent = () => flvInstance.value!.on
-  const removeEvent = () => flvInstance.value!.off
+  /**
+   * 视频地址解析为source格式
+   * @param url
+   */
+  const videoUrlToSource = (url: string) => {
+    let type = ''
+    const lastKey = url.split('.').pop()
+    switch (lastKey) {
+      case 'm3u8': {
+        type = 'application/x-mpegURL'
+        break
+      }
+      case 'zip': {
+        type = 'video/mp4'
+        break
+      }
+      default: {
+        type = 'video/' + lastKey
+      }
+    }
+    return {
+      src: url,
+      type
+    }
+  }
   const flvInit = (el: HTMLVideoElement, url: string) => {
     if (!url || !el) return
     player.status = 0
     try {
-      flvInstance.value = flvjs.createPlayer({
-        type: 'mp4',
-        url
+      el.volume = player.realVolume
+      videoInstance.value = videojs(el, {
+        autoplay: true,
+        preload: 'auto',
+        controls: true,
+        sources: [videoUrlToSource(url)]
       })
-      flvInstance.value.attachMediaElement(el)
-      flvInstance.value.on(flvjs.Events.RECOVERED_EARLY_EOF, (e) => {
-        console.log(e, '123')
-      })
-      flvInstance.value.volume = player.realVolume
-      return flvInstance.value
+      return videoInstance.value
     } catch (err) {
       player.status = -1
       console.log(err, 'init')
@@ -211,9 +237,7 @@ function flvModule(player: Type.Player) {
     play,
     pause,
     destroy,
-    addEvent,
-    removeEvent,
-    flvInstance
+    videoInstance
   }
 }
 
@@ -349,12 +373,12 @@ export default defineComponent({
       //   }
       // ]
     },
-    mute: {
+    muted: {
       type: Boolean,
       default: false
     }
   },
-  emits: ['canplay', 'changeQuality', 'ended', 'error'],
+  emits: ['canplay', 'changeQuality', 'ended', 'error', 'next'],
   setup(props, ctx) {
     const awVideoMsgComp = ref<InstanceType<typeof AwVideoMsg>>()
     const videoEl = ref<HTMLVideoElement>()
@@ -369,7 +393,7 @@ export default defineComponent({
         return this.volume / 100
       },
       fullScreen: false,
-      isMute: props.mute,
+      isMute: props.muted,
       preview: '',
       isListened: false
     })
@@ -388,8 +412,8 @@ export default defineComponent({
     })
     const isBad = computed(() => player.status === -1)
 
-    const { flvInit, destroy, play, pause, ...flvModuleArgs } =
-      flvModule(player)
+    const { flvInit, destroy, play, pause, ...videoModuleArgs } =
+      videoModule(player)
     const {
       changeProgress,
       computedPreview,
@@ -406,7 +430,6 @@ export default defineComponent({
       destroy()
       const flv = flvInit(videoEl.value!, url)
       if (!flv) return
-      flv.load()
       player.status = 2
       ctx.emit('canplay', flv)
     }
@@ -469,7 +492,7 @@ export default defineComponent({
       }
     }, 100)
 
-    watch(() => props.src, init)
+    // watch(() => props.src, init)
 
     /** 监听 */
     ;(() => {
@@ -617,7 +640,7 @@ export default defineComponent({
       controlBar,
       ...playbackRateModule(videoEl),
       ...qualityModule(props.quality, ctx),
-      ...flvModuleArgs
+      ...videoModuleArgs
     }
   }
 })
@@ -638,6 +661,7 @@ export default defineComponent({
     width: 100%;
     height: 100%;
     z-index: 1;
+    opacity: 0.2;
   }
   .mask(@height: 100%) {
     position: absolute;
@@ -729,11 +753,17 @@ export default defineComponent({
         width: @controlHeight;
         height: 100%;
         font-size: 18px;
+        &:active {
+          opacity: 0.7;
+        }
         &__play {
           font-size: 24px;
           &.icon-pause {
             font-size: 16px;
           }
+        }
+        &__next {
+          font-size: 14px;
         }
       }
       &-time {
@@ -849,6 +879,12 @@ export default defineComponent({
         margin: 0 auto;
         font-size: 12px;
       }
+    }
+  }
+  ::v-deep(.vjs-v7) {
+    div,
+    button {
+      display: none !important;
     }
   }
 }
