@@ -1,6 +1,18 @@
 <template>
   <div class="play-history">
-    <h2>播放历史</h2>
+    <h2>
+      播放历史
+      <el-popconfirm
+        title="确定清空播放记录嘛？"
+        confirm-button-text="确定"
+        cancel-button-text="取消"
+        @confirm="clearHistory"
+      >
+        <template #reference>
+          <Icon name="delete" />
+        </template>
+      </el-popconfirm>
+    </h2>
     <div class="play-history__content">
       <div
         v-for="item in list"
@@ -36,7 +48,9 @@ export default defineComponent({
   setup() {
     const playCacheStore = usePlayCacheStore()
     const list = computed(() => playCacheStore.playHistory)
+    const clearHistory = () => playCacheStore.clearHistory()
     return {
+      clearHistory,
       list,
       toComicMain
     }
@@ -53,6 +67,12 @@ export default defineComponent({
   box-sizing: border-box;
   background: var(--box-bg-color);
   border-top-left-radius: 24px;
+  h2 {
+    i {
+      font-size: 18px;
+      cursor: pointer;
+    }
+  }
   &__content {
     display: flex;
     width: 100%;

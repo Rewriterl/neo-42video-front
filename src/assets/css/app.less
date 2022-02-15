@@ -1,6 +1,7 @@
 #app {
   position: relative;
   width: 100%;
+  min-width: 1000px;
   height: 100vh;
   overflow: hidden;
 
@@ -49,13 +50,21 @@
 
 
 // elementPlus 样式覆盖
-.el-input__inner {
+.el-input__inner{
   color: #333 !important;
+}
+
+.el-popover {
+  color: #333 !important;
+  .el-popconfirm__main{
+    padding-bottom: 6px;
+  }
 }
 
 .el-notification {
   background-color: var(--bg-color) !important;
   border: unset !important;
+
   .el-notification__title {
     color: var(--font-color) !important;
   }

@@ -128,7 +128,7 @@ function filterModule(init: () => void) {
     size: 24,
     total: 0
   })
-  const filterVisible = ref(false)
+  const filterVisible = ref(true)
 
   const resetPager = () => {
     pager.currnet = 1

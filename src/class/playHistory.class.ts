@@ -41,6 +41,11 @@ class PlayHistory {
       this.cache_.value = data
     }
   }
+
+  public clearStore() {
+    this.cache_.value.splice(0)
+    localStorage.removeItem(PLAY_HISTORY_STORE_KEY)
+  }
 }
 
 let instance: PlayHistory | null

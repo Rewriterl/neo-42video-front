@@ -3,77 +3,91 @@
     <div class="comic-main__break">
       <Icon name="arrow" @click="$router.go(-1)" />
     </div>
-    <div class="comic-main__inner">
-      <div class="comic-main__video">
-        <AwVideo
-          ref="awVideoComp"
-          :key="anthology.current"
-          :src="anthology.current"
-          autoplay
-          @next="nextAnthology(false)"
-          @ended="nextAnthology(true)"
-          @error="onVideoError"
-        />
-      </div>
-      <div class="comic-main__box">
-        <el-tabs>
-          <el-tab-pane label="选集" lazy>
-            <div class="comic-main__anthology">
-              <!-- <div
+    <transition
+      enter-active-class="animate__slideInUp"
+      leave-active-class="animate__slideOutDown"
+    >
+      <div v-show="!isPending" class="comic-main__inner">
+        <div class="comic-main__video">
+          <AwVideo
+            ref="awVideoComp"
+            :key="anthology.current"
+            :src="anthology.current"
+            autoplay
+            @next="nextAnthology(false)"
+            @ended="nextAnthology(true)"
+            @error="onVideoError"
+          />
+        </div>
+        <div class="comic-main__box">
+          <el-tabs>
+            <el-tab-pane label="选集" lazy>
+              <div class="comic-main__anthology">
+                <!-- <div
                 v-show="anthology.isPending"
                 class="comic-main__anthology-loading"
               ></div>-->
-              <ComicAnthology
-                v-for="(item, index) in anthology.list"
-                :key="index"
-                :org-id="item.orgId"
-                :active="anthology.current"
-                :label="item.name"
-                :list="item.values"
-                :bad-anthology="anthology.bads"
-                @change="changeAnthology"
-              />
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="详情" lazy>
-            <div class="comic-main__info">
-              <div class="cover">
-                <HoverImgCard :src="comic.cover" />
+                <ComicAnthology
+                  v-for="(item, index) in anthology.list"
+                  :key="index"
+                  :org-id="item.orgId"
+                  :active="anthology.current"
+                  :label="item.name"
+                  :list="item.values"
+                  :bad-anthology="anthology.bads"
+                  @change="changeAnthology"
+                />
               </div>
-              <div class="message">
-                <h1>{{ comic.title }}</h1>
-                <ul class="message-tags">
-                  <li v-for="item in comicTags" :key="item.label">
-                    <span>{{ item.label }}</span>
-                    <b>{{ item.value }}</b>
-                  </li>
-                </ul>
-                <ul class="message-cates">
-                  <li v-for="item in comic.cates" :key="item">{{ item }}</li>
-                </ul>
-                <div class="message-desc">
-                  <b>声优：</b>
-                  <p>
-                    <a
-                      v-for="item in comic.voiceActors"
-                      :key="item"
-                      :href="`https://baike.baidu.com/item/${item}`"
-                      target="_blank"
-                      >{{ item }}</a
-                    >
-                  </p>
+            </el-tab-pane>
+            <el-tab-pane label="详情" lazy>
+              <div class="comic-main__info">
+                <div class="cover">
+                  <HoverImgCard :src="comic.cover" />
+                </div>
+                <div class="message">
+                  <h1>{{ comic.title }}</h1>
+                  <ul class="message-tags">
+                    <li v-for="item in comicTags" :key="item.label">
+                      <span>{{ item.label }}</span>
+                      <b>{{ item.value }}</b>
+                    </li>
+                  </ul>
+                  <ul class="message-cates">
+                    <li v-for="item in comic.cates" :key="item">{{ item }}</li>
+                  </ul>
+                  <div class="message-desc">
+                    <b>声优：</b>
+                    <p>
+                      <a
+                        v-for="item in comic.voiceActors"
+                        :key="item"
+                        :href="`https://baike.baidu.com/item/${item}`"
+                        target="_blank"
+                        >{{ item }}</a
+                      >
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </el-tab-pane>
-        </el-tabs>
+            </el-tab-pane>
+          </el-tabs>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeUnmount, reactive, ref } from 'vue'
+import {
+  computed,
+  defineComponent,
+  onBeforeUnmount,
+  reactive,
+  Ref,
+  ref,
+  toRef,
+  watch
+} from 'vue'
 
 import AwVideo from '@comps/AwVideo/AwVideo.vue'
 import ComicAnthology, { ChangeReturns } from './component/ComicAnthology.vue'
@@ -91,7 +105,9 @@ import { usePlayCache } from '@/hooks/user'
  * @param comicId 动漫id
  * @param init 信息请求完成后的回调
  */
-function comicInfoModule(comicId: number, init: () => void) {
+function comicInfoModule(comicId: Ref<number | string>, init: () => void) {
+  const isPending = ref(false)
+
   /** 动漫信息 */
   const comic = reactive<GetComicMainReturn>({
     title: '',
@@ -135,25 +151,36 @@ function comicInfoModule(comicId: number, init: () => void) {
       value: comic.master
     }
   ])
-  /** 数据获取 */
-  ;(async () => {
-    comicUrls.value = await Api.getVideoUrl(comicId)
-    const data = await Api.getComicMain(comicId)
 
-    if (data) {
-      comic.playlist = data.playlist
-      ;(Object.keys(comic) as (keyof GetComicMainReturn)[]).forEach((k) => {
-        if (typeof data[k] !== 'undefined') {
-          comic[k] = data[k] as any
-        }
-      })
-      init()
+  /** 数据获取 */
+  watch(
+    comicId,
+    async (comicId) => {
+      isPending.value = true
+      comicUrls.value = await Api.getVideoUrl(comicId)
+      const data = await Api.getComicMain(comicId)
+
+      if (data) {
+        comic.playlist = data.playlist
+        ;(Object.keys(comic) as (keyof GetComicMainReturn)[]).forEach((k) => {
+          if (typeof data[k] !== 'undefined') {
+            comic[k] = data[k] as any
+          }
+        })
+        isPending.value = false
+        init()
+      }
+    },
+    {
+      immediate: true
     }
-  })()
+  )
+
   return {
     comic,
     comicUrls,
-    comicTags
+    comicTags,
+    isPending
   }
 }
 
@@ -173,9 +200,8 @@ export default defineComponent({
   setup(props) {
     const awVideoComp = ref<InstanceType<typeof AwVideo>>()
     const { playProgressCache, playHistoryCache } = usePlayCache()
-
     const { comic, comicUrls, ...comicInfoModuleArgs } = comicInfoModule(
-      +props.id,
+      toRef(props, 'id'),
       async () => {
         // 获取对应缓存
         const cache = playProgressCache.getLatestCache(+props.id)
@@ -375,6 +401,7 @@ export default defineComponent({
   &__inner {
     width: 90%;
     margin: 0 auto;
+    animation-duration: 0.5s;
   }
   &__video {
     width: 100%;

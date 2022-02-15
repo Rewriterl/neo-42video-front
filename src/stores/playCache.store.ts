@@ -20,5 +20,10 @@ export const usePlayCacheStore = defineStore('playCache', {
         }
       })
     }
+  },
+  actions: {
+    clearHistory() {
+      getPlayHistoryInstance().clearStore()
+    }
   }
 })

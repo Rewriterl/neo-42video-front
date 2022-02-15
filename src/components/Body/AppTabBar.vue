@@ -14,13 +14,13 @@
         <div v-show="historyVisible" class="history-content">
           <el-tabs v-model="tabs.active">
             <el-tab-pane
-              v-for="item in tabs.list.slice(0, 5)"
+              v-for="item in tabs.list"
               :key="item.value"
               :label="item.name"
               :name="item.value"
             >
               <div
-                v-for="k in playHistory"
+                v-for="k in playHistory.slice(0, 4)"
                 :key="k.id"
                 class="card"
                 @click="
@@ -36,7 +36,13 @@
                   <span v-else class="bad">播放失败</span>
                 </div>
               </div>
-              <div v-if="tabs.list.length > 5" class="more">查看全部记录</div>
+              <div
+                v-if="playHistory.length >= 4"
+                class="more"
+                @click="$router.push({ name: 'User' })"
+              >
+                查看全部记录
+              </div>
             </el-tab-pane>
           </el-tabs>
         </div>

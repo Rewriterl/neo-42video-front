@@ -17,7 +17,8 @@ import {
   ElTooltip,
   ElForm,
   ElFormItem,
-  ElInput
+  ElInput,
+  ElPopconfirm
 } from 'element-plus'
 const comps = [
   ElCarousel,
@@ -34,7 +35,8 @@ const comps = [
   ElTooltip,
   ElForm,
   ElFormItem,
-  ElInput
+  ElInput,
+  ElPopconfirm
 ]
 const plugins = [ElLoading, ElNotification]
 export function elementPlusInit(app: App<Element>) {

@@ -213,7 +213,7 @@ function videoModule(player: Type.Player) {
       type
     }
   }
-  const flvInit = (el: HTMLVideoElement, url: string) => {
+  const videoInit = (el: HTMLVideoElement, url: string) => {
     if (!url || !el) return
     player.status = 0
     try {
@@ -224,6 +224,7 @@ function videoModule(player: Type.Player) {
         controls: true,
         sources: [videoUrlToSource(url)]
       })
+
       return videoInstance.value
     } catch (err) {
       player.status = -1
@@ -233,7 +234,7 @@ function videoModule(player: Type.Player) {
   }
 
   return {
-    flvInit,
+    videoInit,
     play,
     pause,
     destroy,
@@ -412,7 +413,7 @@ export default defineComponent({
     })
     const isBad = computed(() => player.status === -1)
 
-    const { flvInit, destroy, play, pause, ...videoModuleArgs } =
+    const { videoInit, destroy, play, pause, ...videoModuleArgs } =
       videoModule(player)
     const {
       changeProgress,
@@ -428,10 +429,14 @@ export default defineComponent({
     const init = (url: string) => {
       if (!url) return
       destroy()
-      const flv = flvInit(videoEl.value!, url)
-      if (!flv) return
+      const video = videoInit(videoEl.value!, url)
+      if (!video) return
+      video.on('error', (e) => {
+        ctx.emit('error')
+        console.log(e)
+      })
       player.status = 2
-      ctx.emit('canplay', flv)
+      ctx.emit('canplay', video)
     }
     /** 播放切换 */
     const playHandler = () => {
