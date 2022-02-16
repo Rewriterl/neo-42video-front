@@ -3,77 +3,73 @@
     <div class="comic-main__break">
       <Icon name="arrow" @click="$router.go(-1)" />
     </div>
-    <transition
-      enter-active-class="animate__slideInUp"
-      leave-active-class="animate__slideOutDown"
-    >
-      <div v-show="!isPending" class="comic-main__inner">
-        <div class="comic-main__video">
-          <AwVideo
-            ref="awVideoComp"
-            :key="anthology.current"
-            :src="anthology.current"
-            autoplay
-            @next="nextAnthology(false)"
-            @ended="nextAnthology(true)"
-            @error="onVideoError"
-          />
-        </div>
-        <div class="comic-main__box">
-          <el-tabs>
-            <el-tab-pane label="选集" lazy>
-              <div class="comic-main__anthology">
-                <!-- <div
+
+    <div :style="{ opacity: isPending ? 0 : 1 }" class="comic-main__inner">
+      <div class="comic-main__video">
+        <AwVideo
+          ref="awVideoComp"
+          :key="id"
+          :src="anthology.current"
+          autoplay
+          @next="nextAnthology"
+          @ended="nextAnthology"
+          @error="onVideoError"
+        />
+      </div>
+      <div class="comic-main__box">
+        <el-tabs>
+          <el-tab-pane label="选集" lazy>
+            <div class="comic-main__anthology">
+              <!-- <div
                 v-show="anthology.isPending"
                 class="comic-main__anthology-loading"
               ></div>-->
-                <ComicAnthology
-                  v-for="(item, index) in anthology.list"
-                  :key="index"
-                  :org-id="item.orgId"
-                  :active="anthology.current"
-                  :label="item.name"
-                  :list="item.values"
-                  :bad-anthology="anthology.bads"
-                  @change="changeAnthology"
-                />
+              <ComicAnthology
+                v-for="(item, index) in anthology.list"
+                :key="index"
+                :org-id="item.orgId"
+                :active="anthology.current"
+                :label="item.name"
+                :list="item.values"
+                :bad-anthology="anthology.bads"
+                @change="changeAnthology"
+              />
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="详情" lazy>
+            <div class="comic-main__info">
+              <div class="cover">
+                <HoverImgCard :src="comic.cover" />
               </div>
-            </el-tab-pane>
-            <el-tab-pane label="详情" lazy>
-              <div class="comic-main__info">
-                <div class="cover">
-                  <HoverImgCard :src="comic.cover" />
-                </div>
-                <div class="message">
-                  <h1>{{ comic.title }}</h1>
-                  <ul class="message-tags">
-                    <li v-for="item in comicTags" :key="item.label">
-                      <span>{{ item.label }}</span>
-                      <b>{{ item.value }}</b>
-                    </li>
-                  </ul>
-                  <ul class="message-cates">
-                    <li v-for="item in comic.cates" :key="item">{{ item }}</li>
-                  </ul>
-                  <div class="message-desc">
-                    <b>声优：</b>
-                    <p>
-                      <a
-                        v-for="item in comic.voiceActors"
-                        :key="item"
-                        :href="`https://baike.baidu.com/item/${item}`"
-                        target="_blank"
-                        >{{ item }}</a
-                      >
-                    </p>
-                  </div>
+              <div class="message">
+                <h1>{{ comic.title }}</h1>
+                <ul class="message-tags">
+                  <li v-for="item in comicTags" :key="item.label">
+                    <span>{{ item.label }}</span>
+                    <b>{{ item.value }}</b>
+                  </li>
+                </ul>
+                <ul class="message-cates">
+                  <li v-for="item in comic.cates" :key="item">{{ item }}</li>
+                </ul>
+                <div class="message-desc">
+                  <b>声优：</b>
+                  <p>
+                    <a
+                      v-for="item in comic.voiceActors"
+                      :key="item"
+                      :href="`https://baike.baidu.com/item/${item}`"
+                      target="_blank"
+                      >{{ item }}</a
+                    >
+                  </p>
                 </div>
               </div>
-            </el-tab-pane>
-          </el-tabs>
-        </div>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
       </div>
-    </transition>
+    </div>
   </div>
 </template>
 
@@ -290,11 +286,15 @@ export default defineComponent({
         anthology.current = value
         anthology.currentItem = item
         isAddCache && saveProgressCache(item)
+        awVideoComp.value!.notify({
+          content: `正在播放${item.name}`,
+          duration: 3000
+        })
         return true
       }
     }
     /** 下一集 */
-    const nextAnthology = (hasToolTip = false) => {
+    const nextAnthology = () => {
       if (!anthology.currentItem) return
       const org = anthology.list.find(
         (item) => item.orgId === anthology.currentItem!.orgId
@@ -311,15 +311,11 @@ export default defineComponent({
         })
         return
       }
+
       changeAnthology({
         ...org.values[index],
         orgId: org.orgId
       })
-      hasToolTip &&
-        awVideoComp.value!.notify({
-          content: `正在为您播放下一集`,
-          duration: 3000
-        })
     }
     /**
      * 保存播放缓存

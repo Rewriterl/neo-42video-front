@@ -176,10 +176,16 @@ export default defineComponent({
     const searchMainEl = ref<HTMLElement>()
     const searchResult = ref<Api.ComicPageList[]>([])
     const isFetchingSearch = ref(false)
-    const { filter, pager, resetName, resetFilter, ...filterModuleArgs } =
-      filterModule(() => {
-        searchByFilter()
-      })
+    const {
+      filter,
+      pager,
+      filterVisible,
+      resetName,
+      resetFilter,
+      ...filterModuleArgs
+    } = filterModule(() => {
+      searchByFilter()
+    })
 
     const hasSearchKey = computed(() => filter.name !== '')
     const realSearchResult = computed(() => arrAvgSplit(searchResult.value, 8))
@@ -199,6 +205,7 @@ export default defineComponent({
     }
     const searchByName = async (clear = true) => {
       if (!filter.name) return
+      filterVisible.value = false
       isFetchingSearch.value = true
       searchMainEl.value!.scrollTop = 0
       clear && resetFilter()
@@ -236,13 +243,14 @@ export default defineComponent({
       filter,
       pager,
       isFetchingSearch,
+      filterVisible,
       searchResult,
+      hasSearchKey,
+      realSearchResult,
       searchByFilter,
       searchByName,
-      hasSearchKey,
       resetName,
       resetFilter,
-      realSearchResult,
       ...filterModuleArgs
     }
   }

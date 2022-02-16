@@ -129,7 +129,22 @@
       />
     </div>
     <AwVideoMsg ref="awVideoMsgComp" />
-    <video ref="videoEl" v-bind="$attrs" :muted="muted" />
+    <VideoRender
+      :key="src"
+      ref="videoInstance"
+      :src="src"
+      @error="videoEvents.error"
+      @initStart="videoInits.start"
+      @initSuccessed="videoInits.successed"
+      @initFailed="videoInits.failed"
+      @canplay="videoEvents.canplay"
+      @timeupdate="videoEvents.timeupdate"
+      @ended="videoEvents.ended"
+      @play="videoEvents.play"
+      @pause="videoEvents.pause"
+      @waiting="videoEvents.waiting"
+      @playing="videoEvents.playing"
+    />
   </div>
 </template>
 
@@ -138,8 +153,6 @@ import {
   computed,
   defineComponent,
   onDeactivated,
-  onMounted,
-  onUnmounted,
   PropType,
   reactive,
   Ref,
@@ -147,11 +160,11 @@ import {
   SetupContext,
   toRefs
 } from 'vue'
-import videojs from 'video.js'
 
 import AwVideoProgress from './AwVideoProgress.vue'
 import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
 import AwVideoMsg, { NotifyItem, NotifyReturns } from './AwVideoMsg.vue'
+import VideoRender from './VideoRender.vue'
 
 import {
   checkFullscreen,
@@ -167,80 +180,8 @@ import * as Type from './type'
 
 export * from './type'
 
-type Ctx = SetupContext<
-  ('canplay' | 'changeQuality' | 'ended' | 'error' | 'next')[]
->
-
-/** video插件封装模块 */
-function videoModule(player: Type.Player) {
-  const videoInstance = ref<Type.FlvInstance>(null)
-
-  const play = () => {
-    if (videoInstance.value) {
-      videoInstance.value.play()
-    }
-  }
-  const pause = () => {
-    if (videoInstance.value) {
-      videoInstance.value.pause()
-    }
-  }
-  const destroy = () => {
-    videoInstance.value && videoInstance.value.dispose()
-  }
-  /**
-   * 视频地址解析为source格式
-   * @param url
-   */
-  const videoUrlToSource = (url: string) => {
-    let type = ''
-    const lastKey = url.split('.').pop()
-    switch (lastKey) {
-      case 'm3u8': {
-        type = 'application/x-mpegURL'
-        break
-      }
-      case 'zip': {
-        type = 'video/mp4'
-        break
-      }
-      default: {
-        type = 'video/' + lastKey
-      }
-    }
-    return {
-      src: url,
-      type
-    }
-  }
-  const videoInit = (el: HTMLVideoElement, url: string) => {
-    if (!url || !el) return
-    player.status = 0
-    try {
-      el.volume = player.realVolume
-      videoInstance.value = videojs(el, {
-        autoplay: true,
-        preload: 'auto',
-        controls: true,
-        sources: [videoUrlToSource(url)]
-      })
-
-      return videoInstance.value
-    } catch (err) {
-      player.status = -1
-      console.log(err, 'init')
-      return null
-    }
-  }
-
-  return {
-    videoInit,
-    play,
-    pause,
-    destroy,
-    videoInstance
-  }
-}
+type Ctx = SetupContext<('changeQuality' | 'ended' | 'error' | 'next')[]>
+type VideoInstance = InstanceType<typeof VideoRender>
 
 /** 画质切换模块 */
 function qualityModule(quality: Type.Quality[], { emit }: Ctx) {
@@ -266,7 +207,7 @@ function qualityModule(quality: Type.Quality[], { emit }: Ctx) {
 }
 
 /** 播放倍数模块 */
-function playbackRateModule(videoEl: Ref<HTMLVideoElement | undefined>) {
+function playbackRateModule(videoInstance: Ref<VideoInstance | undefined>) {
   const playbackRate = reactive({
     visible: false,
     current: '1.0x',
@@ -291,7 +232,7 @@ function playbackRateModule(videoEl: Ref<HTMLVideoElement | undefined>) {
   })
   const changePlayBackRate = (item: typeof playbackRate['list'][0]) => {
     playbackRate.current = item.name
-    videoEl.value!.playbackRate = item.value
+    videoInstance.value!.setPlaybackRate(item.value)
     playbackRate.visible = false
   }
   return {
@@ -303,7 +244,7 @@ function playbackRateModule(videoEl: Ref<HTMLVideoElement | undefined>) {
 /** 进度模块 */
 function progressModule(
   src: Ref<string>,
-  videoEl: Ref<HTMLVideoElement | undefined>,
+  videoInstance: Ref<VideoInstance | undefined>,
   player: Type.Player
 ) {
   /**
@@ -311,7 +252,7 @@ function progressModule(
    * @param val ms
    */
   const changeProgress = (val: number) => {
-    videoEl.value!.currentTime = val
+    videoInstance.value!.setCurrentTime(val)
   }
   /**
    * 计算进度预览图
@@ -348,7 +289,8 @@ export default defineComponent({
   components: {
     AwVideoProgress,
     LoadingBlockRun,
-    AwVideoMsg
+    AwVideoMsg,
+    VideoRender
   },
   inheritAttrs: true,
   props: {
@@ -379,10 +321,10 @@ export default defineComponent({
       default: false
     }
   },
-  emits: ['canplay', 'changeQuality', 'ended', 'error', 'next'],
+  emits: ['changeQuality', 'ended', 'error', 'next'],
   setup(props, ctx) {
     const awVideoMsgComp = ref<InstanceType<typeof AwVideoMsg>>()
-    const videoEl = ref<HTMLVideoElement>()
+    const videoInstance = ref<VideoInstance>()
     const selfEl = ref<HTMLElement>()
 
     const player = reactive<Type.Player>({
@@ -413,31 +355,13 @@ export default defineComponent({
     })
     const isBad = computed(() => player.status === -1)
 
-    const { videoInit, destroy, play, pause, ...videoModuleArgs } =
-      videoModule(player)
     const {
       changeProgress,
       computedPreview,
       onProgressChange,
       fastProgressChange
-    } = progressModule(toRefs(props).src, videoEl, player)
+    } = progressModule(toRefs(props).src, videoInstance, player)
 
-    /**
-     * 视频载入初始化
-     * @param url 视频地址
-     */
-    const init = (url: string) => {
-      if (!url) return
-      destroy()
-      const video = videoInit(videoEl.value!, url)
-      if (!video) return
-      video.on('error', (e) => {
-        ctx.emit('error')
-        console.log(e)
-      })
-      player.status = 2
-      ctx.emit('canplay', video)
-    }
     /** 播放切换 */
     const playHandler = () => {
       switch (player.status) {
@@ -445,11 +369,11 @@ export default defineComponent({
           break
         }
         case 1: {
-          pause()
+          videoInstance.value!.pause()
           break
         }
         case 2: {
-          play()
+          videoInstance.value!.play()
           break
         }
         case -1: {
@@ -473,7 +397,7 @@ export default defineComponent({
      */
     const changeVolume = (val: number) => {
       player.isMute = val === 0
-      videoEl.value && (videoEl.value.volume = val)
+      videoInstance.value!.setVolume(val)
     }
     /**
      * 消息提示
@@ -482,7 +406,6 @@ export default defineComponent({
     const notify = (item: NotifyItem): NotifyReturns => {
       return awVideoMsgComp.value!.notify(item)
     }
-
     /** 控制bar显隐控制器 */
     const controlBarVisibleHandler = throttle(() => {
       if (controlBar.timer) {
@@ -497,101 +420,79 @@ export default defineComponent({
       }
     }, 100)
 
-    // watch(() => props.src, init)
+    const videoInits = {
+      start() {
+        player.status = 0
+        changeVolume(player.realVolume)
+      },
+      successed() {
+        player.status = 2
+      },
+      failed() {
+        player.status = -1
+      }
+    }
+    const videoEvents = {
+      canplay(e: Event) {
+        const { duration } = e.target as HTMLVideoElement
+        player.duration = duration
+        notifys.canplay && notifys.canplay.remove()
+        notifys.canplay = notify({
+          content: '电波获取完成~',
+          duration: 3000
+        })
+      },
+
+      /** 进度 监听 */
+      timeupdate(e: Event) {
+        if (controlBar.isProgressing) return
+        const { currentTime } = e.target as HTMLVideoElement
+        player.currentTime = currentTime
+      },
+      /** 播放结束 监听 */
+      ended() {
+        player.status = 2
+        notify({
+          content: '本集已播放完成~',
+          duration: 5000
+        })
+        ctx.emit('ended')
+      },
+      /** 播放 监听 */
+      play() {
+        player.status = 1
+      },
+      /** 暂停 监听 */
+      pause() {
+        player.status = 2
+      },
+      /** 错误 监听 */
+      error(e: any) {
+        console.error(e)
+        player.status = -1
+        ctx.emit('error')
+        notify({
+          content: '视频加载错误，emmm~',
+          duration: 5000
+        })
+      },
+      /** 缓冲开始 监听 */
+      waiting() {
+        player.status = 0
+        notifys.buffer = notify({
+          content: '电波获取中，请稍后~',
+          duration: 3000
+        })
+      },
+      /** 缓冲结束 监听 */
+      playing() {
+        player.status = 1
+        notifys.buffer && notifys.buffer.remove()
+      }
+    }
 
     /** 监听 */
     ;(() => {
-      const op = {
-        target: videoEl
-      }
-      /** 可播放 监听 */
-      useEventListener(
-        'canplay',
-        (e) => {
-          const { duration } = e.target as HTMLVideoElement
-          player.duration = duration
-          notifys.canplay && notifys.canplay.remove()
-          notifys.canplay = notify({
-            content: '电波获取完成~',
-            duration: 3000
-          })
-        },
-        op
-      )
-      /** 进度 监听 */
-      useEventListener(
-        'timeupdate',
-        (e) => {
-          if (controlBar.isProgressing) return
-          const { currentTime } = e.target as HTMLVideoElement
-          player.currentTime = currentTime
-        },
-        op
-      )
-      /** 播放结束 监听 */
-      useEventListener(
-        'ended',
-        () => {
-          player.status = 2
-          notify({
-            content: '本集已播放完成~',
-            duration: 5000
-          })
-          ctx.emit('ended')
-        },
-        op
-      )
-      /** 播放 监听 */
-      useEventListener(
-        'play',
-        () => {
-          player.status = 1
-        },
-        op
-      )
-      /** 暂停 监听 */
-      useEventListener(
-        'pause',
-        () => {
-          player.status = 2
-        },
-        op
-      )
-      /** 错误 监听 */
-      useEventListener(
-        'error',
-        (e) => {
-          console.error(e)
-          player.status = -1
-          ctx.emit('error')
-          notify({
-            content: '视频加载错误，emmm~',
-            duration: 5000
-          })
-        },
-        op
-      )
-      /** 缓冲开始 监听 */
-      useEventListener(
-        'waiting',
-        () => {
-          player.status = 0
-          notifys.buffer = notify({
-            content: '电波获取中，请稍后~',
-            duration: 3000
-          })
-        },
-        op
-      )
-      /** 缓冲结束 监听 */
-      useEventListener(
-        'playing',
-        () => {
-          player.status = 1
-          notifys.buffer && notifys.buffer.remove()
-        },
-        op
-      )
       // 全屏下无法监听keydown等
       useEventListener('resize', () => {
         !checkFullscreen() && (player.fullScreen = false)
@@ -615,18 +516,14 @@ export default defineComponent({
       player.isListened = true
     })()
 
-    onMounted(() => {
-      init(props.src)
-    })
-    onUnmounted(() => {
-      destroy()
-    })
     onDeactivated(() => {
       player.isListened = false
     })
 
     return {
-      videoEl,
+      videoInits,
+      videoEvents,
+      videoInstance,
       selfEl,
       awVideoMsgComp,
       player,
@@ -643,9 +540,8 @@ export default defineComponent({
       fastProgressChange,
       controlBarVisibleHandler,
       controlBar,
-      ...playbackRateModule(videoEl),
-      ...qualityModule(props.quality, ctx),
-      ...videoModuleArgs
+      ...playbackRateModule(videoInstance),
+      ...qualityModule(props.quality, ctx)
     }
   }
 })
@@ -659,12 +555,10 @@ export default defineComponent({
   color: var(--font-unactive-color);
   background: #000;
   overflow: hidden;
-  video {
+  ::v-deep(.video-render) {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
-    height: 100%;
     z-index: 1;
   }
   .mask(@height: 100%) {

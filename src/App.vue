@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, provide } from 'vue'
 import '@/assets/icon/iconfont.css'
 import '@/assets/icon/iconfont.js'
 
@@ -20,6 +20,14 @@ import AppAsideBar from '@comps/Body/AppAsideBar.vue'
 import AppTabBar from '@comps/Body/AppTabBar.vue'
 import AppRouter from '@comps/Body/AppRouter.vue'
 import { useSystemConfigStore } from './stores/systemConfig.store'
+
+function provideModule() {
+  const isDev = import.meta.env.MODE === 'development'
+  provide('isDev', isDev)
+  return {
+    isDev
+  }
+}
 
 export default defineComponent({
   name: 'Comic',
@@ -31,7 +39,9 @@ export default defineComponent({
   setup() {
     const systemConfigStore = useSystemConfigStore()
     systemConfigStore.getServerIp()
-    return {}
+    return {
+      ...provideModule()
+    }
   }
 })
 </script>
