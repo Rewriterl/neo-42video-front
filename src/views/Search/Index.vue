@@ -63,17 +63,22 @@
         enter-active-class="animate__fadeIn"
         leave-active-class="animate__fadeOut"
       >
-        <div v-show="isFetchingSearch" class="search-main__loading">
+        <div v-show="isSearchFetching" class="search-main__loading">
           <LoadingCodeRun text="电波获取中，请稍后" />
         </div>
       </transition>
-      <div class="search-main__content">
-        <ComicCard
-          v-for="comic in searchResult"
-          :key="comic.id"
-          :detail="comic"
-        />
-      </div>
+      <transition
+        enter-active-class="animate__slideInUp"
+        leave-active-class="animate__slideOutDown"
+      >
+        <div v-show="!isSearchFetching" class="search-main__content">
+          <ComicCard
+            v-for="comic in searchResult"
+            :key="comic.id"
+            :detail="comic"
+          />
+        </div>
+      </transition>
     </main>
     <el-pagination
       v-show="searchResult.length > 0"
@@ -98,9 +103,14 @@ import LoadingCodeRun from '@comps/Loading/LoadingCodeRun.vue'
 
 import { SEARCH_FILTER } from './statics/form'
 import * as Api from '@/api'
-import { arrAvgSplit, getVal } from '@/utils/adLoadsh'
+import { getVal, wait } from '@/utils/adLoadsh'
 
+/**
+ * 筛选模组
+ * @param init 筛选模组就绪回调
+ */
 function filterModule(init: () => void) {
+  /** 筛选信息 */
   const filter = reactive({
     name: '',
     cate: -1,
@@ -109,6 +119,7 @@ function filterModule(init: () => void) {
     letter: '',
     year: 0
   })
+  /** 筛选参数 */
   const filterConfig = reactive({
     org: [] as Api.GetComicFilterConfig,
     get cate() {
@@ -122,7 +133,6 @@ function filterModule(init: () => void) {
       return !info ? [] : info.value
     }
   })
-
   const pager = reactive({
     currnet: 1,
     size: 24,
@@ -143,6 +153,7 @@ function filterModule(init: () => void) {
     })
   }
   const resetName = () => {
+    filter.name = ''
     resetPager()
   }
 
@@ -159,10 +170,10 @@ function filterModule(init: () => void) {
     filter,
     filterConfig,
     pager,
+    SEARCH_FILTER,
     filterVisible,
     resetFilter,
-    resetName,
-    SEARCH_FILTER
+    resetName
   }
 }
 export default defineComponent({
@@ -173,9 +184,10 @@ export default defineComponent({
     LoadingCodeRun
   },
   setup() {
+    const FETCH_WAIT_TIME = 500
     const searchMainEl = ref<HTMLElement>()
     const searchResult = ref<Api.ComicPageList[]>([])
-    const isFetchingSearch = ref(false)
+    const isSearchFetching = ref(false)
     const {
       filter,
       pager,
@@ -188,10 +200,10 @@ export default defineComponent({
     })
 
     const hasSearchKey = computed(() => filter.name !== '')
-    const realSearchResult = computed(() => arrAvgSplit(searchResult.value, 8))
 
     const setSearchResult = (data: Api.ComicPageList[]) => {
       searchResult.value = data
+      // 挨个渲染，太卡了 暂不用
       // searchResult.value.splice(0)
       // const push = (count: number) => {
       //   searchResult.value.push(data[count])
@@ -203,22 +215,31 @@ export default defineComponent({
 
       // push(0)
     }
+    /**
+     * 根据名称搜索
+     * @param clear 是否清空历史
+     */
     const searchByName = async (clear = true) => {
       if (!filter.name) return
       filterVisible.value = false
-      isFetchingSearch.value = true
+      isSearchFetching.value = true
       searchMainEl.value!.scrollTop = 0
       clear && resetFilter()
       const { data, total } = await Api.searchComic({
         name: filter.name,
         page: pager.currnet - 1
       })
+      await wait(FETCH_WAIT_TIME)
       pager.total = total
       setSearchResult(data)
-      isFetchingSearch.value = false
+      isSearchFetching.value = false
     }
+    /**
+     * 根据筛选搜索
+     * @param clear 是否清空历史
+     */
     const searchByFilter = async (clear = true) => {
-      isFetchingSearch.value = true
+      isSearchFetching.value = true
       searchMainEl.value!.scrollTop = 0
       clear && resetName()
       const { data, total } = await Api.filterComic({
@@ -229,9 +250,10 @@ export default defineComponent({
         year: filter.year,
         letter: filter.letter
       })
+      await wait(FETCH_WAIT_TIME)
       setSearchResult(data)
       pager.total = total
-      isFetchingSearch.value = false
+      isSearchFetching.value = false
     }
 
     // onMounted(() => {
@@ -242,11 +264,10 @@ export default defineComponent({
       searchMainEl,
       filter,
       pager,
-      isFetchingSearch,
+      isSearchFetching,
       filterVisible,
       searchResult,
       hasSearchKey,
-      realSearchResult,
       searchByFilter,
       searchByName,
       resetName,
@@ -349,6 +370,7 @@ export default defineComponent({
         width: 100%;
         padding: 30px;
         box-sizing: border-box;
+        animation-duration: 0.25s;
 
         @media screen and (max-width: 1600px) {
           grid-template-columns: repeat(6, 1fr);

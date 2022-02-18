@@ -99,4 +99,4 @@ export default {
   unmounted(el) {
     nodeList.delete(el)
   }
-} as ObjectDirective
+} as ObjectDirective<HTMLElement>

@@ -103,7 +103,6 @@ import { usePlayCache } from '@/hooks/user'
  */
 function comicInfoModule(comicId: Ref<number | string>, init: () => void) {
   const isPending = ref(false)
-
   /** 动漫信息 */
   const comic = reactive<GetComicMainReturn>({
     title: '',

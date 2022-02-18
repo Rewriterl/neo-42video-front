@@ -34,10 +34,18 @@ export default defineComponent({
   setup() {
     const notifys = ref<(NotifyItem & { key: number })[]>([])
 
+    /**
+     * 移除信息
+     * @param key
+     */
     const removeNotify = (key: number) => {
       const index = notifys.value.findIndex((item) => item.key === key)
       !!~index && notifys.value.splice(index, 1)
     }
+    /**
+     * 发送信息
+     * @param notifyItem
+     */
     const notify = (notifyItem: NotifyItem) => {
       const key = Math.random()
       notifys.value.unshift({

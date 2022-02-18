@@ -1,4 +1,4 @@
-import { dfCdns } from '@/common/cdns'
+import { DF_CDNS } from '@/common/cdns'
 
 export type PreloadRels = 'stylesheet' | 'font' | 'javascript'
 export interface PreloadCDN {
@@ -11,7 +11,7 @@ export interface PreloadCDN {
  * link cdn挂载
  */
 export default class PreloadCdn {
-  private preloadCdns: PreloadCDN[] = [...dfCdns]
+  private preloadCdns: PreloadCDN[] = [...DF_CDNS]
   private preloadMap: Record<PreloadRels, { as: string }> = {
     stylesheet: {
       as: 'style'

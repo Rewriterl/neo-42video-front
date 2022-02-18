@@ -7,17 +7,27 @@
     @mouseleave="handleMouseLeave"
   >
     <div class="card" :style="cardStyle">
-      <div class="card-bg" :style="[cardBgTransform, cardBgImage]"></div>
+      <div
+        v-lazy-backgroudImg="src"
+        class="card-bg"
+        :style="cardBgTransform"
+      ></div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { computed, defineComponent, onMounted, reactive, ref } from 'vue'
+
 import { debounce } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
-import { computed, defineComponent, onMounted, reactive, ref } from 'vue'
+import LazyBackgroudImg from '@/directs/lazyBackgroudImg.direct'
+
 export default defineComponent({
   name: 'HoverImgCard',
+  directives: {
+    LazyBackgroudImg
+  },
   props: {
     src: {
       type: String,
@@ -55,9 +65,6 @@ export default defineComponent({
         transform: `translateX(${tX}px) translateY(${tY}px)`
       }
     })
-    const cardBgImage = computed(() => ({
-      backgroundImage: `url(${props.src})`
-    }))
 
     const handleMouseMove = (e: MouseEvent) => {
       mouse.x = e.offsetX - self.width / 2
@@ -91,7 +98,6 @@ export default defineComponent({
       mousePY,
       cardStyle,
       cardBgTransform,
-      cardBgImage,
       handleMouseMove,
       handleMouseEnter,
       handleMouseLeave

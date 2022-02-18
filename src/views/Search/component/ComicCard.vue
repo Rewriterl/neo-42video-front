@@ -9,9 +9,12 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
+
 import * as Api from '@/api'
 import { toComicMain } from '@/hooks/router'
+
 import HoverImgCard from '@/components/Transition/HoverImgCard.vue'
+
 export default defineComponent({
   name: 'ComicCard',
   components: {

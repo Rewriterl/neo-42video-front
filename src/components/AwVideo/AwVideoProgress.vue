@@ -27,7 +27,6 @@ import {
   onMounted,
   reactive,
   ref,
-  nextTick,
   watch
 } from 'vue'
 import { sToMs } from '@/utils/adLoadsh'

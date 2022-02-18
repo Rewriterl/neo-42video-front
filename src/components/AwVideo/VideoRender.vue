@@ -15,6 +15,7 @@ import {
   onMounted
 } from 'vue'
 import videojs from 'video.js'
+
 import * as Type from './type'
 import { useEventListener } from '@/utils/vant/useEventListener'
 
@@ -51,20 +52,6 @@ export default defineComponent({
         } as CSSProperties)
     )
 
-    const play = () => {
-      if (videoInstance.value) {
-        videoInstance.value.play()
-      }
-    }
-    const pause = () => {
-      if (videoInstance.value) {
-        videoInstance.value.pause()
-      }
-    }
-    // 此方法会删除video节点 暂时不用
-    const destroy = () => {
-      videoInstance.value && videoInstance.value.dispose()
-    }
     /**
      * 视频地址解析为source格式
      * @param url
@@ -90,6 +77,11 @@ export default defineComponent({
         type
       }
     }
+    /**
+     * 初始化
+     * @param el 视频节点
+     * @param url 视频地址
+     */
     const videoInit = (el: HTMLVideoElement, url: string) => {
       if (!url || !el) return
       // player.status = 0
@@ -115,31 +107,52 @@ export default defineComponent({
         return null
       }
     }
+
+    /** 修改音量 */
     const setVolume = (volume: number) => (videoEl.value!.volume = volume)
+    /** 修改播放倍数 */
     const setPlaybackRate = (rate: number) =>
       (videoEl.value!.playbackRate = rate)
+    /** 修改当前播放进度 */
     const setCurrentTime = (currentTime: number) =>
       (videoEl.value!.currentTime = currentTime)
+    /** 播放 */
+    const play = () => {
+      if (videoInstance.value) {
+        videoInstance.value.play()
+      }
+    }
+    /** 暂停 */
+    const pause = () => {
+      if (videoInstance.value) {
+        videoInstance.value.pause()
+      }
+    }
+    /** 销毁(此方法会删除video节点 暂时不用) */
+    const destroy = () => {
+      videoInstance.value && videoInstance.value.dispose()
+    }
 
+    /** 监听 */
     ;(() => {
       const op = {
         target: videoEl
       }
-      /** 可播放 监听 */
+      /** 可播放  */
       useEventListener('canplay', (e) => emit('canplay', e), op)
-      /** 进度 监听 */
+      /** 进度  */
       useEventListener('timeupdate', (e) => emit('timeupdate', e), op)
-      /** 播放结束 监听 */
+      /** 播放结束  */
       useEventListener('ended', (e) => emit('ended', e), op)
-      /** 播放 监听 */
+      /** 播放  */
       useEventListener('play', (e) => emit('play', e), op)
-      /** 暂停 监听 */
+      /** 暂停  */
       useEventListener('pause', (e) => emit('pause', e), op)
-      /** 错误 监听 */
+      /** 错误  */
       useEventListener('error', (e) => emit('error', e), op)
-      /** 缓冲开始 监听 */
+      /** 缓冲开始  */
       useEventListener('waiting', (e) => emit('waiting', e), op)
-      /** 缓冲结束 监听 */
+      /** 缓冲结束  */
       useEventListener('playing', (e) => emit('playing', e), op)
     })()
 

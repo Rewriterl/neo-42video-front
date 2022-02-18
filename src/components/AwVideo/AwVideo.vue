@@ -64,9 +64,9 @@
         v-click-outside="() => (qualitySelectVisible = false)"
         class="control-select quality"
       >
-        <span @click="qualitySelectVisible = !qualitySelectVisible">
-          {{ currentQualityName }}
-        </span>
+        <span @click="qualitySelectVisible = !qualitySelectVisible">{{
+          currentQualityName
+        }}</span>
         <ul v-show="qualitySelectVisible">
           <li
             v-for="{ name, value } in quality"
@@ -82,9 +82,9 @@
         v-click-outside="() => (playbackRate.visible = false)"
         class="control-select playback-rate"
       >
-        <span @click="playbackRate.visible = !playbackRate.visible">
-          {{ playbackRate.current }}
-        </span>
+        <span @click="playbackRate.visible = !playbackRate.visible">{{
+          playbackRate.current
+        }}</span>
         <ul v-show="playbackRate.visible">
           <li
             v-for="item in playbackRate.list"
@@ -130,8 +130,8 @@
     </div>
     <AwVideoMsg ref="awVideoMsgComp" />
     <VideoRender
-      :key="src"
       ref="videoInstance"
+      :key="src"
       :src="src"
       @error="videoEvents.error"
       @initStart="videoInits.start"
@@ -152,7 +152,6 @@
 import {
   computed,
   defineComponent,
-  onDeactivated,
   PropType,
   reactive,
   Ref,
@@ -175,7 +174,6 @@ import {
 } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
 import { getVideoScreenshot } from '@/utils/media'
-
 import * as Type from './type'
 
 export * from './type'
@@ -185,13 +183,20 @@ type VideoInstance = InstanceType<typeof VideoRender>
 
 /** 画质切换模块 */
 function qualityModule(quality: Type.Quality[], { emit }: Ctx) {
+  /** 当前画质 */
   const currentQuality = ref<Type.Quality['value']>(-1)
+  /** 画质选项选项显隐 */
   const qualitySelectVisible = ref(false)
+  /** 当前选择的画质名称 */
   const currentQualityName = computed(
     () =>
       quality.find((item) => item.value === currentQuality.value)?.name || '-'
   )
 
+  /**
+   * 画质切换
+   * @param value 画质值
+   */
   const changeQuality = (value: Type.Quality['value']) => {
     currentQuality.value = value
     qualitySelectVisible.value = false
@@ -208,9 +213,13 @@ function qualityModule(quality: Type.Quality[], { emit }: Ctx) {
 
 /** 播放倍数模块 */
 function playbackRateModule(videoInstance: Ref<VideoInstance | undefined>) {
+  /** 播放倍数集合 */
   const playbackRate = reactive({
+    /** 选项显隐 */
     visible: false,
+    /** 当前倍数名称 */
     current: '1.0x',
+    /** 倍数列表 */
     list: [
       {
         name: '2.0x',
@@ -230,6 +239,10 @@ function playbackRateModule(videoInstance: Ref<VideoInstance | undefined>) {
       }
     ]
   })
+  /**
+   * 倍数修改
+   * @param item
+   */
   const changePlayBackRate = (item: typeof playbackRate['list'][0]) => {
     playbackRate.current = item.name
     videoInstance.value!.setPlaybackRate(item.value)
@@ -256,12 +269,14 @@ function progressModule(
   }
   /**
    * 计算进度预览图
+   * @param val ms
    */
   const computedPreview = debounce(async (val: number) => {
     player.preview = await getVideoScreenshot(src.value, val)
   }, 100)
   /**
    * 进度切换
+   * @param val 0-100
    */
   const onProgressChange = (val: any) => {
     const realTime = player.duration * (+val / 100)
@@ -269,7 +284,7 @@ function progressModule(
   }
   /**
    * 进度快速切换
-   * @param limit
+   * @param limit s
    */
   const fastProgressChange = (limit: number) => {
     const num = player.currentTime + limit
@@ -294,10 +309,12 @@ export default defineComponent({
   },
   inheritAttrs: true,
   props: {
+    /** 视频源地址 */
     src: {
       type: String,
       default: ''
     },
+    /** 画质列表 */
     quality: {
       type: Array as PropType<Type.Quality[]>,
       default: () => []
@@ -316,6 +333,7 @@ export default defineComponent({
       //   }
       // ]
     },
+    /** 初始化时是否静音 */
     muted: {
       type: Boolean,
       default: false
@@ -340,19 +358,28 @@ export default defineComponent({
       preview: '',
       isListened: false
     })
+    /**
+     * 提示框集合
+     * ps: 用于存储当前展示的提示框，方便处理
+     */
     const notifys = reactive<{
       [prop: string]: NotifyReturns | null
     }>({
       buffer: null,
       canplay: null
     })
+    /**
+     * 底部控制bar集合
+     */
     const controlBar = reactive({
+      /** 是否显示 */
       visible: false,
       // todo 类型完善
       timer: null as any,
       /** 是否在进度拖拽中 */
       isProgressing: false
     })
+    /** 视频是否错误 */
     const isBad = computed(() => player.status === -1)
 
     const {
@@ -362,7 +389,7 @@ export default defineComponent({
       fastProgressChange
     } = progressModule(toRefs(props).src, videoInstance, player)
 
-    /** 播放切换 */
+    /** 播放控制 */
     const playHandler = () => {
       switch (player.status) {
         case 0: {
@@ -403,7 +430,7 @@ export default defineComponent({
      * 消息提示
      * @param item
      */
-    const notify = (item: NotifyItem): NotifyReturns => {
+    const notify = (item: NotifyItem) => {
       return awVideoMsgComp.value!.notify(item)
     }
     /** 控制bar显隐控制器 */
@@ -420,6 +447,7 @@ export default defineComponent({
       }
     }, 100)
 
+    /** 视频初始化钩子 */
     const videoInits = {
       start() {
         player.status = 0
@@ -432,6 +460,7 @@ export default defineComponent({
         player.status = -1
       }
     }
+    /** 视频响应事件 */
     const videoEvents = {
       canplay(e: Event) {
         const { duration } = e.target as HTMLVideoElement
@@ -513,12 +542,7 @@ export default defineComponent({
           }
         }
       })
-      player.isListened = true
     })()
-
-    onDeactivated(() => {
-      player.isListened = false
-    })
 
     return {
       videoInits,
@@ -527,6 +551,8 @@ export default defineComponent({
       selfEl,
       awVideoMsgComp,
       player,
+      controlBar,
+      isBad,
       playHandler,
       sToMs,
       fullScreen,
@@ -534,12 +560,10 @@ export default defineComponent({
       changeVolume,
       changeProgress,
       computedPreview,
-      isBad,
       notify,
       onProgressChange,
       fastProgressChange,
       controlBarVisibleHandler,
-      controlBar,
       ...playbackRateModule(videoInstance),
       ...qualityModule(props.quality, ctx)
     }
