@@ -12,7 +12,8 @@ import {
   inject,
   ref,
   computed,
-  onMounted
+  onMounted,
+  onBeforeUnmount
 } from 'vue'
 import videojs from 'video.js'
 
@@ -158,6 +159,9 @@ export default defineComponent({
 
     onMounted(() => {
       videoInit(videoEl.value!, props.src)
+    })
+    onBeforeUnmount(() => {
+      destroy()
     })
 
     return {
