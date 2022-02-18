@@ -1,11 +1,43 @@
-# Vue 3 + Typescript + Vite
+<p align="center">
+    <img alt="logo" src="http://comic.adicw.cn/favicon.ico" width="120" height="120" style="margin-bottom: 10px;">
+</p>
 
-This template should help get you started developing with Vue 3 and Typescript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+<h1 align="center">Χαλαρό</h1>
 
-## Recommended IDE Setup
+<p align="center">一个仅供学习自用的PC端动漫视频网站</p>
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
 
-## Type Support For `.vue` Imports in TS
+---
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's `.vue` type support plugin by running `Volar: Switch TS Plugin on/off` from VSCode command palette.
+## 技术栈
+
+- 🍭 vue3+pinia
+- 🌍 vite
+- 💪 typescript
+- 💪 less
+- 📖 video.js
+- 📖 element-plus
+
+## 功能
+
+- 首页推荐（热门、更新、新番动态、其他推荐）
+- 搜索
+- 多源播放
+- 记录（历史、进度）
+- 自定义主题
+- 可变动数据源
+
+## 浏览器支持
+
+建议使用chrome内核的浏览器，如`Chrome`、`Edge`、`FireFox`（暂未做兼容性处理）
+
+## 预览
+
+- [在线地址](http://comic.adicw.cn/)
+
+## 核心成员
+
+| [![Adicwu](https://avatars.githubusercontent.com/u/40051597?s=80)](https://github.com/Adicwu/) | [![Loid](https://avatars.githubusercontent.com/u/19285429?s=80&v=4)](https://github.com/Loid/) |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+|             [AdicWu](https://github.com/Adicwu)              |               [Loid](https://github.com/Loid/)               |
+
