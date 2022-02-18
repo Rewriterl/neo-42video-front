@@ -67,18 +67,13 @@
           <LoadingCodeRun text="电波获取中，请稍后" />
         </div>
       </transition>
-      <transition
-        enter-active-class="animate__slideInUp"
-        leave-active-class="animate__slideOutDown"
-      >
-        <div v-show="!isSearchFetching" class="search-main__content">
-          <ComicCard
-            v-for="comic in searchResult"
-            :key="comic.id"
-            :detail="comic"
-          />
-        </div>
-      </transition>
+      <div class="search-main__content">
+        <ComicCard
+          v-for="comic in searchResult"
+          :key="comic.id"
+          :detail="comic"
+        />
+      </div>
     </main>
     <el-pagination
       v-show="searchResult.length > 0"

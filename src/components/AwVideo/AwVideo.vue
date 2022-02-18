@@ -245,7 +245,7 @@ function playbackRateModule(videoInstance: Ref<VideoInstance | undefined>) {
    */
   const changePlayBackRate = (item: typeof playbackRate['list'][0]) => {
     playbackRate.current = item.name
-    videoInstance.value!.setPlaybackRate(item.value)
+    videoInstance.value?.setPlaybackRate(item.value)
     playbackRate.visible = false
   }
   return {
@@ -265,7 +265,7 @@ function progressModule(
    * @param val ms
    */
   const changeProgress = (val: number) => {
-    videoInstance.value!.setCurrentTime(val)
+    videoInstance.value?.setCurrentTime(val)
   }
   /**
    * 计算进度预览图
@@ -396,11 +396,11 @@ export default defineComponent({
           break
         }
         case 1: {
-          videoInstance.value!.pause()
+          videoInstance.value?.pause()
           break
         }
         case 2: {
-          videoInstance.value!.play()
+          videoInstance.value?.play()
           break
         }
         case -1: {
@@ -424,7 +424,7 @@ export default defineComponent({
      */
     const changeVolume = (val: number) => {
       player.isMute = val === 0
-      videoInstance.value!.setVolume(val)
+      videoInstance.value?.setVolume(val)
     }
     /**
      * 消息提示

@@ -151,9 +151,9 @@ export default defineComponent({
       margin-top: 20px;
     }
   }
-  .setting-themecolor {
-    // height: 400px;
-  }
+  // .setting-themecolor {
+  // height: 400px;
+  // }
   .setting-config {
     ::v-deep(.el-form) {
       width: 400px;
