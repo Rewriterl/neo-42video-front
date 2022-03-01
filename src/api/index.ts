@@ -174,13 +174,13 @@ export async function filterComic(param: {
         .join('&')
     const { data } = await getax(api)
     return {
-      data: getVal<any[]>(() => data.data, []).map((item) => ({
+      data: getVal<any[]>(() => data.data.results, []).map((item) => ({
         cover: item.cover,
         id: item.id,
         season: item.season,
         title: item.title
       })),
-      total: 0
+      total: data?.data?.total || 0
     }
   } catch {
     return {

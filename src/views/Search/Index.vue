@@ -246,8 +246,8 @@ export default defineComponent({
         letter: filter.letter
       })
       await wait(FETCH_WAIT_TIME)
-      setSearchResult(data)
       pager.total = total
+      setSearchResult(data)
       isSearchFetching.value = false
     }
 
