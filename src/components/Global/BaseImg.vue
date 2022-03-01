@@ -8,7 +8,8 @@ import { defineComponent, onMounted, ref } from 'vue'
 import { loadImg } from '@/utils/media'
 import { domObserver } from '@/utils/dom'
 
-const BASE_IMG = 'https://api.adicw.cn/uploads/StudyImg/6141a4ce2715a.png'
+const BASE_IMG =
+  'https://api.adicw.cn/images/61e78c7e3d14b.JPG?path=StudyImg&w=600&h=600'
 
 export default defineComponent({
   name: 'BaseImg',
@@ -27,6 +28,7 @@ export default defineComponent({
     const loaded = ref(false)
 
     const load = async () => {
+      if (!props.src) return
       await loadImg(props.src)
       loaded.value = true
     }

@@ -1,5 +1,5 @@
 <template>
-  <div class="home-banner">
+  <div v-show="isInit" class="home-banner">
     <div class="home-banner__bg">
       <el-carousel
         height="100%"
@@ -14,7 +14,7 @@
         </el-carousel-item>
       </el-carousel>
     </div>
-    <div class="home-banner__info">
+    <div v-if="isReady" class="home-banner__info">
       <div class="home-banner__info-msg">
         <template v-if="carousel.current">
           <transition
@@ -73,14 +73,19 @@
       </div>
     </div>
   </div>
+
+  <div v-if="!isInit" class="home-banner fake">
+    <LoadingBlockRun />
+  </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, reactive, ref } from 'vue'
+import { computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
 
 import AwSlideX from '@comps/AwSlide/AwSlideX.vue'
 import AwSlideItem from '@comps/AwSlide/AwSlideItem.vue'
 import HomeSectionCard from './HomeSectionCard.vue'
+import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
 
 import * as Type from '../types/homeSection.type'
 import { toComicMain } from '@/hooks/router'
@@ -91,7 +96,8 @@ export default defineComponent({
   components: {
     AwSlideX,
     AwSlideItem,
-    HomeSectionCard
+    HomeSectionCard,
+    LoadingBlockRun
   },
   props: {
     banner: {
@@ -114,6 +120,7 @@ export default defineComponent({
   setup(props) {
     type ComicKey = 'hots' | 'latest'
 
+    const isReady = ref(false)
     const awSlideXActive = ref(0)
     const carousel = reactive({
       active: 0,
@@ -171,6 +178,15 @@ export default defineComponent({
       awSlideXActive.value = e
     }
 
+    watch(
+      () => props.isInit,
+      async () => {
+        // 解决卡顿问题
+        await wait(500)
+        isReady.value = true
+      }
+    )
+
     return {
       tabs,
       awSlideXActive,
@@ -179,7 +195,8 @@ export default defineComponent({
       carousel,
       changeTab,
       onAwSlideXChange,
-      toComicMain
+      toComicMain,
+      isReady
     }
   }
 })
@@ -190,6 +207,11 @@ export default defineComponent({
   width: 100%;
   aspect-ratio: 16/9;
   overflow: hidden;
+  &.fake {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   &__bg {
     position: absolute;
     top: 0;

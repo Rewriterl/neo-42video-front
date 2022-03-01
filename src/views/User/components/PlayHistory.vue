@@ -14,26 +14,12 @@
       </el-popconfirm>
     </h2>
     <div class="play-history__content">
-      <div
+      <CodepenCard
         v-for="item in list"
         :key="item.id"
-        class="card"
+        :detail="item"
         @click="toComicMain(item.id)"
-      >
-        <BaseImg :src="item.cover" />
-        <div class="card-info">
-          <el-tooltip :content="item.name" placement="top">
-            <p>{{ item.name }}</p>
-          </el-tooltip>
-          <p>
-            <a v-if="item.playEpisode">{{
-              `${item.playEpisode} ${item.playProgress}`
-            }}</a>
-            <a v-else class="bad">播放失败</a>
-            （{{ item.date }}）
-          </p>
-        </div>
-      </div>
+      />
     </div>
   </div>
 </template>
@@ -42,12 +28,34 @@
 import { computed, defineComponent } from 'vue'
 import { toComicMain } from '@/hooks/router'
 import { usePlayCacheStore } from '@/stores/playCache.store'
+import CodepenCard, {
+  Detail as CodepenCardDetail
+} from '@comps/Card/CodepenCard.vue'
 
 export default defineComponent({
   name: 'PlayHistory',
+  components: {
+    CodepenCard
+  },
   setup() {
     const playCacheStore = usePlayCacheStore()
-    const list = computed(() => playCacheStore.playHistory)
+    const list = computed<CodepenCardDetail[]>(() =>
+      playCacheStore.playHistory.map((item) => ({
+        cover: item.cover,
+        title: item.name,
+        avatar: item.cover,
+        desc: item.playEpisode
+          ? `${item.playEpisode} ${item.playProgress}`
+          : '播放失败',
+        tags: [
+          {
+            icon: 'player',
+            content: `最后播放时间：${item.date}`
+          }
+        ],
+        id: item.id
+      }))
+    )
     const clearHistory = () => playCacheStore.clearHistory()
     return {
       clearHistory,
@@ -74,71 +82,12 @@ export default defineComponent({
     }
   }
   &__content {
-    display: flex;
+    display: grid;
     width: 100%;
-    justify-content: flex-start;
-    gap: 30px 1.6%;
-    flex-wrap: wrap;
     margin-top: 20px;
-    .card {
-      position: relative;
-      width: 15%;
-      max-width: 400px;
-      min-width: 200px;
-      aspect-ratio: 2/1.2;
-      overflow: hidden;
-      border-radius: 8px;
-      // box-shadow: 0 16px 28px #00000042;
-      cursor: pointer;
-      transition: all 0.25s;
-      &:hover {
-        transform: translateY(-10%) scale(1.1);
-        img {
-          filter: brightness(0.6);
-        }
-      }
-      img {
-        width: 100%;
-        height: 100%;
-        transition: all 0.25s;
-      }
-      &-info {
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        padding: 4px 10px;
-        box-sizing: border-box;
-        background: rgba(179, 167, 167, 0.451);
-        backdrop-filter: blur(20px);
-        border-radius: 8px;
-        overflow: hidden;
-        transition: all 0.25s;
-        p {
-          font-size: 12px;
-          color: rgba(255, 255, 255, 0.95);
-          text-align: center;
-          &:first-child {
-            .p-truncate;
-          }
-          &:last-child {
-            transform: scale(0.9);
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 12px;
-          }
-          span {
-            display: block;
-          }
-        }
-        .bad {
-          color: var(--warning-color);
-          font-weight: 800;
-        }
-      }
-    }
+    grid-template-columns: repeat(4, 1fr);
+    gap: 60px 50px;
+    padding-bottom: 40px;
   }
 }
 </style>

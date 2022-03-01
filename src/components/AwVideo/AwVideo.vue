@@ -454,7 +454,7 @@ export default defineComponent({
         changeVolume(player.realVolume)
       },
       successed() {
-        player.status = 2
+        // player.status = 2
       },
       failed() {
         player.status = -1
@@ -463,6 +463,7 @@ export default defineComponent({
     /** 视频响应事件 */
     const videoEvents = {
       canplay(e: Event) {
+        player.status = 2
         const { duration } = e.target as HTMLVideoElement
         player.duration = duration
         notifys.canplay && notifys.canplay.remove()
@@ -655,14 +656,15 @@ export default defineComponent({
     align-items: center;
     color: #fff;
     background: rgba(0, 0, 0, 0.5);
-    z-index: -1;
     height: @controlHeight;
     user-select: none;
     transition: all 0.25s;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+    transform: translateY(150%);
+    z-index: 6;
     &.show {
-      z-index: 8;
+      transform: translateY(0%);
     }
     i {
       cursor: pointer;

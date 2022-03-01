@@ -4,6 +4,7 @@
       :banner="comic.banner"
       :hots="comic.hots"
       :latest="comic.latest"
+      :is-init="isInit"
     />
     <div class="home-main">
       <div class="home-main__col">
