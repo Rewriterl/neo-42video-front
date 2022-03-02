@@ -1,5 +1,5 @@
 <template>
-  <div class="home-block-comic">
+  <LazyBlock class="home-block-comic slide-in-up">
     <h2>{{ title }}</h2>
     <div class="cards">
       <div
@@ -15,16 +15,20 @@
         </div>
       </div>
     </div>
-  </div>
+  </LazyBlock>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { toComicMain } from '@/hooks/router'
 import { ComicPageList } from '@/api'
+import LazyBlock from '@comps/Transition/LazyBlock.vue'
 
 export default defineComponent({
   name: 'HomeBlockComic',
+  components: {
+    LazyBlock
+  },
   props: {
     list: {
       type: Array as PropType<ComicPageList[]>,

@@ -45,18 +45,39 @@
     }
   }
 
+  .slide {
+    &-in-up {
+      animation: slide-y 1.25s forwards;
+    }
+
+    &-out-up {
+      animation: slide-y 0.25s forwards reverse;
+    }
+
+    @keyframes slide-y {
+      from {
+        transform: translateY(100%);
+      }
+
+      to {
+        transform: translateY(0);
+      }
+    }
+  }
+
 }
 
 
 
 // elementPlus 样式覆盖
-.el-input__inner{
+.el-input__inner {
   color: #333 !important;
 }
 
 .el-popover {
   color: #333 !important;
-  .el-popconfirm__main{
+
+  .el-popconfirm__main {
     padding-bottom: 6px;
   }
 }

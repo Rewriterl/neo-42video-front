@@ -1,20 +1,22 @@
 <template>
-  <div class="home-tv" :class="{ 'aw-skeleton': !isInit }">
+  <LazyBlock class="home-tv" :class="{ 'aw-skeleton': !isInit }">
     <h3>剧场版</h3>
     <div class="home-tv__inner">
       <ComicTvCard v-for="item in tv" :key="item.id" :detail="item" />
     </div>
-  </div>
+  </LazyBlock>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import * as SectionType from '../types/homeSection.type'
 import ComicTvCard from './ComicTvCard.vue'
+import LazyBlock from '@comps/Transition/LazyBlock.vue'
 export default defineComponent({
   name: 'HomeTv',
   components: {
-    ComicTvCard
+    ComicTvCard,
+    LazyBlock
   },
   props: {
     tv: {
