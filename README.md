@@ -39,5 +39,5 @@
 
 | [![Adicwu](https://avatars.githubusercontent.com/u/40051597?s=80)](https://github.com/Adicwu/) | [![Loid](https://avatars.githubusercontent.com/u/19285429?s=80&v=4)](https://github.com/Loid/) |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
-|             [AdicWu](https://github.com/Adicwu)              |               [Loid](https://github.com/Loid/)               |
+|             [AdicWu](https://github.com/Adicwu)              |               [Loid]https://github.com/1oid)               |
 
