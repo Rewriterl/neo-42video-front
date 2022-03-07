@@ -14,13 +14,22 @@ export function loadImg(path: string): Promise<string> {
   })
 }
 
-export async function getVideoScreenshot(videoUrl: string, time: number) {
+/**
+ * 获取当前视频截屏
+ * @param videoUrl 视频源
+ * @param currentTime 截取的时间戳
+ * @returns
+ */
+export async function getVideoScreenshot(
+  videoUrl: string,
+  currentTime: number
+) {
   try {
     const video = document.createElement('video')
     video.src = videoUrl
     video.crossOrigin = '*'
     await new Promise((resolve) => (video.oncanplay = resolve))
-    video.currentTime = time
+    video.currentTime = currentTime
     await wait(300)
 
     const canvas = document.createElement('canvas')

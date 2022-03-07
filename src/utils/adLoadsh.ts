@@ -453,3 +453,21 @@ export function getVal<T>(fn: () => T, df: any): T {
     return df
   }
 }
+
+/**
+ * 顺滑push（此方法用于优化列表内容过多时的加载）
+ * @param org 结果源
+ * @param list 数据源
+ */
+export function smoothPush<T>(org: T[], list: T[]) {
+  org.splice(0)
+  const push = (count: number) => {
+    org.push(list[count])
+    count++
+    if (count < list.length) {
+      requestAnimationFrame(() => push(count))
+    }
+  }
+
+  push(0)
+}

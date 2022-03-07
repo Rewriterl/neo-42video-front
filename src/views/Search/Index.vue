@@ -98,7 +98,7 @@ import LoadingCodeRun from '@comps/Loading/LoadingCodeRun.vue'
 
 import { SEARCH_FILTER } from './statics/form'
 import * as Api from '@/api'
-import { getVal, wait } from '@/utils/adLoadsh'
+import { getVal, wait, smoothPush } from '@/utils/adLoadsh'
 
 /**
  * 筛选模组
@@ -196,20 +196,8 @@ export default defineComponent({
 
     const hasSearchKey = computed(() => filter.name !== '')
 
-    const setSearchResult = (data: Api.ComicPageList[]) => {
-      searchResult.value = data
-      // 挨个渲染，太卡了 暂不用
-      // searchResult.value.splice(0)
-      // const push = (count: number) => {
-      //   searchResult.value.push(data[count])
-      //   count++
-      //   if (count < data.length) {
-      //     requestAnimationFrame(() => push(count))
-      //   }
-      // }
-
-      // push(0)
-    }
+    const setSearchResult = (data: Api.ComicPageList[]) =>
+      smoothPush(searchResult.value, data)
     /**
      * 根据名称搜索
      * @param clear 是否清空历史
@@ -357,7 +345,7 @@ export default defineComponent({
       position: relative;
       flex: 1;
       border-top-left-radius: @radius;
-      overflow-y: auto;
+      overflow-y: scroll;
       &__content {
         display: grid;
         grid-template-columns: repeat(8, 1fr);
@@ -401,7 +389,7 @@ export default defineComponent({
       padding: 12px 16px;
       background: #fff;
       border-radius: 15px;
-      box-shadow: 0 0 16px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 -2px 14px rgb(0 0 0 / 14%);
       transition: all 0.25s;
       opacity: 0.2;
       transform: translateY(70%);
