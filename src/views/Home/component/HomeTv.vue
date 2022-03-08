@@ -1,6 +1,6 @@
 <template>
   <LazyBlock class="home-tv" :class="{ 'aw-skeleton': !isInit }">
-    <h3>剧场版</h3>
+    <h3>番外</h3>
     <div class="home-tv__inner">
       <ComicTvCard v-for="item in tv" :key="item.id" :detail="item" />
     </div>

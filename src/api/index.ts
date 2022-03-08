@@ -37,6 +37,47 @@ export async function searchComic(param: {
 }
 
 /**
+ * 动漫筛选
+ * @param param
+ * @returns
+ */
+export async function filterComic(param: {
+  /** 分类 */
+  type?: number
+  /** 类型 */
+  category?: string
+  /** 排序 */
+  order?: string
+  /** 字母 */
+  letter?: string
+  /** 年份 */
+  year?: number
+  page: number
+}): Promise<ApiReturns.FilterComicReturn> {
+  try {
+    const api = Object.entries(param).reduce((total, [k, v]) => {
+      return v !== '' ? `${total}&${k}=${v}` : total
+    }, 'api/filter?')
+
+    const { data } = await getax(api)
+    return {
+      data: getVal<any[]>(() => data.data.results, []).map((item) => ({
+        cover: item.cover,
+        id: item.id,
+        season: item.season,
+        title: item.title
+      })),
+      total: data?.data?.total || 0
+    }
+  } catch {
+    return {
+      data: [],
+      total: 0
+    }
+  }
+}
+
+/**
  * 获取动漫详情
  * @param id
  * @returns
@@ -110,7 +151,7 @@ export async function getVideoUrl(
 export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null> {
   try {
     const { data } = await getax('api/getIndex')
-    const listFormt = (list: any[]) =>
+    const listFormat = (list: any[]) =>
       list.slice(0, 10).map((item) => ({
         cover: item.cover,
         id: item.id,
@@ -124,7 +165,7 @@ export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null
         season: item.season,
         title: item.title
       })),
-      latest: listFormt(getVal<any[]>(() => data.data.latest, [])),
+      latest: listFormat(getVal<any[]>(() => data.data.latest, [])),
       banner: getVal<any[]>(() => data.data.banner, []).map((item) => ({
         cover: item.cover,
         id: item.id || -1,
@@ -141,52 +182,14 @@ export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null
           }))
         })
       ),
-      tv: listFormt(getVal<any[]>(() => data.data.theatre_comic, [])),
-      endJp: listFormt(getVal<any[]>(() => data.data.japancomic, [])),
-      cn: listFormt(getVal<any[]>(() => data.data.chinese_comic, []))
+      tv: listFormat(getVal<any[]>(() => data.data.theatre_comic, [])),
+      endJp: listFormat(getVal<any[]>(() => data.data.japancomic, [])),
+      cn: listFormat(getVal<any[]>(() => data.data.chinese_comic, []))
     }
     // return
   } catch (e) {
     console.error(e)
     return null
-  }
-}
-
-export async function filterComic(param: {
-  /** 分类 */
-  type?: number
-  /** 类型 */
-  category?: string
-  /** 排序 */
-  order?: string
-  /** 字母 */
-  letter?: string
-  /** 年份 */
-  year?: number
-  page: number
-}): Promise<ApiReturns.FilterComicReturn> {
-  try {
-    const api =
-      'api/filter?' +
-      Object.entries(param)
-        .filter(([k, v]) => v !== '')
-        .map(([k, v]) => `${k}=${v}`)
-        .join('&')
-    const { data } = await getax(api)
-    return {
-      data: getVal<any[]>(() => data.data.results, []).map((item) => ({
-        cover: item.cover,
-        id: item.id,
-        season: item.season,
-        title: item.title
-      })),
-      total: data?.data?.total || 0
-    }
-  } catch {
-    return {
-      data: [],
-      total: 0
-    }
   }
 }
 
