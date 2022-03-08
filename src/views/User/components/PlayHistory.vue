@@ -20,6 +20,12 @@
         :detail="item"
         @click="toComicMain(item.id)"
       />
+      <EmptyImgBlock
+        v-show="list.length === 0"
+        content="无聊如你"
+        src="history-empty.png"
+        height="60%"
+      />
     </div>
   </div>
 </template>
@@ -28,14 +34,17 @@
 import { computed, defineComponent } from 'vue'
 import { toComicMain } from '@/hooks/router'
 import { usePlayCacheStore } from '@/stores/playCache.store'
+
 import CodepenCard, {
   Detail as CodepenCardDetail
 } from '@comps/Card/CodepenCard.vue'
+import EmptyImgBlock from '@comps/Block/EmptyImgBlock.vue'
 
 export default defineComponent({
   name: 'PlayHistory',
   components: {
-    CodepenCard
+    CodepenCard,
+    EmptyImgBlock
   },
   setup() {
     const playCacheStore = usePlayCacheStore()

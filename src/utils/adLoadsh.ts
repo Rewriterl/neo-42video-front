@@ -461,13 +461,16 @@ export function getVal<T>(fn: () => T, df: any): T {
  */
 export function smoothPush<T>(org: T[], list: T[]) {
   org.splice(0)
-  const push = (count: number) => {
-    org.push(list[count])
-    count++
-    if (count < list.length) {
-      requestAnimationFrame(() => push(count))
-    }
-  }
 
-  push(0)
+  if (list.length !== 0) {
+    const push = (count: number) => {
+      org.push(list[count])
+      count++
+      if (count < list.length) {
+        requestAnimationFrame(() => push(count))
+      }
+    }
+
+    push(0)
+  }
 }

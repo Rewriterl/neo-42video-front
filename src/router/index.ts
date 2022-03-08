@@ -4,19 +4,19 @@ import { getServerIp } from '@/stores/systemConfig.store'
 import { ElNotification } from 'element-plus'
 
 const routes: Array<RouteRecordRaw> = [
-  // {
-  //   path: '/:pathMatch(.*)*',
-  //   name: 'NotFound',
-  //   component: () => import('@/views/Error/ErrorPage.vue'),
-  //   meta: {
-  //     title: 'Χαλαρό - 404not found'
-  //   }
-  // },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/Error/404.vue'),
+    meta: {
+      title: 'Anime - 404not found'
+    }
+  },
   {
     path: '/',
     component: () => import('@/views/Home/Index.vue'),
     meta: {
-      title: 'Χαλαρό',
+      title: 'Anime',
       dom: '#home'
     }
   },

@@ -67,6 +67,12 @@
           <LoadingCodeRun text="电波获取中，请稍后" />
         </div>
       </transition>
+      <EmptyImgBlock
+        v-show="isEmptySearch"
+        content="什么信息都没找到，甚至还白嫖了顿饭~"
+        src="search-empty.png"
+        height="60%"
+      />
       <div class="search-main__content">
         <ComicCard
           v-for="comic in searchResult"
@@ -95,10 +101,12 @@ import { computed, defineComponent, reactive, ref } from 'vue'
 import AwRadio from '@comps/Form/AwRadio.vue'
 import ComicCard from './component/ComicCard.vue'
 import LoadingCodeRun from '@comps/Loading/LoadingCodeRun.vue'
+import EmptyImgBlock from '@comps/Block/EmptyImgBlock.vue'
 
 import { SEARCH_FILTER } from './statics/form'
 import * as Api from '@/api'
 import { getVal, wait, smoothPush } from '@/utils/adLoadsh'
+import { ElNotification } from 'element-plus'
 
 /**
  * 筛选模组
@@ -176,13 +184,19 @@ export default defineComponent({
   components: {
     AwRadio,
     ComicCard,
-    LoadingCodeRun
+    LoadingCodeRun,
+    EmptyImgBlock
   },
   setup() {
-    const FETCH_WAIT_TIME = 500
     const searchMainEl = ref<HTMLElement>()
     const searchResult = ref<Api.ComicPageList[]>([])
+
+    /** 搜索延迟等待时间 */
+    const FETCH_WAIT_TIME = 500
+    /** 是否在搜索请求中 */
     const isSearchFetching = ref(false)
+    /** 是否为空搜索结果 */
+    const isEmptySearch = ref(false)
     const {
       filter,
       pager,
@@ -196,8 +210,17 @@ export default defineComponent({
 
     const hasSearchKey = computed(() => filter.name !== '')
 
-    const setSearchResult = (data: Api.ComicPageList[]) =>
+    const setSearchResult = (data: Api.ComicPageList[]) => {
+      if (data.length === 0) {
+        isEmptySearch.value = true
+        ElNotification({
+          type: 'error',
+          title: '搜索',
+          message: '未找到相关动漫'
+        })
+      }
       smoothPush(searchResult.value, data)
+    }
     /**
      * 根据名称搜索
      * @param clear 是否清空历史
@@ -206,6 +229,7 @@ export default defineComponent({
       if (!filter.name) return
       filterVisible.value = false
       isSearchFetching.value = true
+      isEmptySearch.value = false
       searchMainEl.value!.scrollTop = 0
       clear && resetFilter()
       const { data, total } = await Api.searchComic({
@@ -223,6 +247,7 @@ export default defineComponent({
      */
     const searchByFilter = async (clear = true) => {
       isSearchFetching.value = true
+      isEmptySearch.value = false
       searchMainEl.value!.scrollTop = 0
       clear && resetName()
       const { data, total } = await Api.filterComic({
@@ -255,6 +280,7 @@ export default defineComponent({
       searchByName,
       resetName,
       resetFilter,
+      isEmptySearch,
       ...filterModuleArgs
     }
   }
