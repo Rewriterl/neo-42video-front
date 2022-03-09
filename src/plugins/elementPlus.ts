@@ -2,7 +2,6 @@ import { App } from 'vue'
 import 'element-plus/dist/index.css'
 import {
   ElNotification,
-  ElLoading,
   ElCarousel,
   ElCarouselItem,
   ElButton,
@@ -38,7 +37,7 @@ const comps = [
   ElInput,
   ElPopconfirm
 ]
-const plugins = [ElLoading, ElNotification]
+const plugins = [ElNotification]
 export function elementPlusInit(app: App<Element>) {
   comps.forEach((comp) => {
     app.component(comp.name, comp)

@@ -1,27 +1,12 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
-// import styleImport from 'vite-plugin-style-import'
 import viteCompression from 'vite-plugin-compression'
 
 export default defineConfig({
   plugins: [
     vue(),
-    // styleImport({
-    //   libs: [
-    //     {
-    //       libraryName: 'element-plus',
-    //       esModule: true,
-    //       ensureStyleFile: true,
-    //       resolveStyle: (name) => {
-    //         return `element-plus/lib/theme-chalk/${name}.css`
-    //       },
-    //       resolveComponent: (name) => {
-    //         return `element-plus/lib/${name}`
-    //       }
-    //     }
-    //   ]
-    // }),
+    // 代码压缩
     viteCompression({
       verbose: true,
       disable: false,
@@ -31,6 +16,7 @@ export default defineConfig({
     })
   ],
   resolve: {
+    // 路径别名配置
     alias: {
       '~styles': path.resolve('./src/assets/css'),
       static: path.resolve('./src/assets'),
@@ -41,6 +27,7 @@ export default defineConfig({
   },
   css: {
     preprocessorOptions: {
+      // 全局less配置
       less: {
         modifyVars: {
           hack: `true; @import (reference) "${path.resolve(

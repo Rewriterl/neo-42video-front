@@ -138,6 +138,7 @@ export default defineComponent({
     }
   }
   ::v-deep(.el-slider) {
+    height: max-content;
     .el-slider__runway {
       margin: 0;
       background: #eee3;
