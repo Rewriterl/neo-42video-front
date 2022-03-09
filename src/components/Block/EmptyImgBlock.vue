@@ -46,6 +46,9 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  &::after {
+    .mask;
+  }
   img {
     width: 300px;
   }
