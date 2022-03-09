@@ -7,7 +7,6 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { importFile } from '@/utils/vite'
 export default defineComponent({
   name: 'EmptyImgBlock',
   props: {
@@ -29,9 +28,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const realSrc = computed(() =>
-      importFile(`../../assets/img/${props.src}`, import.meta.url)
-    )
+    const realSrc = computed(() => `src/assets/img/${props.src}`)
     return {
       realSrc
     }

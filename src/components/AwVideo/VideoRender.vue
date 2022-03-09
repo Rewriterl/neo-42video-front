@@ -188,5 +188,11 @@ export default defineComponent({
     width: 100%;
     height: 100%;
   }
+  ::v-deep(.vjs-v7) {
+    div,
+    button {
+      display: none !important;
+    }
+  }
 }
 </style>

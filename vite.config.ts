@@ -49,6 +49,21 @@ export default defineConfig({
         },
         javascriptEnabled: true
       }
+    },
+    // 用于解决 warning: "@charset" must be the first rule in the file
+    postcss: {
+      plugins: [
+        {
+          postcssPlugin: 'internal:charset-removal',
+          AtRule: {
+            charset: (atRule) => {
+              if (atRule.name === 'charset') {
+                atRule.remove()
+              }
+            }
+          }
+        }
+      ]
     }
   }
 })

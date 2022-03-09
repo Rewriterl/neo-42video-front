@@ -805,11 +805,5 @@ export default defineComponent({
       }
     }
   }
-  ::v-deep(.vjs-v7) {
-    div,
-    button {
-      display: none !important;
-    }
-  }
 }
 </style>
