@@ -23,7 +23,7 @@ export async function searchComic(param: {
     if (results instanceof Array) {
       return {
         data: results,
-        total: (pagetotal || 0) * 24
+        total: (pagetotal || 0) * 20
       }
     } else {
       throw newError()
