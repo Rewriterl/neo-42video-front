@@ -19,7 +19,11 @@
         :key="item.id"
         :detail="item"
         @click="toComicMain(item.id)"
-      />
+      >
+        <template #desc>
+          <span :class="{ 'bad-card': item.status }">{{ item.desc }}</span>
+        </template>
+      </CodepenCard>
       <EmptyImgBlock
         v-show="list.length === 0"
         content="无聊如你"
@@ -62,7 +66,8 @@ export default defineComponent({
             content: `最后播放时间：${item.date}`
           }
         ],
-        id: item.id
+        id: item.id,
+        status: !Boolean(item.playEpisode)
       }))
     )
     const clearHistory = () => playCacheStore.clearHistory()
@@ -94,9 +99,12 @@ export default defineComponent({
     display: grid;
     width: 100%;
     margin-top: 20px;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 60px 50px;
     padding-bottom: 40px;
+    .bad-card {
+      color: var(--warning-color);
+    }
   }
 }
 </style>

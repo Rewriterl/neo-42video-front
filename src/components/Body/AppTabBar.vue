@@ -123,7 +123,7 @@ export default defineComponent({
       position: absolute;
       right: -100%;
       top: 100%;
-      width: 300px;
+      width: 340px;
       margin-top: 10px;
       background: var(--aside-bg-color);
       box-shadow: 0 0 10px rgb(0 0 0 / 0.2);

@@ -11,7 +11,7 @@ export interface Player {
   /** 音量 0-100 */
   volume: number
   /** 实际使用的音量 0-1 */
-  realVolume: number
+  readonly realVolume: number
   /** 状态 -2无状态 -1加载失败 0加载中 1播放中 2暂停中  */
   status: -2 | -1 | 0 | 1 | 2
   /** 全屏 */

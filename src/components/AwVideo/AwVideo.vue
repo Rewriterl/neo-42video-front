@@ -144,6 +144,8 @@
       @pause="videoEvents.pause"
       @waiting="videoEvents.waiting"
       @playing="videoEvents.playing"
+      @seeking="videoEvents.waiting"
+      @seeked="videoEvents.playing"
     />
   </div>
 </template>
@@ -472,7 +474,6 @@ export default defineComponent({
           duration: 3000
         })
       },
-
       /** 进度 监听 */
       timeupdate(e: Event) {
         if (controlBar.isProgressing) return
@@ -507,18 +508,19 @@ export default defineComponent({
         })
       },
       /** 缓冲开始 监听 */
-      waiting() {
+      waiting: debounce(() => {
         player.status = 0
         notifys.buffer = notify({
           content: '电波获取中，请稍后~',
           duration: 3000
         })
-      },
+      }, 100),
       /** 缓冲结束 监听 */
-      playing() {
-        player.status = 1
+      playing: debounce((e: Event) => {
+        const { paused } = e.target as HTMLVideoElement
+        player.status = paused ? 2 : 1
         notifys.buffer && notifys.buffer.remove()
-      }
+      }, 100)
     }
 
     /** 监听 */

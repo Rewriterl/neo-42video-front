@@ -7,8 +7,12 @@
       <div class="info">
         <BaseImg class="info-avatar" :src="detail.avatar" />
         <div class="info-names">
-          <p>{{ detail.title }}</p>
-          <a>{{ detail.desc }}</a>
+          <p class="info-names__title">{{ detail.title }}</p>
+          <p class="info-names__desc">
+            <slot name="desc">
+              {{ detail.desc }}
+            </slot>
+          </p>
         </div>
       </div>
       <ul class="tags">
@@ -87,7 +91,8 @@ export default defineComponent({
     }
     .info {
       display: grid;
-      grid-template-columns: 40px 1fr 40px;
+      // grid-template-columns: 40px 1fr 40px;
+      grid-template-columns: 40px 1fr;
       margin-top: 14px;
       &-avatar {
         border-radius: 4px;
@@ -96,14 +101,14 @@ export default defineComponent({
       &-names {
         padding: 2px 10px;
         box-sizing: border-box;
-        p {
+        &__title {
           .p-truncate;
           .font-format(19px);
           font-size: 14px;
           color: var(--font-color);
           font-weight: 600;
         }
-        a {
+        &__desc {
           .p-truncate;
           .font-format(16px);
           font-size: 12px;

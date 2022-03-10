@@ -39,7 +39,9 @@ export default defineComponent({
     play: (e: Event) => e,
     pause: (e: Event) => e,
     waiting: (e: Event) => e,
-    playing: (e: Event) => e
+    playing: (e: Event) => e,
+    seeking: (e: Event) => e,
+    seeked: (e: Event) => e
   },
   setup(props, { emit }) {
     const isDev = inject('isDev')
@@ -155,6 +157,10 @@ export default defineComponent({
       useEventListener('waiting', (e) => emit('waiting', e), op)
       /** 缓冲结束  */
       useEventListener('playing', (e) => emit('playing', e), op)
+      /** 进度跳转开始 */
+      useEventListener('seeking', (e) => emit('seeking', e), op)
+      /** 进度跳转结束 */
+      useEventListener('seeked', (e) => emit('seeked', e), op)
     })()
 
     onMounted(() => {

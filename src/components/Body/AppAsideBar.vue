@@ -48,7 +48,10 @@ export default defineComponent({
         (item) => item.routeName === $route.name
       )
       return {
-        transform: `translateY(${routeIndex === -1 ? 0 : routeIndex * 100}%)`
+        transform: `translate(
+          ${!~routeIndex ? -100 : 0}%,
+          ${!~routeIndex ? 0 : routeIndex * 100}%
+        )`
       } as CSSProperties
     })
     return {
