@@ -3,11 +3,14 @@
     <div class="codePen-card__content">
       <div class="cover">
         <BaseImg :src="detail.cover" />
+        <slot name="cover" />
       </div>
       <div class="info">
         <BaseImg class="info-avatar" :src="detail.avatar" />
         <div class="info-names">
-          <p class="info-names__title">{{ detail.title }}</p>
+          <p class="info-names__title" :title="detail.title">
+            {{ detail.title }}
+          </p>
           <p class="info-names__desc">
             <slot name="desc">
               {{ detail.desc }}
@@ -54,7 +57,6 @@ export default defineComponent({
   position: relative;
   width: 100%;
   z-index: 1;
-  cursor: pointer;
   img {
     width: 100%;
     height: 100%;
@@ -81,6 +83,7 @@ export default defineComponent({
     position: relative;
     width: 100%;
     .cover {
+      position: relative;
       aspect-ratio: 16/9;
       overflow: hidden;
       img {
