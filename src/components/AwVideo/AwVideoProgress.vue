@@ -93,12 +93,8 @@ export default defineComponent({
       if (!hasCurListenlist.value) return
       emit('timeChange', tooltipTime.value)
     }
-    const computeCurArea = (currentTime: number) => {
-      const { duration } = props
-      return currentTime === 0
-        ? 0
-        : +((currentTime / duration) * 100).toFixed(2)
-    }
+    const computeCurArea = (currentTime: number) =>
+      currentTime === 0 ? 0 : +((currentTime / props.duration) * 100).toFixed(2)
 
     watch(
       () => props.currentTime,

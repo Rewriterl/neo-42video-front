@@ -87,8 +87,6 @@ export default defineComponent({
      */
     const videoInit = (el: HTMLVideoElement, url: string) => {
       if (!url || !el) return
-      // player.status = 0
-      // el.volume = player.realVolume
       emit('initStart')
       try {
         videoInstance.value = videojs(el, {
@@ -104,7 +102,6 @@ export default defineComponent({
         })
         return videoInstance.value
       } catch (err) {
-        // player.status = -1
         emit('initFailed')
         console.log(err, 'init')
         return null

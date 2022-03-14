@@ -133,10 +133,10 @@
       ref="videoInstance"
       :key="src"
       :src="src"
-      @error="videoEvents.error"
       @initStart="videoInits.start"
       @initSuccessed="videoInits.successed"
       @initFailed="videoInits.failed"
+      @error="videoEvents.error"
       @canplay="videoEvents.canplay"
       @timeupdate="videoEvents.timeupdate"
       @ended="videoEvents.ended"
@@ -377,7 +377,7 @@ export default defineComponent({
       /** 是否显示 */
       visible: false,
       // todo 类型完善
-      timer: null as any,
+      timer: null as null | NodeJS.Timeout,
       /** 是否在进度拖拽中 */
       isProgressing: false
     })
@@ -531,9 +531,6 @@ export default defineComponent({
       })
       useEventListener('keydown', (e) => {
         const el = e as KeyboardEvent
-        // if (checkFullscreen()) {
-
-        // }
         switch (el.key) {
           case 'ArrowLeft': {
             fastProgressChange(-10)

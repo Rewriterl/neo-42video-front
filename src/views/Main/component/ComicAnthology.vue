@@ -1,9 +1,24 @@
 <template>
   <div class="comic-anthology">
-    <label>{{ label }}</label>
-    <ul>
+    <!-- <ul v-if="realSection.length > 0" class="comic-anthology__section">
+      <li v-for="item in realSection" :key="item.key">{{ item.name }}</li>
+    </ul> -->
+    <div class="comic-anthology__section">
+      <label>{{ label }}</label>
+      <el-select v-model="activeTab" placeholder="Select" size="small">
+        <el-option
+          v-for="item in realSection"
+          :key="item.key"
+          :label="item.name"
+          :value="item.key"
+        >
+        </el-option>
+      </el-select>
+    </div>
+
+    <ul class="comic-anthology__list">
       <li
-        v-for="{ name, value } in list"
+        v-for="{ name, value } in realList"
         :key="value"
         :class="{ active: active === value, disable: isBad(value) }"
         @click="liClick({ name, value })"
@@ -15,7 +30,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { arrAvgSplit } from '@/utils/adLoadsh'
+import { computed, defineComponent, PropType, ref } from 'vue'
 
 export interface Option {
   name: string | number
@@ -51,6 +67,8 @@ export default defineComponent({
   },
   emits: ['change'],
   setup(props, { emit }) {
+    const activeTab = ref(0)
+
     const isBad = (value: Option['value']) => props.badAnthology.includes(value)
     const liClick = (item: Option) => {
       if (isBad(item.value)) return
@@ -59,9 +77,25 @@ export default defineComponent({
         orgId: props.orgId
       } as ChangeReturns)
     }
+    const splitList = computed(() => arrAvgSplit(props.list, 100) as Option[][])
+    const realList = computed(() => {
+      return props.list.length > 100
+        ? splitList.value[activeTab.value]
+        : props.list
+    })
+    const realSection = computed(() =>
+      splitList.value.map((item, index) => ({
+        name: `${item[0].name} - ${item[item.length - 1].name}`,
+        key: index
+      }))
+    )
+
     return {
       isBad,
-      liClick
+      liClick,
+      realSection,
+      activeTab,
+      realList
     }
   }
 })
@@ -70,11 +104,8 @@ export default defineComponent({
 .comic-anthology {
   position: relative;
   margin-bottom: 16px;
-  label {
-    display: flex;
-    padding-bottom: 12px;
-  }
-  ul {
+
+  &__list {
     display: flex;
     width: 100%;
     flex-wrap: wrap;
@@ -99,6 +130,17 @@ export default defineComponent({
         color: var(--warning-color);
         cursor: no-drop;
       }
+    }
+  }
+  &__section {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 8px 0 16px 0;
+    & > label {
+      margin-right: 8px;
+      font-size: 16px;
     }
   }
 }

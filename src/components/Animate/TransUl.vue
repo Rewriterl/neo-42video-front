@@ -22,7 +22,7 @@ export default defineComponent({
       default: 0.25
     }
   },
-  setup(props: { duration: number }) {
+  setup(props) {
     const selfComp = ref<any>()
     const isActive = ref(true)
 
@@ -31,8 +31,8 @@ export default defineComponent({
       ;(el as HTMLElement).style.transform = 'translateX(100%)'
     }
     const enter = (el: Element, done: () => void) => {
-      const brother: ChildNode[] = [...el.parentElement!.childNodes]
-      const elIndex: number = brother.indexOf(el)
+      const brother = [...el.parentElement!.childNodes]
+      const elIndex = brother.indexOf(el)
 
       ;(el as HTMLElement).style.transition = `all ${props.duration}s ease ${
         elIndex * props.duration
@@ -44,7 +44,7 @@ export default defineComponent({
       }, 100)
     }
     onMounted(() => {
-      domObserver(selfComp.value.$el, () => (isActive.value = false))
+      domObserver(selfComp.value?.$el, () => (isActive.value = false))
     })
     return {
       beforeEnter,

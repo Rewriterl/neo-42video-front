@@ -260,7 +260,7 @@ export default defineComponent({
       bads: [],
       list: computed(() =>
         comicUrls.value.map((item) => ({
-          name: `播放源-${item.key}`,
+          name: `播放源(${item.key})`,
           orgId: item.key,
           values: item.value.map((url, index) => ({
             name: getVal(() => comic.playlist[index].name, '未知'),
@@ -508,11 +508,14 @@ export default defineComponent({
         margin-top: 16px;
         font-size: 14px;
         b {
-          width: 60px;
+          width: 44px;
         }
         a {
           margin-right: 8px;
           color: var(--primary-color);
+        }
+        p {
+          flex: 1;
         }
       }
     }

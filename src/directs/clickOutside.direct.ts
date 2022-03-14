@@ -29,10 +29,10 @@ const on = function (
 let startClick: MouseEvent
 
 if (!isServer) {
-  on(document, 'mousedown', (e: MouseEvent | any) => (startClick = e))
-  on(document, 'mouseup', (e: MouseEvent | any) => {
+  on(document, 'mousedown', (e) => (startClick = e as MouseEvent))
+  on(document, 'mouseup', (e) => {
     for (const { documentHandler } of nodeList.values()) {
-      documentHandler(e, startClick)
+      documentHandler(e as MouseEvent, startClick)
     }
   })
 }

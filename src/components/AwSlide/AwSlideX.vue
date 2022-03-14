@@ -82,12 +82,16 @@ function styleModule(childrenEls: ComputedRef<HTMLElement[]>, slider: Slider) {
     'aw-slide__inner-transition': isTransition.value
   }))
   const arrowVisible = computed(() => (key: 'left' | 'right') => {
-    if (key === 'left') {
-      return slider.active !== 0
-    } else if (key === 'right') {
-      return slider.active < childrenEls.value.length - 1
-    } else {
-      return true
+    switch (key) {
+      case 'left': {
+        return slider.active !== 0
+      }
+      case 'right': {
+        return slider.active < childrenEls.value.length - 1
+      }
+      default: {
+        return true
+      }
     }
   })
 
@@ -109,12 +113,8 @@ function styleModule(childrenEls: ComputedRef<HTMLElement[]>, slider: Slider) {
   }
 }
 function controlModule(slider: Slider) {
-  const next = () => {
-    slider.active++
-  }
-  const prev = () => {
-    slider.active--
-  }
+  const next = () => slider.active++
+  const prev = () => slider.active--
   return {
     next,
     prev
@@ -137,7 +137,7 @@ export default defineComponent({
     })
     watch(
       () => slider.active,
-      (active: number) => {
+      (active) => {
         emit('onChange', active)
       },
       {

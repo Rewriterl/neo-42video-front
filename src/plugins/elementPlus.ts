@@ -19,7 +19,9 @@ import {
   ElInput,
   ElPopconfirm,
   ElTimeline,
-  ElTimelineItem
+  ElTimelineItem,
+  ElSelect,
+  ElOption
 } from 'element-plus'
 const comps = [
   ElCarousel,
@@ -39,7 +41,9 @@ const comps = [
   ElInput,
   ElPopconfirm,
   ElTimeline,
-  ElTimelineItem
+  ElTimelineItem,
+  ElSelect,
+  ElOption
 ]
 const plugins = [ElNotification]
 export function elementPlusInit(app: App<Element>) {
