@@ -154,6 +154,7 @@
 import {
   computed,
   defineComponent,
+  ExtractPropTypes,
   PropType,
   reactive,
   Ref,
@@ -180,11 +181,47 @@ import * as Type from './type'
 
 export * from './type'
 
-type Ctx = SetupContext<('changeQuality' | 'ended' | 'error' | 'next')[]>
+const props = {
+  /** 视频源地址 */
+  src: {
+    type: String,
+    default: ''
+  },
+  /** 画质列表 */
+  quality: {
+    type: Array as PropType<Type.Quality[]>,
+    default: () => []
+    // [
+    //   {
+    //     name: '1080p 超清',
+    //     value: 0
+    //   },
+    //   {
+    //     name: '720p 高清',
+    //     value: 1
+    //   },
+    //   {
+    //     name: '自动',
+    //     value: -1
+    //   }
+    // ]
+  },
+  /** 初始化时是否静音 */
+  muted: {
+    type: Boolean,
+    default: false
+  }
+}
+
+type Props = ExtractPropTypes<typeof props>
 type VideoInstance = InstanceType<typeof VideoRender>
 
 /** 画质切换模块 */
-function qualityModule(quality: Type.Quality[], { emit }: Ctx) {
+function qualityModule(
+  quality: Props['quality'],
+  // todo
+  { emit }: SetupContext<any[]>
+) {
   /** 当前画质 */
   const currentQuality = ref<Type.Quality['value']>(-1)
   /** 画质选项选项显隐 */
@@ -258,7 +295,7 @@ function playbackRateModule(videoInstance: Ref<VideoInstance | undefined>) {
 
 /** 进度模块 */
 function progressModule(
-  src: Ref<string>,
+  src: Ref<Props['src']>,
   videoInstance: Ref<VideoInstance | undefined>,
   player: Type.Player
 ) {
@@ -310,37 +347,7 @@ export default defineComponent({
     VideoRender
   },
   inheritAttrs: true,
-  props: {
-    /** 视频源地址 */
-    src: {
-      type: String,
-      default: ''
-    },
-    /** 画质列表 */
-    quality: {
-      type: Array as PropType<Type.Quality[]>,
-      default: () => []
-      // [
-      //   {
-      //     name: '1080p 超清',
-      //     value: 0
-      //   },
-      //   {
-      //     name: '720p 高清',
-      //     value: 1
-      //   },
-      //   {
-      //     name: '自动',
-      //     value: -1
-      //   }
-      // ]
-    },
-    /** 初始化时是否静音 */
-    muted: {
-      type: Boolean,
-      default: false
-    }
-  },
+  props,
   emits: ['changeQuality', 'ended', 'error', 'next'],
   setup(props, ctx) {
     const awVideoMsgComp = ref<InstanceType<typeof AwVideoMsg>>()

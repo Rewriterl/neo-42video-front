@@ -5,19 +5,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
-import { domObserver } from '@/utils/dom'
+import { defineComponent, ref } from 'vue'
+import { useDomObserver } from '@/hooks/utils'
 
 export default defineComponent({
   name: 'LazyBlock',
   setup() {
     const selfEl = ref<HTMLElement>()
     const visible = ref(false)
-    onMounted(() => {
-      domObserver(selfEl.value!, () => {
-        visible.value = true
-      })
+    useDomObserver(selfEl, () => {
+      visible.value = true
     })
+
     return {
       visible,
       selfEl

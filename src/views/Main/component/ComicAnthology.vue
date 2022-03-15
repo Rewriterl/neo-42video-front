@@ -5,7 +5,12 @@
     </ul> -->
     <div class="comic-anthology__section">
       <label>{{ label }}</label>
-      <el-select v-model="activeTab" placeholder="Select" size="small">
+      <el-select
+        v-if="realSection.length > 1"
+        v-model="activeTab"
+        placeholder="Select"
+        size="small"
+      >
         <el-option
           v-for="item in realSection"
           :key="item.key"

@@ -12,8 +12,8 @@
 </template>
 
 <script lang="ts">
-import { domObserver } from '@/utils/dom'
-import { defineComponent, onMounted, ref } from 'vue'
+import { useDomObserver } from '@/hooks/utils'
+import { defineComponent, ref } from 'vue'
 export default defineComponent({
   name: 'TransUl',
   props: {
@@ -43,9 +43,7 @@ export default defineComponent({
         done()
       }, 100)
     }
-    onMounted(() => {
-      domObserver(selfComp.value?.$el, () => (isActive.value = false))
-    })
+    useDomObserver(selfComp.value?.$el, () => (isActive.value = false))
     return {
       beforeEnter,
       selfComp,

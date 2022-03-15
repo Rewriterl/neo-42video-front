@@ -3,7 +3,9 @@
     <div class="cover">
       <HoverImgCard :src="detail.cover" />
     </div>
-    <div class="info">{{ detail.title }}</div>
+    <AttachedContainer :offset-x="12" :width="240">
+      <ComicCardInfo :detail="detail" />
+    </AttachedContainer>
   </div>
 </template>
 
@@ -14,11 +16,15 @@ import * as Api from '@/api'
 import { toComicMain } from '@/hooks/router'
 
 import HoverImgCard from '@/components/Transition/HoverImgCard.vue'
+import AttachedContainer from '@/components/Container/AttachedContainer.vue'
+import ComicCardInfo from './ComicCardInfo.vue'
 
 export default defineComponent({
   name: 'ComicCard',
   components: {
-    HoverImgCard
+    HoverImgCard,
+    AttachedContainer,
+    ComicCardInfo
   },
   props: {
     detail: {
@@ -46,19 +52,12 @@ export default defineComponent({
     flex: 1;
     width: 100%;
     aspect-ratio: 1/1.4;
-    border-radius: 6px;
+    // border-radius: 6px;
   }
-
   .info {
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    color: var(--font-color);
-    text-align: center;
-    font-size: 14px;
-    height: 36px;
-    margin: 8px 0;
-    .p-truncate(2);
+    p {
+      font-size: 18px;
+    }
   }
 }
 </style>

@@ -4,9 +4,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { loadImg } from '@/utils/media'
-import { domObserver } from '@/utils/dom'
+import { useDomObserver } from '@/hooks/utils'
 
 const BASE_IMG =
   'https://api.adicw.cn/images/61e78c7e3d14b.JPG?path=StudyImg&w=600&h=600'
@@ -34,9 +34,7 @@ export default defineComponent({
     }
     if (!props.lazy) load()
 
-    onMounted(() => {
-      domObserver(fakeImgEl.value!, load)
-    })
+    useDomObserver(fakeImgEl, load)
 
     return {
       loaded,

@@ -14,6 +14,7 @@ export function domObserver(el: HTMLElement, callback: () => void) {
   })
   observer.observe(el)
 }
+
 /**
  * 获取图片加载状态
  * @param imgPath 图片地址
@@ -31,8 +32,9 @@ export function getImgStatus(imgPath: string) {
     }
   })
 }
+
 /**
- * 获取元素的真实样式（无视过渡）
+ * 获取元素的真实样式（无视过渡动画）
  * @param el 节点
  * @param styles 要获取的参数名称数组
  * @returns

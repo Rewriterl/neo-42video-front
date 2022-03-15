@@ -375,7 +375,7 @@ export default defineComponent({
       &__content {
         display: grid;
         grid-template-columns: repeat(8, 1fr);
-        gap: 16px 24px;
+        gap: 24px;
         width: 100%;
         padding: 30px;
         box-sizing: border-box;
