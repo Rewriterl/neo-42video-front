@@ -84,6 +84,7 @@ import {
   toRef,
   watch
 } from 'vue'
+import { useRoute } from 'vue-router'
 
 import AwVideo from '@comps/AwVideo/AwVideo.vue'
 import ComicAnthology, { ChangeReturns } from './component/ComicAnthology.vue'
@@ -193,59 +194,24 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const route = useRoute()
     const awVideoComp = ref<InstanceType<typeof AwVideo>>()
+    const routeParam = reactive({
+      get episode() {
+        return Number(route.query.episode) || -1
+      },
+      get progress() {
+        return Number(route.query.progress) || -1
+      },
+      get orgId() {
+        return String(route.query.orgId) || ''
+      }
+    })
     const { playProgressCache, playHistoryCache } = usePlayCache()
     const { comic, comicUrls, ...comicInfoModuleArgs } = comicInfoModule(
       toRef(props, 'id'),
-      async () => {
-        // 获取对应缓存
-        const cache = playProgressCache.getLatestCache(+props.id)
-        if (cache) {
-          // 查找缓存对应源
-          const list = anthology.list.find((item) => item.orgId === cache.orgId)
-          if (!list) return
-          // 查找缓存对应集
-          const value = list.values.find((item) => item.name === cache.name)
-          if (value) {
-            changeAnthology(
-              {
-                ...value,
-                orgId: list.orgId
-              },
-              false
-            )
-            await wait(2000)
-            // 定位缓存进度
-            awVideoComp.value!.changeProgress(cache.progress)
-            awVideoComp.value!.notify({
-              content: `已为您定位到 ${value.name} ${sToMs(cache.progress)}`,
-              duration: 3000
-            })
-          }
-        } else {
-          // 默认选择第一个源下的第一集
-          const item = getVal(() => anthology.list[0].values[0], null)
-          const isBad =
-            item &&
-            !changeAnthology(
-              {
-                ...item,
-                orgId: anthology.list[0].orgId
-              },
-              false
-            )
-          isBad &&
-            ElNotification({
-              type: 'error',
-              title: '动漫加载',
-              message: '默认加载失败，请手动选择源'
-            })
-        }
-        playHistoryCache.add({
-          id: +props.id,
-          name: comic.title,
-          cover: comic.cover
-        })
+      () => {
+        !!~routeParam.episode ? routeInit() : dfInit()
       }
     )
     /** 选集 */
@@ -257,9 +223,10 @@ export default defineComponent({
     >({
       current: '',
       currentItem: null,
+      currentIndex: -1,
       bads: [],
-      list: computed(() =>
-        comicUrls.value.map((item) => ({
+      get list() {
+        return comicUrls.value.map((item) => ({
           name: `播放源(${item.key})`,
           orgId: item.key,
           values: item.value.map((url, index) => ({
@@ -267,8 +234,17 @@ export default defineComponent({
             value: url
           }))
         }))
-      )
+      }
     })
+    /** 选集列表-map */
+    const anthologyListMap = computed(() =>
+      anthology.list.reduce<{
+        [orgId: string]: Type.Anthology['list'][0]
+      }>((total, item) => {
+        total[item.orgId] = item
+        return total
+      }, {})
+    )
 
     /**
      * 修改选集
@@ -295,9 +271,7 @@ export default defineComponent({
     /** 下一集 */
     const nextAnthology = () => {
       if (!anthology.currentItem) return
-      const org = anthology.list.find(
-        (item) => item.orgId === anthology.currentItem!.orgId
-      )
+      const org = anthologyListMap.value[anthology.currentItem!.orgId]
       if (!org) return
       const index =
         org.values.findIndex(
@@ -339,6 +313,83 @@ export default defineComponent({
       anthology.current = ''
       anthology.currentItem = null
     }
+    /**
+     * 默认初始化
+     */
+    const dfInit = async () => {
+      // 获取对应缓存
+      const cache = playProgressCache.getLatestCache(+props.id)
+      if (cache) {
+        // 查找缓存对应源
+        const list = anthologyListMap.value[cache.orgId]
+        if (!list) return
+        // 查找缓存对应集
+        const value = list.values.find((item) => item.name === cache.name)
+        if (value) {
+          changeAnthology(
+            {
+              ...value,
+              orgId: list.orgId
+            },
+            false
+          )
+          await wait(2000)
+          // 定位缓存进度
+          awVideoComp.value!.changeProgress(cache.progress)
+          awVideoComp.value!.notify({
+            content: `上次播放到 ${value.name} ${sToMs(cache.progress)}`,
+            duration: 3000
+          })
+        }
+      } else {
+        // 默认选择第一个源下的第一集
+        const item = getVal(() => anthology.list[0].values[0], null)
+        const isBad =
+          item &&
+          !changeAnthology(
+            {
+              ...item,
+              orgId: anthology.list[0].orgId
+            },
+            false
+          )
+        isBad &&
+          ElNotification({
+            type: 'error',
+            title: '动漫加载',
+            message: '默认加载失败，请手动选择源'
+          })
+      }
+
+      playHistoryCache.add({
+        id: +props.id,
+        name: comic.title,
+        cover: comic.cover
+      })
+    }
+    /**
+     * 路由初始化
+     */
+    const routeInit = async () => {
+      const list = anthologyListMap.value[routeParam.orgId]
+      if (!list) return
+      const value = list.values[routeParam.episode]
+
+      changeAnthology(
+        {
+          ...value,
+          orgId: list.orgId
+        },
+        false
+      )
+      await wait(2000)
+      // 定位缓存进度
+      awVideoComp.value!.changeProgress(routeParam.progress)
+      awVideoComp.value!.notify({
+        content: `已为您定位到 ${value.name} ${sToMs(routeParam.progress)}`,
+        duration: 3000
+      })
+    }
 
     /** 销毁前预处理 */
     onBeforeUnmount(() => {
@@ -351,9 +402,10 @@ export default defineComponent({
       ...comicInfoModuleArgs,
       comic,
       comicUrls,
-      changeAnthology,
       anthology,
       awVideoComp,
+      routeParam,
+      changeAnthology,
       onVideoError,
       nextAnthology
     }

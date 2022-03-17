@@ -92,7 +92,7 @@ export default defineComponent({
         videoInstance.value = videojs(el, {
           autoplay: true,
           preload: 'auto',
-          controls: true,
+          controls: false,
           sources: [videoUrlToSource(url)]
         })
         emit('initSuccessed')
