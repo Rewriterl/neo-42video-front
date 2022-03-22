@@ -8,9 +8,9 @@
 
 **Path：** /api/search
 
-**Method：**GET
+**Method：** GET
 
-**实例：**/api/search/史莱姆?page=1
+**实例：** /api/search/史莱姆?page=1
 
 #### 请求参数
 
@@ -70,7 +70,7 @@
 
 **Path：** /api/filter
 
-**Method：**GET
+**Method：** GET
 
 #### 请求参数
 
@@ -128,11 +128,11 @@
 
 **Path：** /api/search
 
-**Method：**GET
+**Method：** GET
 
-**实例：**api/getAnime/1829
+**实例：** api/getAnime/1829
 
-**注意：**返回参数里的`playlist`，其集信息`title`对应的`value`为当前集在集列表的索引下标（因为此接口和api/getVideo有关联）
+**注意：** 返回参数里的`playlist`，其集信息`title`对应的`value`为当前集在集列表的索引下标（因为此接口和api/getVideo有关联）
 
 #### 请求参数
 
@@ -200,11 +200,11 @@
 
 **Path：** /api/getVideo
 
-**Method：**GET
+**Method：** GET
 
-**实例：**api/getVideo/1829
+**实例：** api/getVideo/1829
 
-**注意：**此接口返回数据与 `/api/search`接口返回的`playlist`关联
+**注意：** 此接口返回数据与 `/api/search`接口返回的`playlist`关联
 
 #### 请求参数
 
@@ -244,7 +244,7 @@
 
 **Path：** /api/getConfig
 
-**Method：**GET
+**Method：** GET
 
 #### 请求参数
 
@@ -290,9 +290,9 @@
 
 **Path：** /api/getIndex
 
-**Method：**GET
+**Method：** GET
 
-**接口描述：**列表如下： 热门、最新更新、轮播、每周更新列表、番外、完结日漫、国漫
+**接口描述：** 列表如下： 热门、最新更新、轮播、每周更新列表、番外、完结日漫、国漫
 
 #### 请求参数
 
