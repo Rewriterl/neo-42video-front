@@ -32,6 +32,7 @@
 建议使用chrome内核的浏览器，如`Chrome`、`Edge`、`FireFox`（暂未做兼容性处理）
 
 ## 使用指南
+- [后端接口文档](https://gitee.com/adicwu/comic-pc.wiki.git)
 
 1. 进入`src/api/index.ts`文件下
 2. 将其内部方法更换为自己的后端接口，要求：只改变方法体，遵从`传入参数`和`返回参数`的格式
