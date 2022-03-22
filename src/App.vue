@@ -1,10 +1,15 @@
 <template>
   <div class="app-contain">
-    <aside class="app-contain__aside">
-      <b class="animate__jello">Χαλαρό</b>
-      <AppAsideBar />
-    </aside>
     <AppTabBar />
+    <aside class="app-contain__aside" :class="{ hide: !asideVisible }">
+      <div
+        class="switch"
+        :title="asideVisible ? '隐藏' : '展开'"
+        @click="asideVisible = !asideVisible"
+      ></div>
+      <b v-show="asideVisible" class="animate__jello">Anime</b>
+      <AppAsideBar v-show="asideVisible" />
+    </aside>
     <main class="app-contain__main">
       <AppRouter />
     </main>
@@ -12,13 +17,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, provide } from 'vue'
+import { defineComponent, provide, ref } from 'vue'
 import '@/assets/icon/iconfont.css'
 import '@/assets/icon/iconfont.js'
 
 import AppAsideBar from '@comps/Body/AppAsideBar.vue'
 import AppTabBar from '@comps/Body/AppTabBar.vue'
 import AppRouter from '@comps/Body/AppRouter.vue'
+
 import { useSystemConfigStore } from './stores/systemConfig.store'
 
 function provideModule() {
@@ -26,6 +32,12 @@ function provideModule() {
   provide('isDev', isDev)
   return {
     isDev
+  }
+}
+function asideModule() {
+  const asideVisible = ref(true)
+  return {
+    asideVisible
   }
 }
 
@@ -40,6 +52,7 @@ export default defineComponent({
     const systemConfigStore = useSystemConfigStore()
     systemConfigStore.getServerIp()
     return {
+      ...asideModule(),
       ...provideModule()
     }
   }
@@ -68,6 +81,10 @@ export default defineComponent({
     padding-left: @frameTop;
     box-sizing: border-box;
     animation: slide-in @slideDruation forwards;
+    transition: all 0.25s;
+    &.hide {
+      width: 80px;
+    }
     & > b {
       display: flex;
       justify-content: center;
@@ -77,6 +94,29 @@ export default defineComponent({
       font-size: 30px;
       animation-duration: 1.25s;
       animation-delay: @slideDruation;
+    }
+    .switch {
+      position: absolute;
+      top: 0;
+      right: 8px;
+      bottom: 0;
+      margin: auto 0;
+      width: 20px;
+      height: 100px;
+      cursor: pointer;
+      &::before {
+        .mask(1,#fff);
+        right: 0;
+        margin: 0 auto;
+        width: 5px;
+        height: 100%;
+        border-radius: 20px;
+        opacity: 0.6;
+        transition: all 0.25s;
+      }
+      &:hover::before {
+        opacity: 0.8;
+      }
     }
     @keyframes slide-in {
       from {
