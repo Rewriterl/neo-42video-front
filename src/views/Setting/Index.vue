@@ -18,6 +18,7 @@
         <el-form-item label="服务器地址" prop="serverIp">
           <el-input
             v-model="config.serverIp"
+            :style="hideStyle"
             placeholder="如：http://192.169.1.19:8002/"
           />
         </el-form-item>
@@ -31,7 +32,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import {
+  computed,
+  CSSProperties,
+  defineComponent,
+  inject,
+  reactive,
+  ref
+} from 'vue'
 
 import { getThemeInstance } from '@/theme/theme.class'
 
@@ -121,7 +129,15 @@ export default defineComponent({
     ThemeColorEditor
   },
   setup() {
+    const isDev = inject('isDev')
+    const hideStyle = computed(
+      () =>
+        ({
+          opacity: isDev ? 0 : 1
+        } as CSSProperties)
+    )
     return {
+      hideStyle,
       ...themeColorModule(),
       ...configModule()
     }

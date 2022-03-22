@@ -195,6 +195,7 @@ export default defineComponent({
   },
   setup(props) {
     const route = useRoute()
+
     const awVideoComp = ref<InstanceType<typeof AwVideo>>()
     const routeParam = reactive({
       get episode() {
@@ -210,9 +211,7 @@ export default defineComponent({
     const { playProgressCache, playHistoryCache } = usePlayCache()
     const { comic, comicUrls, ...comicInfoModuleArgs } = comicInfoModule(
       toRef(props, 'id'),
-      () => {
-        !!~routeParam.episode ? routeInit() : dfInit()
-      }
+      () => (!!~routeParam.episode ? initInRoute() : init())
     )
     /** 选集 */
     const anthology = reactive<
@@ -223,7 +222,6 @@ export default defineComponent({
     >({
       current: '',
       currentItem: null,
-      currentIndex: -1,
       bads: [],
       get list() {
         return comicUrls.value.map((item) => ({
@@ -261,6 +259,7 @@ export default defineComponent({
         anthology.current = value
         anthology.currentItem = item
         isAddCache && saveProgressCache(item)
+        awVideoComp.value!.clearNotify()
         awVideoComp.value!.notify({
           content: `正在播放${item.name}`,
           duration: 3000
@@ -271,24 +270,23 @@ export default defineComponent({
     /** 下一集 */
     const nextAnthology = () => {
       if (!anthology.currentItem) return
-      const org = anthologyListMap.value[anthology.currentItem!.orgId]
-      if (!org) return
-      const index =
-        org.values.findIndex(
-          (item) => item.value === anthology.currentItem!.value
+      const list = anthologyListMap.value[anthology.currentItem.orgId]
+      if (!list) return
+      const nextIndex =
+        list.values.findIndex(
+          (item) => item.value === anthology.currentItem?.value
         ) + 1
-      if (index >= org.values.length) {
+      if (nextIndex >= list.values.length) {
         awVideoComp.value!.notify({
           content: `已经是最后一个了~`,
           duration: 3000
         })
-        return
+      } else {
+        changeAnthology({
+          ...list.values[nextIndex],
+          orgId: list.orgId
+        })
       }
-
-      changeAnthology({
-        ...org.values[index],
-        orgId: org.orgId
-      })
     }
     /**
      * 保存播放缓存
@@ -316,7 +314,7 @@ export default defineComponent({
     /**
      * 默认初始化
      */
-    const dfInit = async () => {
+    const init = async () => {
       // 获取对应缓存
       const cache = playProgressCache.getLatestCache(+props.id)
       if (cache) {
@@ -325,35 +323,32 @@ export default defineComponent({
         if (!list) return
         // 查找缓存对应集
         const value = list.values.find((item) => item.name === cache.name)
-        if (value) {
-          changeAnthology(
-            {
-              ...value,
-              orgId: list.orgId
-            },
-            false
-          )
-          await wait(2000)
-          // 定位缓存进度
-          awVideoComp.value!.changeProgress(cache.progress)
-          awVideoComp.value!.notify({
-            content: `上次播放到 ${value.name} ${sToMs(cache.progress)}`,
-            duration: 3000
-          })
-        }
+        if (!value) return
+        changeAnthology(
+          {
+            ...value,
+            orgId: list.orgId
+          },
+          false
+        )
+        await wait(2000)
+        // 定位缓存进度
+        awVideoComp.value!.changeProgress(cache.progress)
+        awVideoComp.value!.notify({
+          content: `上次播放到 ${value.name} ${sToMs(cache.progress)}`,
+          duration: 3000
+        })
       } else {
         // 默认选择第一个源下的第一集
         const item = getVal(() => anthology.list[0].values[0], null)
-        const isBad =
-          item &&
+        item &&
           !changeAnthology(
             {
               ...item,
               orgId: anthology.list[0].orgId
             },
             false
-          )
-        isBad &&
+          ) &&
           ElNotification({
             type: 'error',
             title: '动漫加载',
@@ -368,9 +363,9 @@ export default defineComponent({
       })
     }
     /**
-     * 路由初始化
+     * 初始化-从路由中获取信息
      */
-    const routeInit = async () => {
+    const initInRoute = async () => {
       const list = anthologyListMap.value[routeParam.orgId]
       if (!list) return
       const value = list.values[routeParam.episode]

@@ -145,7 +145,7 @@ export async function getVideoUrl(
 }
 
 /**
- * 获取每日更新动漫
+ * 获取混合列表（热门、最新更新、轮播、每周更新列表、番外、完结日漫、国漫）
  * @returns
  */
 export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null> {

@@ -1,13 +1,10 @@
 import * as Api from '@apis/index'
-import { ComputedRef, readonly } from 'vue'
 
 export type Playlist = Api.GetComicMainReturn['playlist']
 export type ComicName = Api.GetComicMainReturn['title']
 export interface Anthology {
   /** 当前选中的集的地址 */
   current: string
-  /** 当前选中的集的地址下标 */
-  readonly currentIndex: number
   /** 错误集的集合 */
   bads: string[]
   /** 播放源及其地址集 */

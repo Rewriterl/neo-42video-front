@@ -51,7 +51,7 @@ export default defineComponent({
     const videoStyle = computed(
       () =>
         ({
-          opacity: isDev ? 0.2 : 1
+          // opacity: isDev ? 0.2 : 1
         } as CSSProperties)
     )
 

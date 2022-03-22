@@ -70,9 +70,10 @@
       <EmptyImgBlock
         v-show="isEmptySearch"
         content="什么信息都没找到，甚至还白嫖了顿饭~"
-        src="search-empty.png"
         height="60%"
-      />
+      >
+        <img src="~static/img/search-empty.png" alt="" />
+      </EmptyImgBlock>
       <div class="search-main__content">
         <ComicCard
           v-for="comic in searchResult"

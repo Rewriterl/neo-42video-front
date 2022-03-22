@@ -3,6 +3,7 @@
     ref="selfEl"
     class="aw-video"
     @mousemove="controlBarVisibleHandler"
+    @mouseleave="hideControlBar"
     @touchmove="controlBarVisibleHandler"
   >
     <div class="aw-video__mask" :class="{ disable: !src }" @click="playHandler">
@@ -168,13 +169,7 @@ import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
 import AwVideoMsg, { NotifyItem, NotifyReturns } from './AwVideoMsg.vue'
 import VideoRender from './VideoRender.vue'
 
-import {
-  checkFullscreen,
-  debounce,
-  fullscreen,
-  sToMs,
-  throttle
-} from '@/utils/adLoadsh'
+import { checkFullscreen, debounce, fullscreen, sToMs } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
 import { getVideoScreenshot } from '@/utils/media'
 import * as Type from './type'
@@ -442,19 +437,24 @@ export default defineComponent({
     const notify = (item: NotifyItem) => {
       return awVideoMsgComp.value!.notify(item)
     }
+    const clearNotify = () => {
+      return awVideoMsgComp.value!.clearNotify()
+    }
+    const hideControlBar = () => {
+      controlBar.visible = false
+      controlBar.timer = null
+      controlBar.timer && clearTimeout(controlBar.timer)
+    }
     /** 控制bar显隐控制器 */
-    const controlBarVisibleHandler = throttle(() => {
+    const controlBarVisibleHandler = () => {
       if (controlBar.timer) {
         clearTimeout(controlBar.timer)
         controlBar.timer = null
       } else {
         controlBar.visible = true
-        controlBar.timer = setTimeout(() => {
-          controlBar.visible = false
-          controlBar.timer = null
-        }, 3000)
+        controlBar.timer = setTimeout(hideControlBar, 3000)
       }
-    }, 100)
+    }
 
     /** 视频初始化钩子 */
     const videoInits = {
@@ -560,6 +560,7 @@ export default defineComponent({
       player,
       controlBar,
       isBad,
+      hideControlBar,
       playHandler,
       sToMs,
       fullScreen,
@@ -568,6 +569,7 @@ export default defineComponent({
       changeProgress,
       computedPreview,
       notify,
+      clearNotify,
       onProgressChange,
       fastProgressChange,
       controlBarVisibleHandler,
@@ -717,6 +719,9 @@ export default defineComponent({
         }
         &.playback-rate {
           width: 60px;
+          ul {
+            overflow: hidden;
+          }
         }
         span {
           display: inline-block;

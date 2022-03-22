@@ -34,12 +34,9 @@
         </div>
       </el-timeline-item>
     </el-timeline>
-    <EmptyImgBlock
-      v-show="!hasList"
-      content="无聊如你"
-      src="history-empty.png"
-      height="60%"
-    />
+    <EmptyImgBlock v-show="!hasList" content="无聊如你" height="60%">
+      <img src="~static/img/history-empty.png" alt="" />
+    </EmptyImgBlock>
   </div>
 </template>
 

@@ -1,6 +1,8 @@
 <template>
   <div class="page-404">
-    <EmptyImgBlock content="404 NOT FOUND" />
+    <EmptyImgBlock content="404 NOT FOUND">
+      <img src="~static/img/404.png" alt="" />
+    </EmptyImgBlock>
   </div>
 </template>
 

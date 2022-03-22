@@ -42,6 +42,9 @@ export default defineComponent({
       const index = notifys.value.findIndex((item) => item.key === key)
       !!~index && notifys.value.splice(index, 1)
     }
+    const clearNotify = () => {
+      notifys.value.splice(0)
+    }
     /**
      * 发送信息
      * @param notifyItem
@@ -66,6 +69,7 @@ export default defineComponent({
     return {
       notify,
       removeNotify,
+      clearNotify,
       notifys
     }
   }

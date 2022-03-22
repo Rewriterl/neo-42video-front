@@ -1,22 +1,21 @@
 <template>
   <div class="empty-img-block">
-    <img :src="realSrc" />
+    <div>
+      <slot />
+    </div>
     <p>{{ content }}</p>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { defineComponent } from 'vue'
+
 export default defineComponent({
   name: 'EmptyImgBlock',
   props: {
     content: {
       type: String,
       default: '什么都没有'
-    },
-    src: {
-      type: String,
-      default: '404.png'
     },
     width: {
       type: String,
@@ -25,12 +24,6 @@ export default defineComponent({
     height: {
       type: String,
       default: '100%'
-    }
-  },
-  setup(props) {
-    const realSrc = computed(() => `src/assets/img/${props.src}`)
-    return {
-      realSrc
     }
   }
 })
@@ -49,9 +42,14 @@ export default defineComponent({
   &::after {
     .mask;
   }
-  img {
+  div {
     width: 300px;
+    overflow: hidden;
+    ::v-global(img) {
+      width: 100%;
+    }
   }
+
   p {
     color: var(--font-color);
     padding-top: 24px;
