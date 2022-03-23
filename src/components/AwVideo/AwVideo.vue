@@ -3,7 +3,6 @@
     ref="selfEl"
     class="aw-video"
     @mousemove="controlBarVisibleHandler"
-    @mouseleave="hideControlBar"
     @touchmove="controlBarVisibleHandler"
   >
     <div class="aw-video__mask" :class="{ disable: !src }" @click="playHandler">
@@ -169,7 +168,13 @@ import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
 import AwVideoMsg, { NotifyItem, NotifyReturns } from './AwVideoMsg.vue'
 import VideoRender from './VideoRender.vue'
 
-import { checkFullscreen, debounce, fullscreen, sToMs } from '@/utils/adLoadsh'
+import {
+  checkFullscreen,
+  debounce,
+  fullscreen,
+  sToMs,
+  throttle
+} from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
 import { getVideoScreenshot } from '@/utils/media'
 import * as Type from './type'
@@ -446,15 +451,14 @@ export default defineComponent({
       controlBar.timer && clearTimeout(controlBar.timer)
     }
     /** 控制bar显隐控制器 */
-    const controlBarVisibleHandler = () => {
+    const controlBarVisibleHandler = throttle(() => {
       if (controlBar.timer) {
         clearTimeout(controlBar.timer)
         controlBar.timer = null
-      } else {
-        controlBar.visible = true
-        controlBar.timer = setTimeout(hideControlBar, 3000)
       }
-    }
+      controlBar.visible = true
+      controlBar.timer = setTimeout(hideControlBar, 3000)
+    }, 100)
 
     /** 视频初始化钩子 */
     const videoInits = {
@@ -532,19 +536,27 @@ export default defineComponent({
 
     /** 监听 */
     ;(() => {
-      // 全屏下无法监听keydown等
+      // ps: 全屏下无法监听keydown等
       useEventListener('resize', () => {
         !checkFullscreen() && (player.fullScreen = false)
       })
       useEventListener('keydown', (e) => {
-        const el = e as KeyboardEvent
-        switch (el.key) {
+        const evt = e as KeyboardEvent
+        e.preventDefault()
+        switch (evt.key) {
+          // 方向键左
           case 'ArrowLeft': {
             fastProgressChange(-10)
             break
           }
+          // 方向键右
           case 'ArrowRight': {
             fastProgressChange(10)
+            break
+          }
+          // 空格键
+          case ' ': {
+            playHandler()
             break
           }
         }

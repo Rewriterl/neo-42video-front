@@ -35,13 +35,15 @@
       </el-timeline-item>
     </el-timeline>
     <EmptyImgBlock v-show="!hasList" content="无聊如你" height="60%">
-      <img src="~static/img/history-empty.png" alt="" />
+      <img src="~static/img/history-empty.png" />
     </EmptyImgBlock>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
+import moment from 'moment'
+
 import { toComicMain } from '@/hooks/router'
 import { usePlayCacheStore } from '@/stores/playCache.store'
 
@@ -49,7 +51,6 @@ import CodepenCard, {
   Detail as CodepenCardDetail
 } from '@comps/Card/CodepenCard.vue'
 import EmptyImgBlock from '@comps/Block/EmptyImgBlock.vue'
-import moment from 'moment'
 
 export default defineComponent({
   name: 'PlayHistory',
@@ -91,10 +92,10 @@ export default defineComponent({
     )
     const clearHistory = () => playCacheStore.clearHistory()
     return {
-      clearHistory,
       timelist,
-      toComicMain,
-      hasList
+      hasList,
+      clearHistory,
+      toComicMain
     }
   }
 })

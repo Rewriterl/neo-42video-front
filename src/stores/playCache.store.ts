@@ -7,11 +7,12 @@ import { getPlayProgressInstance } from '@/class/playProgress.class'
 
 export const usePlayCacheStore = defineStore('playCache', {
   getters: {
+    playProgressMap() {
+      return getPlayProgressInstance().cache
+    },
     playHistory() {
       return getPlayHistoryInstance().cache.map((item) => {
-        const cache = getPlayProgressInstance().cache.find(
-          (cache) => cache.comicId === item.id
-        )
+        const cache = getPlayProgressInstance().getLatestCache(item.id)
         return {
           ...item,
           playProgress: sToMs(cache?.progress || 0),
