@@ -31,6 +31,7 @@
       <AwVideoProgress
         :duration="player.duration"
         :current-time="player.currentTime"
+        :buffered-list="player.bufferedList"
         @timePreview="computedPreview"
         @change="onProgressChange"
         @progressing="controlBar.isProgressing = true"
@@ -365,7 +366,8 @@ export default defineComponent({
       fullScreen: false,
       isMute: props.muted,
       preview: '',
-      isListened: false
+      isListened: false,
+      bufferedList: []
     })
     /**
      * 提示框集合
@@ -488,8 +490,14 @@ export default defineComponent({
       /** 进度 监听 */
       timeupdate(e: Event) {
         if (controlBar.isProgressing) return
-        const { currentTime } = e.target as HTMLVideoElement
-        player.currentTime = currentTime
+        const video = e.target as HTMLVideoElement
+
+        player.currentTime = video.currentTime
+        player.bufferedList = Array(video.buffered.length)
+          .fill(0)
+          .map((_, index) => {
+            return [video.buffered.start(index), video.buffered.end(index)]
+          })
       },
       /** 播放结束 监听 */
       ended() {
@@ -812,11 +820,9 @@ export default defineComponent({
     }
     .preview {
       position: relative;
-      width: 100px;
-      aspect-ratio: 1.7/1;
+      width: 140px;
       img {
         width: 100%;
-        height: 100%;
         object-fit: cover;
       }
       span {
@@ -824,7 +830,9 @@ export default defineComponent({
         left: 4px;
         bottom: 4px;
         margin: 0 auto;
-        font-size: 12px;
+        font-size: 14px;
+        padding: 2px 4px;
+        background: rgba(0, 0, 0, 0.7);
       }
     }
   }

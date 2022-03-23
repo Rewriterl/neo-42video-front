@@ -10,7 +10,11 @@
     @mouseup="progressend"
     @touchend="progressend"
   >
-    <el-slider v-model="sliderVal" :show-tooltip="false" v-bind="$attrs" />
+    <AwSlider
+      v-model="sliderVal"
+      :parts="bufferedListPercent"
+      v-bind="$attrs"
+    />
     <div class="aw-video__progress-tooltip" :style="tooltipStyle">
       <slot name="tooltip" :time="sToMs(tooltipTime)">
         <span>{{ sToMs(tooltipTime) }}</span>
@@ -25,14 +29,19 @@ import {
   CSSProperties,
   defineComponent,
   onMounted,
+  PropType,
   reactive,
   ref,
   watch
 } from 'vue'
 import { sToMs } from '@/utils/adLoadsh'
 import { onWindowSizeChange } from '@/utils/vant/useWindowSize'
+import AwSlider from '@/components/AwSlider/AwSlider.vue'
 export default defineComponent({
   name: 'AwVideoProgress',
+  components: {
+    AwSlider
+  },
   props: {
     duration: {
       type: Number,
@@ -41,6 +50,10 @@ export default defineComponent({
     currentTime: {
       type: Number,
       default: 0
+    },
+    bufferedList: {
+      type: Array as PropType<[number, number][]>,
+      default: () => []
     }
   },
   emits: ['timeChange', 'timePreview', 'progressing', 'progressend'],
@@ -66,6 +79,12 @@ export default defineComponent({
       const time = (mouse.x / self.width) * duration
       return time | 0
     })
+    const bufferedListPercent = computed(
+      () =>
+        props.bufferedList.map((item) =>
+          item.map((num) => +((num / props.duration) * 100).toFixed(2))
+        ) as [number, number][]
+    )
 
     const progressing = () => emit('progressing')
     const progressend = () => emit('progressend')
@@ -117,6 +136,7 @@ export default defineComponent({
       hasCurListenlist,
       progressing,
       progressend,
+      bufferedListPercent,
       sliderVal
     }
   }
@@ -131,20 +151,6 @@ export default defineComponent({
   &:hover {
     .aw-video__progress-tooltip {
       opacity: 1;
-    }
-  }
-  ::v-deep(.el-slider) {
-    height: max-content;
-    .el-slider__runway {
-      margin: 0;
-      background: #eee3;
-      .el-slider__bar {
-        background: linear-gradient(to left, #1aafe8, #df6edc);
-      }
-    }
-    .el-slider__button {
-      border-radius: 4px;
-      height: 14px;
     }
   }
   .progress {

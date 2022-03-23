@@ -22,6 +22,8 @@ export interface Player {
   preview: string
   /** 是否已经进行监听 */
   isListened: boolean
+  /** 缓冲节点列表 */
+  bufferedList: [number, number][]
 }
 export interface Quality {
   /** 画质名称 */
