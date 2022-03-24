@@ -431,6 +431,7 @@ export default defineComponent({
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.25s;
+    z-index: 4;
     i {
       color: var(--font-color);
       font-size: 24px;
@@ -441,7 +442,7 @@ export default defineComponent({
     }
   }
   &__inner {
-    width: 90%;
+    width: 95%;
     margin: 0 auto;
     animation-duration: 0.5s;
   }

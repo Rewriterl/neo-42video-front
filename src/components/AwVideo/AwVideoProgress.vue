@@ -7,8 +7,6 @@
     @touchmove="onMove"
     @mousedown="progressing"
     @touchstart="progressing"
-    @mouseup="progressend"
-    @touchend="progressend"
   >
     <AwSlider
       v-model="sliderVal"

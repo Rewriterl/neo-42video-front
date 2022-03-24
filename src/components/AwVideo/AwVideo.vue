@@ -2,6 +2,7 @@
   <div
     ref="selfEl"
     class="aw-video"
+    :class="{ 'web-fullscreen': player.webFullScreen }"
     @mousemove="controlBarVisibleHandler"
     @touchmove="controlBarVisibleHandler"
   >
@@ -35,7 +36,6 @@
         @timePreview="computedPreview"
         @change="onProgressChange"
         @progressing="controlBar.isProgressing = true"
-        @progressend="controlBar.isProgressing = false"
       >
         <template #tooltip="{ time }">
           <div class="preview">
@@ -125,8 +125,22 @@
       </div>
       <Icon
         class="control-icon"
+        :name="player.webFullScreen ? 'exit-fullscreen-4-3' : 'fullscreen-4-3'"
+        @click="player.webFullScreen = !player.webFullScreen"
+      />
+      <Icon
+        class="control-icon"
+        :name="
+          player.pip
+            ? 'picture-in-picture-exit-fill'
+            : 'picture-in-picture-2-fill'
+        "
+        @click="pipCutover"
+      />
+      <Icon
+        class="control-icon"
         :name="player.fullScreen ? 'exit-full-screen' : 'full-screen'"
-        @click="fullScreen"
+        @click="fullScreenCutover"
       />
     </div>
     <AwVideoMsg ref="awVideoMsgComp" />
@@ -174,7 +188,8 @@ import {
   debounce,
   fullscreen,
   sToMs,
-  throttle
+  throttle,
+  pictureInPicture
 } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
 import { getVideoScreenshot } from '@/utils/media'
@@ -294,51 +309,6 @@ function playbackRateModule(videoInstance: Ref<VideoInstance | undefined>) {
   }
 }
 
-/** 进度模块 */
-function progressModule(
-  src: Ref<Props['src']>,
-  videoInstance: Ref<VideoInstance | undefined>,
-  player: Type.Player
-) {
-  /**
-   * 进度修改
-   * @param val ms
-   */
-  const changeProgress = (val: number) => {
-    videoInstance.value?.setCurrentTime(val)
-  }
-  /**
-   * 计算进度预览图
-   * @param val ms
-   */
-  const computedPreview = debounce(async (val: number) => {
-    player.preview = await getVideoScreenshot(src.value, val)
-  }, 100)
-  /**
-   * 进度切换
-   * @param val 0-100
-   */
-  const onProgressChange = (val: any) => {
-    const realTime = player.duration * (+val / 100)
-    changeProgress(realTime)
-  }
-  /**
-   * 进度快速切换
-   * @param limit s
-   */
-  const fastProgressChange = (limit: number) => {
-    const num = player.currentTime + limit
-    if (num < 0 || num > player.duration) return
-    changeProgress(num)
-  }
-  return {
-    changeProgress,
-    computedPreview,
-    onProgressChange,
-    fastProgressChange
-  }
-}
-
 export default defineComponent({
   name: 'AwVideo',
   components: {
@@ -367,7 +337,9 @@ export default defineComponent({
       isMute: props.muted,
       preview: '',
       isListened: false,
-      bufferedList: []
+      bufferedList: [],
+      pip: false,
+      webFullScreen: false
     })
     /**
      * 提示框集合
@@ -398,7 +370,48 @@ export default defineComponent({
       computedPreview,
       onProgressChange,
       fastProgressChange
-    } = progressModule(toRefs(props).src, videoInstance, player)
+    } =
+      /** 进度模块 */
+      (function progressModule() {
+        /**
+         * 进度修改
+         * @param val ms
+         */
+        const changeProgress = (val: number) => {
+          videoInstance.value?.setCurrentTime(val)
+        }
+        /**
+         * 计算进度预览图
+         * @param val ms
+         */
+        const computedPreview = debounce(async (val: number) => {
+          player.preview = await getVideoScreenshot(props.src, val)
+        }, 100)
+        /**
+         * 进度切换
+         * @param val 0-100
+         */
+        const onProgressChange = (val: any) => {
+          const realTime = player.duration * (+val / 100)
+          changeProgress(realTime)
+          controlBar.isProgressing = false
+        }
+        /**
+         * 进度快速切换
+         * @param limit s
+         */
+        const fastProgressChange = (limit: number) => {
+          const num = player.currentTime + limit
+          if (num < 0 || num > player.duration) return
+          changeProgress(num)
+        }
+        return {
+          changeProgress,
+          computedPreview,
+          onProgressChange,
+          fastProgressChange
+        }
+      })()
 
     /** 播放控制 */
     const playHandler = () => {
@@ -420,9 +433,15 @@ export default defineComponent({
       }
     }
     /** 全屏切换 */
-    const fullScreen = () => {
+    const fullScreenCutover = () => {
       player.fullScreen = !player.fullScreen
+      player.webFullScreen = false
       fullscreen(selfEl.value!, player.fullScreen ? 'to' : 'exit')
+    }
+    const pipCutover = () => {
+      player.pip = !player.pip
+      const videoEl = selfEl.value!.querySelector('video')
+      videoEl && pictureInPicture(videoEl, player.pip ? 'to' : 'exit')
     }
     /** 静音切换 */
     const volumeCutover = () => {
@@ -548,6 +567,9 @@ export default defineComponent({
       useEventListener('resize', () => {
         !checkFullscreen() && (player.fullScreen = false)
       })
+      useEventListener('leavepictureinpicture', () => {
+        player.pip = false
+      })
       useEventListener('keydown', (e) => {
         const evt = e as KeyboardEvent
         e.preventDefault()
@@ -583,7 +605,8 @@ export default defineComponent({
       hideControlBar,
       playHandler,
       sToMs,
-      fullScreen,
+      fullScreenCutover,
+      pipCutover,
       volumeCutover,
       changeVolume,
       changeProgress,
@@ -608,6 +631,15 @@ export default defineComponent({
   color: var(--font-unactive-color);
   background: #000;
   overflow: hidden;
+  &.web-fullscreen {
+    position: fixed;
+    left: 0;
+    top: 0;
+    aspect-ratio: unset;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999;
+  }
   ::v-deep(.video-render) {
     position: absolute;
     left: 0;

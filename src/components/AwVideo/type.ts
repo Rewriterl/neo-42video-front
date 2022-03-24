@@ -16,6 +16,10 @@ export interface Player {
   status: -2 | -1 | 0 | 1 | 2
   /** 全屏 */
   fullScreen: boolean
+  /** 画中画 */
+  pip: boolean
+  /** 网站全屏 */
+  webFullScreen: boolean
   /** 是否静音 */
   isMute: boolean
   /** 进度预览图 */

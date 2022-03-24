@@ -312,6 +312,24 @@ export function fullscreen(el: HTMLElement, type: 'to' | 'exit') {
 }
 
 /**
+ * 画中画切换
+ * @param el 绑定节点
+ * @param type to全屏 exit退出全屏
+ */
+export function pictureInPicture(el: HTMLVideoElement, type: 'to' | 'exit') {
+  switch (type) {
+    case 'exit': {
+      document.exitPictureInPicture()
+      break
+    }
+    case 'to': {
+      el.requestPictureInPicture()
+      break
+    }
+  }
+}
+
+/**
  * 判断浏览器当前是否为全屏状态
  * @returns
  */
