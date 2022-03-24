@@ -1,10 +1,38 @@
 {
   "id": "3045542",
-  "name": "COMIC",
+  "name": "comic-pc",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
   "description": "",
   "glyphs": [
+    {
+      "icon_id": "15592128",
+      "name": "picture-in-picture-exit-fill",
+      "font_class": "picture-in-picture-exit-fill",
+      "unicode": "ead3",
+      "unicode_decimal": 60115
+    },
+    {
+      "icon_id": "24697321",
+      "name": "picture-in-picture-2-fill",
+      "font_class": "picture-in-picture-2-fill",
+      "unicode": "e96e",
+      "unicode_decimal": 59758
+    },
+    {
+      "icon_id": "15617106",
+      "name": "fullscreen-4-3",
+      "font_class": "fullscreen-4-3",
+      "unicode": "e8a0",
+      "unicode_decimal": 59552
+    },
+    {
+      "icon_id": "15617369",
+      "name": "exit-fullscreen-4-3",
+      "font_class": "exit-fullscreen-4-3",
+      "unicode": "e8d0",
+      "unicode_decimal": 59600
+    },
     {
       "icon_id": "15838486",
       "name": "history",
