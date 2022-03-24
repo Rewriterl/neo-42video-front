@@ -30,6 +30,7 @@
       class="aw-video__control"
     >
       <AwVideoProgress
+        ref="awVideoProgressComp"
         :duration="player.duration"
         :current-time="player.currentTime"
         :buffered-list="player.bufferedList"
@@ -49,17 +50,18 @@
         :name="player.status === 1 ? 'pause' : 'play'"
         @click="playHandler"
       />
-      <Icon
-        class="control-icon control-icon__next"
-        name="iconfontsvgnext"
-        @click="$emit('next')"
-      />
+      <el-tooltip effect="dark" content="下一集" placement="top-start">
+        <Icon
+          class="control-icon control-icon__next"
+          name="iconfontsvgnext"
+          @click="$emit('next')"
+        />
+      </el-tooltip>
       <div class="control-time">
         {{ sToMs(player.currentTime) }}
         <span>/</span>
         {{ sToMs(player.duration) }}
       </div>
-
       <div
         v-if="quality.length > 0"
         v-click-outside="() => (qualitySelectVisible = false)"
@@ -97,17 +99,21 @@
           </li>
         </ul>
       </div>
-      <Icon
-        class="control-icon"
-        style="transform: rotateY(180deg)"
-        name="rotate_b"
-        @click="fastProgressChange(-15)"
-      />
-      <Icon
-        class="control-icon"
-        name="rotate_b"
-        @click="fastProgressChange(15)"
-      />
+      <el-tooltip effect="dark" content="快退15秒" placement="top-start">
+        <Icon
+          class="control-icon"
+          style="transform: rotateY(180deg)"
+          name="rotate_b"
+          @click="fastProgressChange(-15)"
+        />
+      </el-tooltip>
+      <el-tooltip effect="dark" content="快进15秒" placement="top-start">
+        <Icon
+          class="control-icon"
+          name="rotate_b"
+          @click="fastProgressChange(15)"
+        />
+      </el-tooltip>
       <div class="control-icon control-volume">
         <Icon
           :name="player.isMute ? 'mute' : 'volume'"
@@ -123,25 +129,33 @@
           />
         </div>
       </div>
-      <Icon
-        class="control-icon"
-        :name="player.webFullScreen ? 'exit-fullscreen-4-3' : 'fullscreen-4-3'"
-        @click="player.webFullScreen = !player.webFullScreen"
-      />
-      <Icon
-        class="control-icon"
-        :name="
-          player.pip
-            ? 'picture-in-picture-exit-fill'
-            : 'picture-in-picture-2-fill'
-        "
-        @click="pipCutover"
-      />
-      <Icon
-        class="control-icon"
-        :name="player.fullScreen ? 'exit-full-screen' : 'full-screen'"
-        @click="fullScreenCutover"
-      />
+      <el-tooltip effect="dark" content="网页全屏" placement="top-start">
+        <Icon
+          class="control-icon"
+          :name="
+            player.webFullScreen ? 'exit-fullscreen-4-3' : 'fullscreen-4-3'
+          "
+          @click="webFullScreenCutover"
+        />
+      </el-tooltip>
+      <el-tooltip effect="dark" content="画中画" placement="top-start">
+        <Icon
+          class="control-icon"
+          :name="
+            player.pip
+              ? 'picture-in-picture-exit-fill'
+              : 'picture-in-picture-2-fill'
+          "
+          @click="pipCutover"
+        />
+      </el-tooltip>
+      <el-tooltip effect="dark" content="全屏" placement="top-start">
+        <Icon
+          class="control-icon"
+          :name="player.fullScreen ? 'exit-full-screen' : 'full-screen'"
+          @click="fullScreenCutover"
+        />
+      </el-tooltip>
     </div>
     <AwVideoMsg ref="awVideoMsgComp" />
     <VideoRender
@@ -322,6 +336,7 @@ export default defineComponent({
   emits: ['changeQuality', 'ended', 'error', 'next'],
   setup(props, ctx) {
     const awVideoMsgComp = ref<InstanceType<typeof AwVideoMsg>>()
+    const awVideoProgressComp = ref<InstanceType<typeof AwVideoProgress>>()
     const videoInstance = ref<VideoInstance>()
     const selfEl = ref<HTMLElement>()
 
@@ -438,10 +453,19 @@ export default defineComponent({
       player.webFullScreen = false
       fullscreen(selfEl.value!, player.fullScreen ? 'to' : 'exit')
     }
+    /** 画中画切换 */
     const pipCutover = () => {
       player.pip = !player.pip
       const videoEl = selfEl.value!.querySelector('video')
+
       videoEl && pictureInPicture(videoEl, player.pip ? 'to' : 'exit')
+    }
+    /** 网页全屏切换 */
+    const webFullScreenCutover = () => {
+      player.webFullScreen = !player.webFullScreen
+      setTimeout(() => {
+        awVideoProgressComp.value?.initStyle()
+      }, 300)
     }
     /** 静音切换 */
     const volumeCutover = () => {
@@ -596,6 +620,7 @@ export default defineComponent({
     return {
       videoInits,
       videoEvents,
+      awVideoProgressComp,
       videoInstance,
       selfEl,
       awVideoMsgComp,
@@ -612,6 +637,7 @@ export default defineComponent({
       changeProgress,
       computedPreview,
       notify,
+      webFullScreenCutover,
       clearNotify,
       onProgressChange,
       fastProgressChange,

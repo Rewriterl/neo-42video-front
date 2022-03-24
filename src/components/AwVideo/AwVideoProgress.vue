@@ -135,7 +135,8 @@ export default defineComponent({
       progressing,
       progressend,
       bufferedListPercent,
-      sliderVal
+      sliderVal,
+      initStyle
     }
   }
 })
