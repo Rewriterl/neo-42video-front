@@ -3,6 +3,7 @@
     ref="selfDom"
     class="aw-video__progress"
     :class="{ 'aw-video__progress-hide': !hasCurListenlist }"
+    @mouseenter="initStyle"
     @mousemove="onMove"
     @touchmove="onMove"
     @mousedown="progressing"

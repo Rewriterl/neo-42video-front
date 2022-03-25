@@ -1,5 +1,5 @@
 <template>
-  <div ref="selfEl" class="aw-slider">
+  <div ref="selfEl" class="aw-slider" @mouseenter="styleInit">
     <div class="aw-slider__runway" :style="runwayStyle" @click="changeValue">
       <div class="aw-slider__bar" :style="barStyle"></div>
       <div class="aw-slider__part">
@@ -28,10 +28,10 @@ import {
   CSSProperties,
   ref,
   reactive,
-  PropType
+  PropType,
+  onMounted
 } from 'vue'
 
-import { useReStyle } from '@/hooks/utils'
 import { numLimit } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
 // todo 蜜汁鬼畜
@@ -132,7 +132,7 @@ export default defineComponent({
       emit('change', setValue(e))
     }
 
-    useReStyle(styleInit)
+    onMounted(styleInit)
     useEventListener('mouseup', dragEnd)
 
     return {
@@ -144,7 +144,8 @@ export default defineComponent({
       dragStart,
       dragEnd,
       isDraging,
-      partsStyleList
+      partsStyleList,
+      styleInit
     }
   }
 })
