@@ -1,6 +1,6 @@
 import { jsonParse } from '@/utils/adLoadsh'
 import { ref } from 'vue'
-import { DF_SYSTEM_COLOR, THEME_PINK } from './static'
+import { DF_SYSTEM_COLOR, THEME_DARK } from './static'
 import { ThemeColorVar } from './type'
 
 const THEMECOLOR_STORE_KEY = 'THEMECOLOR_STORE'
@@ -47,7 +47,7 @@ class Theme {
       editedVar ||
       DF_SYSTEM_COLOR.map((item, index) => ({
         ...item,
-        value: THEME_PINK[index] || '#000'
+        value: THEME_DARK[index] || '#000'
       }))
     this.current_.value.forEach((item) => {
       document.documentElement.style.setProperty(item.var, item.value)

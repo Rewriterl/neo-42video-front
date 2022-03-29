@@ -20,18 +20,29 @@
         :timestamp="String(date)"
         placement="top"
       >
-        <div class="play-history__content">
+        <ListVueTransition class="play-history__content">
           <CodepenCard v-for="item in list" :key="item.id" :detail="item">
             <template #cover>
               <div class="cover-info">
-                <Icon name="play" @click="toComicMain(item.id)" />
+                <Icon
+                  class="play"
+                  title="继续播放"
+                  name="play"
+                  @click="toComicMain(item.id)"
+                />
+                <Icon
+                  class="delete"
+                  title="删除"
+                  name="delete"
+                  @click="removeComicHistory(item.id)"
+                />
               </div>
             </template>
             <template #desc>
               <span :class="{ 'bad-card': item.status }">{{ item.desc }}</span>
             </template>
           </CodepenCard>
-        </div>
+        </ListVueTransition>
       </el-timeline-item>
     </el-timeline>
     <EmptyImgBlock v-show="!hasList" content="无聊如你" height="60%">
@@ -51,12 +62,14 @@ import CodepenCard, {
   Detail as CodepenCardDetail
 } from '@comps/Card/CodepenCard.vue'
 import EmptyImgBlock from '@comps/Block/EmptyImgBlock.vue'
+import ListVueTransition from '@/components/Transition/ListVueTransition.vue'
 
 export default defineComponent({
   name: 'PlayHistory',
   components: {
     CodepenCard,
-    EmptyImgBlock
+    EmptyImgBlock,
+    ListVueTransition
   },
   setup() {
     const playCacheStore = usePlayCacheStore()
@@ -91,11 +104,14 @@ export default defineComponent({
       }, {})
     )
     const clearHistory = () => playCacheStore.clearHistory()
+    const removeComicHistory = (id: number) =>
+      playCacheStore.removeHistoryById(id)
     return {
       timelist,
       hasList,
       clearHistory,
-      toComicMain
+      toComicMain,
+      removeComicHistory
     }
   }
 })
@@ -142,11 +158,25 @@ export default defineComponent({
         align-items: center;
         opacity: 0;
         transition: all 0.25s;
-        i {
+        .play {
           font-size: 40px;
           text-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
           cursor: pointer;
           color: rgba(255, 255, 255, 0.925);
+        }
+        .delete {
+          position: absolute;
+          right: 0;
+          top: 0;
+          font-size: 20px;
+          color: var(--warning-color);
+          cursor: pointer;
+          font-weight: bold;
+          padding: 4px;
+          transition: all 0.25s;
+          &:hover {
+            opacity: 0.3;
+          }
         }
       }
       .bad-card {

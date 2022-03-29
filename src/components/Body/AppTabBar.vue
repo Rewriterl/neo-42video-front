@@ -98,20 +98,30 @@ export default defineComponent({
   align-items: center;
   z-index: 8;
   .avatar {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     overflow: hidden;
-    border: 2px solid var(--primary-color);
     img {
       width: 100%;
     }
   }
   .tool {
-    font-size: 26px;
-    margin-right: 18px;
+    position: relative;
+    display: flex;
+    width: 36px;
+    height: 36px;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    margin-right: 14px;
     cursor: pointer;
     color: var(--font-color);
+    &::after {
+      .mask(-1,var(--aside-bg-color));
+      border-radius: 50%;
+      opacity: 0.8;
+    }
     &.active {
       color: var(--primary-color);
     }

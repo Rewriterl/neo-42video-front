@@ -105,7 +105,7 @@ export default defineComponent({
       height: 100px;
       cursor: pointer;
       &::before {
-        .mask(1,#fff);
+        .mask(1,var(--font-color));
         right: 0;
         margin: 0 auto;
         width: 5px;

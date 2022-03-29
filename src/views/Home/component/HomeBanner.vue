@@ -22,20 +22,24 @@
             leave-active-class="carousel-info-out"
           >
             <div v-show="carousel.infoVisible" class="inner">
-              <!-- <span>这是一段话</span> -->
+              <span>俺也不知道</span>
               <h1>{{ carousel.current.title }}</h1>
-              <!-- <p>
-                这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介这是一个很长的简介
-              </p> -->
-              <!-- <div class="inner-rate">
+              <p>
+                越是漂亮华丽 令人振奋的烟花，在消逝之后就让人越感觉到寂寞。
+                但即便烟花消逝了 回忆却还留着
+              </p>
+              <div class="inner-rate">
                 <el-rate :value="5" disabled />
-                评分
-              </div> -->
+                <span>999 <i>views</i></span>
+              </div>
               <div class="inner-control">
-                <!-- <el-button type="warning" round>详细信息</el-button> -->
-                <el-button round plain @click="toComicMain(carousel.current.id)"
-                  >播放</el-button
-                >
+                <el-button
+                  type="warning"
+                  round
+                  @click="toComicMain(carousel.current.id)"
+                  >前往播放<Icon name="play"
+                /></el-button>
+                <el-button round plain>详情</el-button>
               </div>
             </div>
           </transition>
@@ -260,6 +264,7 @@ export default defineComponent({
       }
       .inner-rate {
         display: flex;
+        align-items: center;
         margin-top: 16px;
         margin-bottom: 30px;
         font-size: 14px;
@@ -267,13 +272,22 @@ export default defineComponent({
       }
       .inner-control {
         ::v-deep(.el-button) {
+          position: relative;
           padding: 6px 22px;
           min-height: 36px;
           margin-right: 10px;
+          i {
+            width: 8px;
+            margin-left: 4px;
+          }
         }
         ::v-deep(.el-button--default) {
           background: unset;
           color: #fff;
+          &:first-child {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+          }
         }
       }
       .carousel-info {

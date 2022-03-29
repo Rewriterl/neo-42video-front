@@ -10,13 +10,21 @@ interface CacheItem {
 
 const PLAY_HISTORY_STORE_KEY = 'PLAY_HISTORY_STORE'
 
+/**
+ * 播放历史缓存
+ */
 class PlayHistory {
+  /** 缓存列表 */
   private cache_ = ref<CacheItem[]>([])
 
   public get cache() {
     return this.cache_.value
   }
 
+  /**
+   * 添加历史数据
+   * @param item 动漫信息
+   */
   public add(item: Omit<CacheItem, 'date'>) {
     const index = this.cache_.value.findIndex((ch) => ch.id === item.id)
     if (!!~index) {
@@ -28,6 +36,21 @@ class PlayHistory {
     })
   }
 
+  /**
+   * 删除指定id数据
+   * @param id 动漫id
+   */
+  public remove(id: CacheItem['id']) {
+    const index = this.cache_.value.findIndex((ch) => ch.id === id)
+    if (!!~index) {
+      this.cache_.value.splice(index, 1)
+      this.saveStore()
+    }
+  }
+
+  /**
+   * 数据-本地保存
+   */
   public saveStore() {
     localStorage.setItem(
       PLAY_HISTORY_STORE_KEY,
@@ -35,6 +58,9 @@ class PlayHistory {
     )
   }
 
+  /**
+   * 数据-本地获取
+   */
   public getStore() {
     const data = jsonParse(localStorage.getItem(PLAY_HISTORY_STORE_KEY), [])
     if (data instanceof Array) {
@@ -42,6 +68,9 @@ class PlayHistory {
     }
   }
 
+  /**
+   * 数据-本地清空
+   */
   public clearStore() {
     this.cache_.value.splice(0)
     localStorage.removeItem(PLAY_HISTORY_STORE_KEY)

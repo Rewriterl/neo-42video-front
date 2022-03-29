@@ -5,6 +5,7 @@
     </ul> -->
     <div class="comic-anthology__section">
       <label>{{ label }}</label>
+      <div class="line"></div>
       <el-select
         v-if="realSection.length > 1"
         v-model="activeTab"
@@ -18,6 +19,15 @@
           :value="item.key"
         >
         </el-option>
+      </el-select>
+      <el-select
+        v-model="listSort"
+        style="width: 60px"
+        placeholder="Select"
+        size="small"
+      >
+        <el-option label="顺序" :value="0" />
+        <el-option label="倒序" :value="1" />
       </el-select>
     </div>
 
@@ -73,6 +83,8 @@ export default defineComponent({
   emits: ['change'],
   setup(props, { emit }) {
     const activeTab = ref(0)
+    /** 当前显示的列表排序 0顺序 1倒序 */
+    const listSort = ref(0)
 
     const isBad = (value: Option['value']) => props.badAnthology.includes(value)
     const liClick = (item: Option) => {
@@ -84,9 +96,9 @@ export default defineComponent({
     }
     const splitList = computed(() => arrAvgSplit(props.list, 100) as Option[][])
     const realList = computed(() => {
-      return props.list.length > 100
-        ? splitList.value[activeTab.value]
-        : props.list
+      const result =
+        props.list.length > 100 ? splitList.value[activeTab.value] : props.list
+      return !listSort.value ? result : [...result].reverse()
     })
     const realSection = computed(() =>
       splitList.value.map((item, index) => ({
@@ -100,7 +112,8 @@ export default defineComponent({
       liClick,
       realSection,
       activeTab,
-      realList
+      realList,
+      listSort
     }
   }
 })
@@ -144,8 +157,19 @@ export default defineComponent({
     width: 100%;
     margin: 8px 0 16px 0;
     & > label {
-      margin-right: 8px;
       font-size: 16px;
+    }
+    .line {
+      flex: 1;
+      height: 2px;
+      padding: 0 22px;
+      background: var(--font-color);
+      opacity: 0.4;
+      box-sizing: border-box;
+      background-clip: content-box;
+    }
+    ::v-deep(.el-select) {
+      margin-left: 12px;
     }
   }
 }
