@@ -67,6 +67,10 @@
               </div>
             </div>
           </el-tab-pane>
+
+          <el-tab-pane v-if="comicImglist.length > 0" label="相关图片" lazy>
+            <ComicImglist :imgs="comicImglist" />
+          </el-tab-pane>
         </el-tabs>
       </div>
     </div>
@@ -89,6 +93,7 @@ import { useRoute } from 'vue-router'
 import AwVideo from '@comps/AwVideo/AwVideo.vue'
 import ComicAnthology, { ChangeReturns } from './component/ComicAnthology.vue'
 import HoverImgCard from '@/components/Transition/HoverImgCard.vue'
+import ComicImglist from './component/ComicImglist.vue'
 import { ElNotification } from 'element-plus'
 
 import * as Api from '@apis/index'
@@ -120,6 +125,7 @@ function comicInfoModule(comicId: Ref<number | string>, init: () => void) {
   })
   /** 动漫地址集 */
   const comicUrls = ref<Api.GetVideoUrlReturn>([])
+  const comicImglist = ref<Api.GetComicImglistReturn>([])
   /** 动漫tags */
   const comicTags = computed(() => [
     {
@@ -163,6 +169,10 @@ function comicInfoModule(comicId: Ref<number | string>, init: () => void) {
             comic[k] = data[k] as any
           }
         })
+        Api.getComicImglist({
+          name: comic.title
+        }).then((res) => (comicImglist.value = res))
+
         isPending.value = false
         init()
       }
@@ -176,7 +186,8 @@ function comicInfoModule(comicId: Ref<number | string>, init: () => void) {
     comic,
     comicUrls,
     comicTags,
-    isPending
+    isPending,
+    comicImglist
   }
 }
 
@@ -185,7 +196,8 @@ export default defineComponent({
   components: {
     AwVideo,
     ComicAnthology,
-    HoverImgCard
+    HoverImgCard,
+    ComicImglist
   },
   props: {
     id: {
@@ -211,7 +223,9 @@ export default defineComponent({
     const { playProgressCache, playHistoryCache } = usePlayCache()
     const { comic, comicUrls, ...comicInfoModuleArgs } = comicInfoModule(
       toRef(props, 'id'),
-      () => (!!~routeParam.episode ? initInRoute() : init())
+      () => {
+        !!~routeParam.episode ? initInRoute() : init()
+      }
     )
     /** 选集 */
     const anthology = reactive<
@@ -431,7 +445,7 @@ export default defineComponent({
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.25s;
-    z-index: 4;
+    z-index: 8;
     i {
       color: var(--font-color);
       font-size: 24px;

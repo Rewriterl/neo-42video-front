@@ -188,8 +188,7 @@ import {
   reactive,
   Ref,
   ref,
-  SetupContext,
-  toRefs
+  SetupContext
 } from 'vue'
 
 import AwVideoProgress from './AwVideoProgress.vue'
@@ -697,7 +696,7 @@ export default defineComponent({
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 16;
+    z-index: 5;
     background: #000;
     img {
       width: 100px;
@@ -718,7 +717,7 @@ export default defineComponent({
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 15;
+    z-index: 3;
     background: rgb(0 0 0 / 25%);
     span {
       margin-top: 30px;
@@ -748,7 +747,7 @@ export default defineComponent({
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     transform: translateY(150%);
-    z-index: 6;
+    z-index: 4;
     &.show {
       transform: translateY(0%);
     }

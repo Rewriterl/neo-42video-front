@@ -164,7 +164,7 @@ export default defineComponent({
       height: 2px;
       padding: 0 22px;
       background: var(--font-color);
-      opacity: 0.4;
+      opacity: 0.1;
       box-sizing: border-box;
       background-clip: content-box;
     }

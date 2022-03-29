@@ -1,4 +1,4 @@
-import axios, { AxiosPromise } from 'axios'
+import axios from 'axios'
 import { BASE_URL, timeout } from './config'
 import AxiosUtils from './axiosUtils.class'
 
@@ -14,9 +14,9 @@ new AxiosUtils(instance)
  * @param url 请求地址
  * @returns
  */
-export function getax(url: string): AxiosPromise<any> {
+export function getax<T>(url: string) {
   // onDownloadProgress ???
-  return instance(url)
+  return instance.get<T>(url)
 }
 
 /**
@@ -26,12 +26,8 @@ export function getax(url: string): AxiosPromise<any> {
  * @param config 请求配置
  * @returns
  */
-export function postax(
-  url: string,
-  params = {},
-  config = {}
-): AxiosPromise<any> {
-  return instance.post(url, params, config)
+export function postax<T>(url: string, params = {}, config = {}) {
+  return instance.post<T>(url, params, config)
 }
 
 /**
@@ -39,11 +35,11 @@ export function postax(
  * @param url 完整请求地址
  * @returns
  */
-export function dfGetax(url: string): AxiosPromise<any> {
+export function dfGetax<T>(url: string) {
   const instance = axios.create({
     timeout
   })
-  return instance(url)
+  return instance.get<T>(url)
 }
 
 /**

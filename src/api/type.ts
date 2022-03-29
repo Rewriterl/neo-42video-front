@@ -137,3 +137,21 @@ export type GetComicFilterConfig = {
     value: string
   }[]
 }[]
+
+/**
+ * 动漫的相关图片列表-来源pixiv
+ */
+export type GetComicImglistReturn = {
+  /** id */
+  id: string
+  /** 名称 */
+  title: string
+  /** 图片地址 */
+  url: string
+  /** 简介 */
+  desc: string
+  /** 时间 */
+  date: string
+  w: number
+  h: number
+}[]

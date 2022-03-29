@@ -1,4 +1,4 @@
-interface ApiSearch {
+export interface Search {
   /** 状态码 */
   code: number
   /** 状态文字 */
@@ -29,7 +29,7 @@ interface ApiSearch {
   }
 }
 
-interface ApiFilter {
+export interface Filter {
   /** 状态码 */
   code: number
   /** 状态文字 */
@@ -54,7 +54,7 @@ interface ApiFilter {
   }
 }
 
-interface ApiGetAnime {
+export interface GetAnime {
   /** 状态码 */
   code: number
   /** 状态文字 */
@@ -94,7 +94,7 @@ interface ApiGetAnime {
   }
 }
 
-interface ApiGetVideo {
+export interface GetVideo {
   /** 状态码 */
   code: number
   /** 状态文字 */
@@ -106,7 +106,7 @@ interface ApiGetVideo {
   }
 }
 
-interface ApiGetConfig {
+export interface GetConfig {
   /** 状态码 */
   code: number
   /** 状态文字 */
@@ -130,7 +130,7 @@ interface ApiGetConfig {
   }
 }
 
-interface ApiGetIndex {
+export interface GetIndex {
   /** 状态码 */
   code: number
   /** 状态文字 */
@@ -220,4 +220,27 @@ interface ApiGetIndex {
       title: string
     }[]
   }
+}
+
+export interface VilipixIllust {
+  /** 结果 */
+  rows: {
+    id: string
+    /** 创建时间 */
+    create_date: string
+    /** 简介 */
+    description: string
+    /** 名称 */
+    alt: string
+    /** 分类 字符串，逗号分割 */
+    tags: string
+    /** 图片地址 */
+    url: string
+    /** 图片宽度 */
+    width: number
+    /** 图片高度 */
+    height: number
+  }[]
+  /** 结果总数 */
+  count: number
 }

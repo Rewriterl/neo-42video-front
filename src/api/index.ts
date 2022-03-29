@@ -1,6 +1,7 @@
-import { getax } from '@/common/request/index'
+import { dfGetax, getax } from '@/common/request/index'
 import { getVal } from '@/utils/adLoadsh'
-import * as ApiReturns from './type'
+import * as FnReturns from './type'
+import * as ApiReturns from './api.type'
 export * from './type'
 
 const newError = () => new Error('bad request')
@@ -13,13 +14,15 @@ const newError = () => new Error('bad request')
 export async function searchComic(param: {
   name: string
   page: number
-}): Promise<ApiReturns.SearchComicReturn> {
+}): Promise<FnReturns.SearchComicReturn> {
   try {
     const {
       data: {
         data: { results, pagetotal }
       }
-    } = await getax(`api/search/${param.name}?page=${param.page}`)
+    } = await getax<ApiReturns.Search>(
+      `api/search/${param.name}?page=${param.page}`
+    )
     if (results instanceof Array) {
       return {
         data: results,
@@ -53,13 +56,13 @@ export async function filterComic(param: {
   /** 年份 */
   year?: number
   page: number
-}): Promise<ApiReturns.FilterComicReturn> {
+}): Promise<FnReturns.FilterComicReturn> {
   try {
     const api = Object.entries(param).reduce((total, [k, v]) => {
       return v !== '' ? `${total}&${k}=${v}` : total
     }, 'api/filter?')
 
-    const { data } = await getax(api)
+    const { data } = await getax<ApiReturns.Filter>(api)
     return {
       data: getVal<any[]>(() => data.data.results, []).map((item) => ({
         cover: item.cover,
@@ -84,11 +87,11 @@ export async function filterComic(param: {
  */
 export async function getComicMain(
   id: number | string
-): Promise<ApiReturns.GetComicMainReturn | null> {
+): Promise<FnReturns.GetComicMainReturn | null> {
   try {
     const {
       data: { data }
-    } = await getax(`api/getAnime/${id}`)
+    } = await getax<ApiReturns.GetAnime>(`api/getAnime/${id}`)
     // const playlist = Object.entries(data.playlist || {}).map(([k, v]) => ({
     //   name: `播放源 - ${k}`,
     //   value: (v as any[]).map((item) => ({
@@ -127,11 +130,11 @@ export async function getComicMain(
  */
 export async function getVideoUrl(
   key: string | number
-): Promise<ApiReturns.GetVideoUrlReturn> {
+): Promise<FnReturns.GetVideoUrlReturn> {
   try {
     const {
       data: { data = {} }
-    } = await getax(`api/getVideo/${key}`)
+    } = await getax<ApiReturns.GetVideo>(`api/getVideo/${key}`)
     return Object.entries(data).map(([k, v]) => ({
       key: k,
       value: (v instanceof Array ? v : []).map((url) =>
@@ -148,9 +151,9 @@ export async function getVideoUrl(
  * 获取混合列表（热门、最新更新、轮播、每周更新列表、番外、完结日漫、国漫）
  * @returns
  */
-export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null> {
+export async function getHomeMixData(): Promise<FnReturns.GetHomeMixData | null> {
   try {
-    const { data } = await getax('api/getIndex')
+    const { data } = await getax<ApiReturns.GetIndex>('api/getIndex')
     const listFormat = (list: any[]) =>
       list.slice(0, 10).map((item) => ({
         cover: item.cover,
@@ -197,9 +200,9 @@ export async function getHomeMixData(): Promise<ApiReturns.GetHomeMixData | null
  * 获取动漫筛选条件
  * @returns
  */
-export async function getComicFilterConfig(): Promise<ApiReturns.GetComicFilterConfig> {
+export async function getComicFilterConfig(): Promise<FnReturns.GetComicFilterConfig> {
   try {
-    const { data } = await getax('api/getConfig')
+    const { data } = await getax<ApiReturns.GetConfig>('api/getConfig')
     return getVal<any[]>(() => data.data.filtersConfig, []).map((item) => ({
       id: item.id,
       name: item.name,
@@ -209,6 +212,48 @@ export async function getComicFilterConfig(): Promise<ApiReturns.GetComicFilterC
       }))
     }))
   } catch {
+    return []
+  }
+}
+
+/**
+ * 获取动漫的相关图片列表-来源pixiv
+ * @param param
+ */
+export async function getComicImglist({
+  name = '',
+  limit = 20,
+  offset = 0
+}: {
+  /** 动漫名称 */
+  name?: string
+  /** 分页大小 */
+  limit?: number
+  /** 偏移数量 */
+  offset?: number
+}): Promise<FnReturns.GetComicImglistReturn> {
+  try {
+    const realName = name
+      .split(' ')[0]
+      .split('/')[0]
+      .split('(')[0]
+      .replace(
+        /(第一季|第二季|第四季|第五季|第六季|第七季|BD|无修|剧场版|？)/,
+        ''
+      )
+    const { data } = await dfGetax<ApiReturns.VilipixIllust>(
+      `https://www.vilipix.com/api/illust/tag/${realName}?limit=${limit}&offset=${offset}`
+    )
+    return (data.rows || []).map((item) => ({
+      date: item.create_date,
+      title: item.alt,
+      url: item.url,
+      id: item.id,
+      desc: item.description,
+      w: item.width,
+      h: item.height
+    }))
+  } catch (e) {
     return []
   }
 }
