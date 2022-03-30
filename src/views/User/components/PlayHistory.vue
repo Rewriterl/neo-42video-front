@@ -63,6 +63,7 @@ import CodepenCard, {
 } from '@comps/Card/CodepenCard.vue'
 import EmptyImgBlock from '@comps/Block/EmptyImgBlock.vue'
 import ListVueTransition from '@/components/Transition/ListVueTransition.vue'
+import { usePageOut } from '@/utils/hooks/usePageChange'
 
 export default defineComponent({
   name: 'PlayHistory',
@@ -73,12 +74,13 @@ export default defineComponent({
   },
   setup() {
     const playCacheStore = usePlayCacheStore()
+
     const hasList = computed(() => playCacheStore.playHistory.length !== 0)
     const timelist = computed(() =>
       playCacheStore.playHistory.reduce<{
         [time: string]: CodepenCardDetail[]
       }>((total, item) => {
-        const result = {
+        const value = {
           cover: item.cover,
           title: item.name,
           avatar: item.cover,
@@ -96,16 +98,22 @@ export default defineComponent({
         }
         const date = moment(item.date).format('YYYY/MM/DD')
         if (total[date]) {
-          total[date].push(result)
+          total[date].push(value)
         } else {
-          total[date] = [result]
+          total[date] = [value]
         }
         return total
       }, {})
     )
+
     const clearHistory = () => playCacheStore.clearHistory()
     const removeComicHistory = (id: number) =>
       playCacheStore.removeHistoryById(id)
+
+    usePageOut(() => {
+      playCacheStore.saveHistory()
+    })
+
     return {
       timelist,
       hasList,

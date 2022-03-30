@@ -26,6 +26,9 @@ export const usePlayCacheStore = defineStore('playCache', {
     clearHistory() {
       getPlayHistoryInstance().clearStore()
     },
+    saveHistory() {
+      getPlayHistoryInstance().saveStore()
+    },
     removeHistoryById(id: number) {
       getPlayHistoryInstance().remove(id)
     }

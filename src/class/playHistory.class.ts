@@ -44,7 +44,6 @@ class PlayHistory {
     const index = this.cache_.value.findIndex((ch) => ch.id === id)
     if (!!~index) {
       this.cache_.value.splice(index, 1)
-      this.saveStore()
     }
   }
 

@@ -1,5 +1,5 @@
 import { unref, onUnmounted, onDeactivated, Ref } from 'vue'
-import { usePageOut } from './usePageOut'
+import { usePageIn } from './usePageChange'
 
 // eslint-disable-next-line
 export let supportsPassive = false;
@@ -30,5 +30,5 @@ export function useResizeListener(
 
   onUnmounted(remove)
   onDeactivated(remove)
-  usePageOut(add)
+  usePageIn(add)
 }
