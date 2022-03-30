@@ -119,7 +119,10 @@ class PlayProgress {
   }
 
   public getStore() {
-    const data = jsonParse(localStorage.getItem(PLAY_PROGRESS_STORE_KEY), [])
+    const data = jsonParse<CacheItem[]>(
+      localStorage.getItem(PLAY_PROGRESS_STORE_KEY),
+      []
+    )
     if (data instanceof Array) {
       this.cache_.value = data
     }

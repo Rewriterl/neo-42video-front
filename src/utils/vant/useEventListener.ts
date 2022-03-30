@@ -7,7 +7,7 @@ import {
   onMounted,
   onActivated
 } from 'vue'
-export function onMountedOrActivated(hook: () => any) {
+export function onMountedOrActivated(hook: () => void) {
   let mounted: boolean
 
   onMounted(() => {

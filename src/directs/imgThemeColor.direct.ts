@@ -6,7 +6,7 @@
 //  * @result 如果读取成功，则在其绑点节点生成--theme-color变量；失败不进行操作
 //  */
 // export default {
-//   async mounted(el: HTMLImageElement, binding: DirectiveBinding): Promise<any> {
+//   async mounted(el: HTMLImageElement, binding: DirectiveBinding) {
 //     const src = binding.value ? binding.value : el.src
 //     if (!src) return
 //     const rgb = await readImgThemeColor(src)

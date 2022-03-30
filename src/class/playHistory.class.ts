@@ -62,7 +62,10 @@ class PlayHistory {
    * 数据-本地获取
    */
   public getStore() {
-    const data = jsonParse(localStorage.getItem(PLAY_HISTORY_STORE_KEY), [])
+    const data = jsonParse<CacheItem[]>(
+      localStorage.getItem(PLAY_HISTORY_STORE_KEY),
+      []
+    )
     if (data instanceof Array) {
       this.cache_.value = data
     }

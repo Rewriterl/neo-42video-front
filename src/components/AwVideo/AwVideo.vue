@@ -67,9 +67,9 @@
         v-click-outside="() => (qualitySelectVisible = false)"
         class="control-select quality"
       >
-        <span @click="qualitySelectVisible = !qualitySelectVisible">{{
-          currentQualityName
-        }}</span>
+        <span @click="qualitySelectVisible = !qualitySelectVisible">
+          {{ currentQualityName }}
+        </span>
         <ul v-show="qualitySelectVisible">
           <li
             v-for="{ name, value } in quality"
@@ -85,9 +85,9 @@
         v-click-outside="() => (playbackRate.visible = false)"
         class="control-select playback-rate"
       >
-        <span @click="playbackRate.visible = !playbackRate.visible">{{
-          playbackRate.current
-        }}</span>
+        <span @click="playbackRate.visible = !playbackRate.visible">
+          {{ playbackRate.current }}
+        </span>
         <ul v-show="playbackRate.visible">
           <li
             v-for="item in playbackRate.list"
@@ -180,16 +180,7 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  ExtractPropTypes,
-  PropType,
-  reactive,
-  Ref,
-  ref,
-  SetupContext
-} from 'vue'
+import { computed, defineComponent, PropType, reactive, Ref, ref } from 'vue'
 
 import AwVideoProgress from './AwVideoProgress.vue'
 import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
@@ -242,42 +233,8 @@ const props = {
   }
 }
 
-type Props = ExtractPropTypes<typeof props>
+// type Props = ExtractPropTypes<typeof props>
 type VideoInstance = InstanceType<typeof VideoRender>
-
-/** 画质切换模块 */
-function qualityModule(
-  quality: Props['quality'],
-  // todo
-  { emit }: SetupContext<any[]>
-) {
-  /** 当前画质 */
-  const currentQuality = ref<Type.Quality['value']>(-1)
-  /** 画质选项选项显隐 */
-  const qualitySelectVisible = ref(false)
-  /** 当前选择的画质名称 */
-  const currentQualityName = computed(
-    () =>
-      quality.find((item) => item.value === currentQuality.value)?.name || '-'
-  )
-
-  /**
-   * 画质切换
-   * @param value 画质值
-   */
-  const changeQuality = (value: Type.Quality['value']) => {
-    currentQuality.value = value
-    qualitySelectVisible.value = false
-    emit('changeQuality', value)
-  }
-
-  return {
-    currentQuality,
-    currentQualityName,
-    changeQuality,
-    qualitySelectVisible
-  }
-}
 
 /** 播放倍数模块 */
 function playbackRateModule(videoInstance: Ref<VideoInstance | undefined>) {
@@ -379,6 +336,38 @@ export default defineComponent({
     /** 视频是否错误 */
     const isBad = computed(() => player.status === -1)
 
+    const qualityModule =
+      /** 画质切换模块 */
+      (() => {
+        /** 当前画质 */
+        const currentQuality = ref<Type.Quality['value']>(-1)
+        /** 画质选项选项显隐 */
+        const qualitySelectVisible = ref(false)
+        /** 当前选择的画质名称 */
+        const currentQualityName = computed(
+          () =>
+            props.quality.find((item) => item.value === currentQuality.value)
+              ?.name || '-'
+        )
+
+        /**
+         * 画质切换
+         * @param value 画质值
+         */
+        const changeQuality = (value: Type.Quality['value']) => {
+          currentQuality.value = value
+          qualitySelectVisible.value = false
+          ctx.emit('changeQuality', value)
+        }
+
+        return {
+          currentQuality,
+          currentQualityName,
+          changeQuality,
+          qualitySelectVisible
+        }
+      })()
+
     const {
       changeProgress,
       computedPreview,
@@ -386,7 +375,7 @@ export default defineComponent({
       fastProgressChange
     } =
       /** 进度模块 */
-      (function progressModule() {
+      (() => {
         /**
          * 进度修改
          * @param val ms
@@ -559,7 +548,7 @@ export default defineComponent({
         player.status = 2
       },
       /** 错误 监听 */
-      error(e: any) {
+      error(e: Error) {
         console.error(e)
         player.status = -1
         ctx.emit('error')
@@ -642,7 +631,7 @@ export default defineComponent({
       fastProgressChange,
       controlBarVisibleHandler,
       ...playbackRateModule(videoInstance),
-      ...qualityModule(props.quality, ctx)
+      ...qualityModule
     }
   }
 })

@@ -12,14 +12,6 @@ export default class AxiosUtils {
     this.request()
   }
   /**
-   * 获取token
-   * @returns token字符串
-   */
-  // private getToken(): string | null {
-  // const { token } = (store.state as any).user
-  // return token || localStorage.getItem('token')
-  // }
-  /**
    * 响应拦截器
    */
   private response() {

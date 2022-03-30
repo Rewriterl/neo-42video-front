@@ -109,9 +109,9 @@ export function numLimit(num: number, min = 0, max = 100): number {
  * @param callback 回调，携带 当前遍历内容 当前遍历下标，需返回符合条件
  * @returns 结果下标，找不到为 -1
  */
-export function findLastIndex(
-  arr: any[],
-  callback: (cur: any, index: number) => boolean
+export function findLastIndex<T>(
+  arr: T[],
+  callback: (cur: T, index: number) => boolean
 ) {
   let index = 0
   for (let i = 0; i < arr.length; i++) {
@@ -139,7 +139,7 @@ export function deepCopy<T>(obj: T): T {
 export function arrObjRmSameByKey(arrA: any[], arrB: any[], key: string) {
   const res: any[] = []
   for (let i = 0; i < arrA.length; i++) {
-    const index = arrB.findIndex((item: any) => item[key] === arrA[i][key])
+    const index = arrB.findIndex((item) => item[key] === arrA[i][key])
     if (index === -1) res.push(arrA[i])
   }
   return res
@@ -152,9 +152,7 @@ export function arrObjRmSameByKey(arrA: any[], arrB: any[], key: string) {
  * @returns 去重后结果
  */
 export function arrSubtraction(arrA: any[], arrB: any[]) {
-  return Array.from(
-    new Set([...arrA].filter((item: any) => !arrB.includes(item)))
-  )
+  return Array.from(new Set([...arrA].filter((item) => !arrB.includes(item))))
 }
 
 /**
@@ -231,7 +229,7 @@ export function treeTraversal(tree: Tree[], callback?: (item: any) => void) {
  * @param callback 条件
  * @returns
  */
-export function splitAfter(arr: any[], callback: (item: any) => boolean) {
+export function splitAfter<T>(arr: T[], callback: (item: T) => boolean) {
   const index = arr.findIndex(callback)
   return arr.slice(index + 1, arr.length)
 }
@@ -334,18 +332,6 @@ export function pictureInPicture(el: HTMLVideoElement, type: 'to' | 'exit') {
  * @returns
  */
 export function checkFullscreen() {
-  // const el = document as any
-  // const wd = window as any
-  // const isFull =
-  //   el.fullscreenEnabled ||
-  //   wd.fullScreen ||
-  //   el.webkitIsFullScreen ||
-  //   el.msFullscreenEnabled
-  // if (typeof isFull === 'undefined') {
-  //   return false
-  // } else {
-  //   return isFull
-  // }
   return (document as any).webkitIsFullScreen
 }
 
@@ -428,11 +414,11 @@ export function timeToMs(time: string) {
  * @param df 失败时的默认值
  * @returns
  */
-export function jsonParse(val: any, df: any) {
+export function jsonParse<T>(val: string | null, df: T) {
   try {
-    return JSON.parse(val)
+    return JSON.parse(val!) as T
   } catch (e) {
-    return df || []
+    return df
   }
 }
 
@@ -460,7 +446,7 @@ export async function getEl(
  * @param df 默认值
  * @returns
  */
-export function getVal<T>(fn: () => T, df: any): T {
+export function getVal<T, A>(fn: () => T, df: A): T | A {
   try {
     const res = fn()
     if (!res) {

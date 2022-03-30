@@ -1,3 +1,5 @@
+import { ValueOf } from 'element-plus/es/components/table/src/table-column/defaults'
+
 /**
  * 监听节点是否存在于当前屏幕视野
  * @param el 监听的节点
@@ -40,15 +42,20 @@ export function getImgStatus(imgPath: string) {
  * @returns
  */
 export function getRealStyle(el: HTMLElement, styles = ['width', 'height']) {
-  const computedStyle: any = window.getComputedStyle(el)
-  const res: any = {}
+  const computedStyle = window.getComputedStyle(el) as any
+  const result: {
+    [prop: string]: string | number
+  } = {}
   const numberStyles = ['width', 'height']
-  styles.forEach((style: string) => {
-    if (numberStyles.indexOf(style) != -1) {
-      res[style] = Number(computedStyle[style].replace('px', ''))
+  styles.forEach((style) => {
+    if (!!~numberStyles.indexOf(style)) {
+      const value = computedStyle[style]
+      if (typeof value === 'string') {
+        result[style] = Number(value?.replace('px', ''))
+      }
     } else {
-      res[style] = computedStyle[style]
+      result[style] = computedStyle[style]
     }
   })
-  return styles.length > 0 ? res : computedStyle
+  return styles.length > 0 ? result : computedStyle
 }

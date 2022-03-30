@@ -34,7 +34,7 @@ export default defineComponent({
       default: ''
     }
   },
-  setup(props) {
+  setup() {
     const selfEl = ref<HTMLElement>()
     const self = reactive({
       width: 0,
@@ -45,7 +45,7 @@ export default defineComponent({
     const mouse = reactive({
       x: 0,
       y: 0,
-      leaveDelay: null as any | null
+      leaveDelay: null as NodeJS.Timeout | null
     })
 
     const mousePX = computed(() => mouse.x / self.width)

@@ -43,6 +43,7 @@ class Theme {
    * @param editedVar 颜色配置列表
    */
   public colorVarInit(editedVar?: ThemeColorVar[]) {
+    if (editedVar?.length === 0) return
     this.current_.value =
       editedVar ||
       DF_SYSTEM_COLOR.map((item, index) => ({
@@ -62,7 +63,10 @@ class Theme {
    * @returns
    */
   public getLocalColor() {
-    return jsonParse(localStorage.getItem(THEMECOLOR_STORE_KEY), false)
+    return jsonParse<ThemeColorVar[]>(
+      localStorage.getItem(THEMECOLOR_STORE_KEY),
+      []
+    )
   }
 
   /**

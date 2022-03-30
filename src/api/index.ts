@@ -64,7 +64,7 @@ export async function filterComic(param: {
 
     const { data } = await getax<ApiReturns.Filter>(api)
     return {
-      data: getVal<any[]>(() => data.data.results, []).map((item) => ({
+      data: getVal(() => data.data.results, []).map((item) => ({
         cover: item.cover,
         id: item.id,
         season: item.season,
@@ -92,19 +92,10 @@ export async function getComicMain(
     const {
       data: { data }
     } = await getax<ApiReturns.GetAnime>(`api/getAnime/${id}`)
-    // const playlist = Object.entries(data.playlist || {}).map(([k, v]) => ({
-    //   name: `播放源 - ${k}`,
-    //   value: (v as any[]).map((item) => ({
-    //     name: item.title || '-',
-    //     value: item.link
-    //   }))
-    // }))
-    const playlist = getVal<any[]>(() => data.playlist[0], []).map(
-      (item, index) => ({
-        name: String(item.title),
-        value: index
-      })
-    )
+    const playlist = getVal(() => data.playlist[0], []).map((item, index) => ({
+      name: String(item.title),
+      value: index
+    }))
     return {
       playlist,
       title: data.title,
@@ -162,32 +153,32 @@ export async function getHomeMixData(): Promise<FnReturns.GetHomeMixData | null>
         title: item.title
       }))
     return {
-      hots: getVal<any[]>(() => data.data.hots.results, []).map((item) => ({
+      hots: getVal(() => data.data.hots.results, []).map((item) => ({
         cover: item.cover,
         id: item.id,
         season: item.season,
         title: item.title
       })),
-      latest: listFormat(getVal<any[]>(() => data.data.latest, [])),
-      banner: getVal<any[]>(() => data.data.banner, []).map((item) => ({
+      latest: listFormat(getVal(() => data.data.latest, [])),
+      banner: getVal(() => data.data.banner, []).map((item) => ({
         cover: item.cover,
-        id: item.id || -1,
+        id: item.id || '-1',
         title: item.title || '未知'
       })),
-      perweek: Object.entries(getVal<any>(() => data.data.perweek, {})).map(
+      perweek: Object.entries(getVal(() => data.data.perweek, {})).map(
         ([k, v]) => ({
           name: `周${['一', '二', '三', '四', '五', '六', '日'][+k]}`,
           key: k,
-          value: ((v || []) as any[]).map((e) => ({
+          value: (v || []).map((e) => ({
             id: e.id,
             season: e.season || '未知',
             title: e.title || '未知'
           }))
         })
       ),
-      tv: listFormat(getVal<any[]>(() => data.data.theatre_comic, [])),
-      endJp: listFormat(getVal<any[]>(() => data.data.japancomic, [])),
-      cn: listFormat(getVal<any[]>(() => data.data.chinese_comic, []))
+      tv: listFormat(getVal(() => data.data.theatre_comic, [])),
+      endJp: listFormat(getVal(() => data.data.japancomic, [])),
+      cn: listFormat(getVal(() => data.data.chinese_comic, []))
     }
     // return
   } catch (e) {
@@ -203,10 +194,10 @@ export async function getHomeMixData(): Promise<FnReturns.GetHomeMixData | null>
 export async function getComicFilterConfig(): Promise<FnReturns.GetComicFilterConfig> {
   try {
     const { data } = await getax<ApiReturns.GetConfig>('api/getConfig')
-    return getVal<any[]>(() => data.data.filtersConfig, []).map((item) => ({
+    return getVal(() => data.data.filtersConfig, []).map((item) => ({
       id: item.id,
       name: item.name,
-      value: (item.categories || []).map((key: any) => ({
+      value: (item.categories || []).map((key) => ({
         name: key.classname,
         value: key.classid
       }))

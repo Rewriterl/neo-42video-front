@@ -1,28 +1,6 @@
-import {
-  unref,
-  onUnmounted,
-  onDeactivated,
-  nextTick,
-  onMounted,
-  onActivated,
-  Ref
-} from 'vue'
-export function onMountedOrActivated(hook: () => any) {
-  let mounted: boolean
+import { unref, onUnmounted, onDeactivated, Ref } from 'vue'
+import { usePageOut } from './usePageOut'
 
-  onMounted(() => {
-    hook()
-    nextTick(() => {
-      mounted = true
-    })
-  })
-
-  onActivated(() => {
-    if (mounted) {
-      hook()
-    }
-  })
-}
 // eslint-disable-next-line
 export let supportsPassive = false;
 
@@ -52,5 +30,5 @@ export function useResizeListener(
 
   onUnmounted(remove)
   onDeactivated(remove)
-  onMountedOrActivated(add)
+  usePageOut(add)
 }

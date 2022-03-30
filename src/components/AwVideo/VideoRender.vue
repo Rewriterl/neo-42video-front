@@ -32,7 +32,7 @@ export default defineComponent({
     initStart: null,
     initSuccessed: null,
     initFailed: null,
-    error: (e: any) => e,
+    error: (e: any | Error) => e,
     canplay: (e: Event) => e,
     timeupdate: (e: Event) => e,
     ended: (e: Event) => e,

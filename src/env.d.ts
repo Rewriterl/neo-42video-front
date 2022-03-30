@@ -6,3 +6,8 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+/**
+ * 对象值类型
+ */
+type ValueOf<T> = T[keyof T]
