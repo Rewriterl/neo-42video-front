@@ -45,6 +45,7 @@
 </template>
 
 <script lang="ts">
+import { videoUrlFormat } from '@/api/utils'
 import { arrAvgSplit } from '@/utils/adLoadsh'
 import { computed, defineComponent, PropType, ref } from 'vue'
 
@@ -98,7 +99,10 @@ export default defineComponent({
     const realList = computed(() => {
       const result =
         props.list.length > 100 ? splitList.value[activeTab.value] : props.list
-      return !listSort.value ? result : [...result].reverse()
+      return (!listSort.value ? result : [...result].reverse()).map((item) => ({
+        ...item,
+        value: videoUrlFormat(item.value)
+      }))
     })
     const realSection = computed(() =>
       splitList.value.map((item, index) => ({

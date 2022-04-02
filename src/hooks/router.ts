@@ -7,7 +7,7 @@ import router from '../router/index'
  */
 export function toComicMain(
   id: number | string,
-  type = 'push' as 'push' | 'replace'
+  type: 'push' | 'replace' = 'push'
 ) {
   return router[type]({
     name: 'ComicMain',

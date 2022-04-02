@@ -201,38 +201,6 @@ import * as Type from './type'
 
 export * from './type'
 
-const props = {
-  /** 视频源地址 */
-  src: {
-    type: String,
-    default: ''
-  },
-  /** 画质列表 */
-  quality: {
-    type: Array as PropType<Type.Quality[]>,
-    default: () => []
-    // [
-    //   {
-    //     name: '1080p 超清',
-    //     value: 0
-    //   },
-    //   {
-    //     name: '720p 高清',
-    //     value: 1
-    //   },
-    //   {
-    //     name: '自动',
-    //     value: -1
-    //   }
-    // ]
-  },
-  /** 初始化时是否静音 */
-  muted: {
-    type: Boolean,
-    default: false
-  }
-}
-
 // type Props = ExtractPropTypes<typeof props>
 type VideoInstance = InstanceType<typeof VideoRender>
 
@@ -288,7 +256,37 @@ export default defineComponent({
     VideoRender
   },
   inheritAttrs: true,
-  props,
+  props: {
+    /** 视频源地址 */
+    src: {
+      type: String,
+      default: ''
+    },
+    /** 画质列表 */
+    quality: {
+      type: Array as PropType<Type.Quality[]>,
+      default: () => []
+      // [
+      //   {
+      //     name: '1080p 超清',
+      //     value: 0
+      //   },
+      //   {
+      //     name: '720p 高清',
+      //     value: 1
+      //   },
+      //   {
+      //     name: '自动',
+      //     value: -1
+      //   }
+      // ]
+    },
+    /** 初始化时是否静音 */
+    muted: {
+      type: Boolean,
+      default: false
+    }
+  },
   emits: ['changeQuality', 'ended', 'error', 'next'],
   setup(props, ctx) {
     const awVideoMsgComp = ref<InstanceType<typeof AwVideoMsg>>()

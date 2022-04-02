@@ -25,26 +25,27 @@ class PlayProgress {
   }
 
   private get cacheMap() {
-    return this.cache_.value.reduce(
+    return this.cache_.value.reduce<{ [cacheKey: string]: CacheItem }>(
       (totol, item) => {
         totol[this.cacheItemToName(item)] = item
         return totol
       },
-      {} as {
-        [cacheKey: string]: CacheItem
-      }
+      {}
     )
   }
 
   private get latestCacheMap() {
-    return this.cache_.value.reduce((totol, item) => {
-      if (!totol[item.comicId]) {
-        totol[item.comicId] = item
-      } else if (item.date > totol[item.comicId].date) {
-        totol[item.comicId] = item
-      }
-      return totol
-    }, {} as { [comicId: string]: CacheItem })
+    return this.cache_.value.reduce<{ [comicId: string]: CacheItem }>(
+      (totol, item) => {
+        if (!totol[item.comicId]) {
+          totol[item.comicId] = item
+        } else if (item.date > totol[item.comicId].date) {
+          totol[item.comicId] = item
+        }
+        return totol
+      },
+      {}
+    )
   }
 
   private createDate() {

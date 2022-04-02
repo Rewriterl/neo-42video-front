@@ -67,10 +67,13 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const colors = reactive(
-      props.themes.reduce((totol, { prop, value }) => {
-        totol[prop] = value
-        return totol
-      }, {} as { [prop: string]: string })
+      props.themes.reduce<{ [prop: string]: string }>(
+        (totol, { prop, value }) => {
+          totol[prop] = value
+          return totol
+        },
+        {}
+      )
     )
 
     const onColorChanged = () => {

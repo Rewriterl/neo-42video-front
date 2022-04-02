@@ -1,5 +1,5 @@
 <template>
-  <div class="play-history">
+  <BotLoad class="play-history" :data="timelist" :perpage="3">
     <h2>
       播放历史
       <el-popconfirm
@@ -13,42 +13,47 @@
         </template>
       </el-popconfirm>
     </h2>
-    <el-timeline class="play-history__timeline">
-      <el-timeline-item
-        v-for="(list, date) in timelist"
-        :key="date"
-        :timestamp="String(date)"
-        placement="top"
-      >
-        <ListVueTransition class="play-history__content">
-          <CodepenCard v-for="item in list" :key="item.id" :detail="item">
-            <template #cover>
-              <div class="cover-info">
-                <Icon
-                  class="play"
-                  title="继续播放"
-                  name="play"
-                  @click="toComicMain(item.id)"
-                />
-                <Icon
-                  class="delete"
-                  title="删除"
-                  name="delete"
-                  @click="removeComicHistory(item.id)"
-                />
-              </div>
-            </template>
-            <template #desc>
-              <span :class="{ 'bad-card': item.status }">{{ item.desc }}</span>
-            </template>
-          </CodepenCard>
-        </ListVueTransition>
-      </el-timeline-item>
-    </el-timeline>
+    <template #contain="{ data }">
+      <el-timeline class="play-history__timeline">
+        <el-timeline-item
+          v-for="{ time, list } in data"
+          :key="time"
+          :timestamp="String(time)"
+          placement="top"
+        >
+          <ListVueTransition class="play-history__content">
+            <CodepenCard v-for="item in list" :key="item.id" :detail="item">
+              <template #cover>
+                <div class="cover-info">
+                  <Icon
+                    class="play"
+                    title="继续播放"
+                    name="play"
+                    @click="toComicMain(item.id)"
+                  />
+                  <Icon
+                    class="delete"
+                    title="删除"
+                    name="delete"
+                    @click="removeComicHistory(item.id)"
+                  />
+                </div>
+              </template>
+              <template #desc>
+                <span :class="{ 'bad-card': item.status }">{{
+                  item.desc
+                }}</span>
+              </template>
+            </CodepenCard>
+          </ListVueTransition>
+        </el-timeline-item>
+      </el-timeline>
+    </template>
+
     <EmptyImgBlock v-show="!hasList" content="无聊如你" height="60%">
       <img src="~static/img/history-empty.png" />
     </EmptyImgBlock>
-  </div>
+  </BotLoad>
 </template>
 
 <script lang="ts">
@@ -57,26 +62,28 @@ import moment from 'moment'
 
 import { toComicMain } from '@/hooks/router'
 import { usePlayCacheStore } from '@/stores/playCache.store'
+import { usePageOut } from '@/utils/hooks/usePageChange'
 
 import CodepenCard, {
   Detail as CodepenCardDetail
 } from '@comps/Card/CodepenCard.vue'
 import EmptyImgBlock from '@comps/Block/EmptyImgBlock.vue'
 import ListVueTransition from '@/components/Transition/ListVueTransition.vue'
-import { usePageOut } from '@/utils/hooks/usePageChange'
+import BotLoad from '@/components/Container/BotLoad.vue'
 
 export default defineComponent({
   name: 'PlayHistory',
   components: {
     CodepenCard,
     EmptyImgBlock,
-    ListVueTransition
+    ListVueTransition,
+    BotLoad
   },
   setup() {
     const playCacheStore = usePlayCacheStore()
 
     const hasList = computed(() => playCacheStore.playHistory.length !== 0)
-    const timelist = computed(() =>
+    const timemap = computed(() =>
       playCacheStore.playHistory.reduce<{
         [time: string]: CodepenCardDetail[]
       }>((total, item) => {
@@ -104,6 +111,11 @@ export default defineComponent({
         }
         return total
       }, {})
+    )
+    const timelist = computed(() =>
+      Object.entries(timemap.value)
+        .map(([k, v]) => ({ time: k, list: v }))
+        .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
     )
 
     const clearHistory = () => playCacheStore.clearHistory()

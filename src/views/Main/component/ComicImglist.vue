@@ -8,7 +8,7 @@
     </div>
     <div ref="$innerEl" class="comic-imglist__content">
       <div class="comic-imglist__content-inner">
-        <img v-for="img in imgs" :key="img.id" :src="img.url" />
+        <BaseImg v-for="img in imgs" :key="img.id" :src="img.url" />
       </div>
     </div>
   </div>
@@ -19,7 +19,6 @@ import { onBeforeUpdate, nextTick, ref } from 'vue'
 import * as Api from '@apis/index'
 import { useResizeListener } from '@/utils/hooks/useResizeListener'
 import { debounce } from '@/utils/adLoadsh'
-import { computed } from '@vue/reactivity'
 
 const props = withDefaults(
   defineProps<{
@@ -40,6 +39,7 @@ const $innerEl = ref<HTMLElement>()
 const activeIndex = ref(0)
 
 const styleInit = debounce(async () => {
+  if (!$innerEl.value) return
   await nextTick()
   const innerHeight = $innerEl.value!.clientHeight
   imgElInfolist.value = [...$innerEl.value!.querySelectorAll('img')].map(

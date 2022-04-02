@@ -347,8 +347,8 @@ export default defineComponent({
         )
         await wait(2000)
         // 定位缓存进度
-        awVideoComp.value!.changeProgress(cache.progress)
-        awVideoComp.value!.notify({
+        awVideoComp.value?.changeProgress(cache.progress)
+        awVideoComp.value?.notify({
           content: `上次播放到 ${value.name} ${sToMs(cache.progress)}`,
           duration: 3000
         })
@@ -393,8 +393,8 @@ export default defineComponent({
       )
       await wait(2000)
       // 定位缓存进度
-      awVideoComp.value!.changeProgress(routeParam.progress)
-      awVideoComp.value!.notify({
+      awVideoComp.value?.changeProgress(routeParam.progress)
+      awVideoComp.value?.notify({
         content: `已为您定位到 ${value.name} ${sToMs(routeParam.progress)}`,
         duration: 3000
       })

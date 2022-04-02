@@ -128,9 +128,10 @@ export async function getVideoUrl(
     } = await getax<ApiReturns.GetVideo>(`api/getVideo/${key}`)
     return Object.entries(data).map(([k, v]) => ({
       key: k,
-      value: (v instanceof Array ? v : []).map((url) =>
-        url.replaceAll("'", '').split('?url=').pop()
-      ) as string[]
+      value: v
+      // (v instanceof Array ? v : []).map((url) =>
+      //   url.replaceAll("'", '').split('?url=').pop()
+      // ) as string[]
     }))
   } catch {
     console.log('bad')
