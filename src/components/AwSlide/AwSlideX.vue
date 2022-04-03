@@ -6,8 +6,8 @@
       </div>
     </div>
     <transition
-      enter-active-class="fadeInLeft"
-      leave-active-class="fadeOutLeft"
+      enter-active-class="animate__fadeInLeft"
+      leave-active-class="animate__fadeOutLeft"
     >
       <div
         v-show="arrowVisible('left')"
@@ -18,8 +18,8 @@
       </div>
     </transition>
     <transition
-      enter-active-class="fadeInRight"
-      leave-active-class="fadeOutRight"
+      enter-active-class="animate__fadeInRight"
+      leave-active-class="animate__fadeOutRight"
     >
       <div
         v-show="arrowVisible('right')"
@@ -112,14 +112,6 @@ function styleModule(childrenEls: ComputedRef<HTMLElement[]>, slider: Slider) {
     selfDom
   }
 }
-function controlModule(slider: Slider) {
-  const next = () => slider.active++
-  const prev = () => slider.active--
-  return {
-    next,
-    prev
-  }
-}
 export default defineComponent({
   name: 'AwSlideX',
   emits: {
@@ -129,12 +121,19 @@ export default defineComponent({
      */
     onChange: (e: number) => typeof e === 'number'
   },
-  setup(props, { emit }) {
+  setup(_, { emit }) {
     const { children, childrenEls } = linkChild()
     const slider = reactive<Slider>({
       active: 0,
       perScreenChildcount: 0
     })
+
+    const { arrowVisible, ...styleModuleArgs } = styleModule(
+      childrenEls,
+      slider
+    )
+    const prev = () => arrowVisible.value('left') && slider.active--
+    const next = () => arrowVisible.value('right') && slider.active++
     watch(
       () => slider.active,
       (active) => {
@@ -146,8 +145,10 @@ export default defineComponent({
     )
     return {
       children,
-      ...styleModule(childrenEls, slider),
-      ...controlModule(slider)
+      arrowVisible,
+      next,
+      prev,
+      ...styleModuleArgs
     }
   }
 })
