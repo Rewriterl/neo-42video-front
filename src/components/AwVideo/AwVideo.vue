@@ -31,20 +31,14 @@
     >
       <AwVideoProgress
         ref="awVideoProgressComp"
+        :preview-img="player.preview"
         :duration="player.duration"
         :current-time="player.currentTime"
         :buffered-list="player.bufferedList"
         @timePreview="computedPreview"
         @change="onProgressChange"
         @progressing="controlBar.isProgressing = true"
-      >
-        <template #tooltip="{ time }">
-          <div class="preview">
-            <img v-if="player.preview" :src="player.preview" />
-            <span>{{ time }}</span>
-          </div>
-        </template>
-      </AwVideoProgress>
+      />
       <Icon
         class="control-icon control-icon__play"
         :name="player.status === 1 ? 'pause' : 'play'"
@@ -860,23 +854,6 @@ export default defineComponent({
             }
           }
         }
-      }
-    }
-    .preview {
-      position: relative;
-      width: 140px;
-      img {
-        width: 100%;
-        object-fit: cover;
-      }
-      span {
-        position: absolute;
-        left: 4px;
-        bottom: 4px;
-        margin: 0 auto;
-        font-size: 14px;
-        padding: 2px 4px;
-        background: rgba(0, 0, 0, 0.7);
       }
     }
   }

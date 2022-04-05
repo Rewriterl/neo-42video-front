@@ -15,9 +15,14 @@
       v-bind="$attrs"
     />
     <div class="aw-video__progress-tooltip" :style="tooltipStyle">
-      <slot name="tooltip" :time="sToMs(tooltipTime)">
+      <div class="preview">
+        <img v-if="previewImg" :src="previewImg" />
         <span>{{ sToMs(tooltipTime) }}</span>
-      </slot>
+      </div>
+    </div>
+    <div class="aw-video__progress-indicator" :style="tooltipStyle">
+      <Icon name="icon_love_hover" />
+      <Icon name="icon_love_hover" />
     </div>
   </div>
 </template>
@@ -53,6 +58,10 @@ export default defineComponent({
     bufferedList: {
       type: Array as PropType<[number, number][]>,
       default: () => []
+    },
+    previewImg: {
+      type: String,
+      default: ''
     }
   },
   emits: ['timeChange', 'timePreview', 'progressing', 'progressend'],
@@ -70,7 +79,7 @@ export default defineComponent({
     const hasCurListenlist = computed(() => true)
     const tooltipStyle = computed(() => {
       return {
-        transform: `translateX(${mouse.x - 20}px)`
+        transform: `translateX(${mouse.x}px)`
       } as CSSProperties
     })
     const tooltipTime = computed(() => {
@@ -144,12 +153,15 @@ export default defineComponent({
 </script>
 <style lang="less" scoped>
 .aw-video__progress {
+  @offset: 4px;
   position: absolute;
-  top: 0;
+  top: -@offset;
   width: 100%;
+  padding: 4px 0;
   cursor: pointer;
   &:hover {
-    .aw-video__progress-tooltip {
+    .aw-video__progress-tooltip,
+    .aw-video__progress-indicator {
       opacity: 1;
     }
   }
@@ -160,8 +172,8 @@ export default defineComponent({
   }
   &-tooltip {
     position: absolute;
-    bottom: 16px;
-    left: 0;
+    bottom: 26px;
+    left: -20px;
     padding: 0 8px;
     background: rgb(0 0 0 / 0.8);
     display: flex;
@@ -171,6 +183,24 @@ export default defineComponent({
     border-radius: 8px;
     opacity: 0;
     transition: opacity 0.25s;
+
+    .preview {
+      position: relative;
+      width: 140px;
+      img {
+        width: 100%;
+        object-fit: cover;
+      }
+      span {
+        position: absolute;
+        left: 4px;
+        bottom: 4px;
+        margin: 0 auto;
+        font-size: 14px;
+        padding: 2px 4px;
+        background: rgba(0, 0, 0, 0.7);
+      }
+    }
   }
   &-hide {
     cursor: unset;
@@ -180,6 +210,30 @@ export default defineComponent({
     .progress {
       opacity: 0;
       transform: translateY(100px);
+    }
+  }
+  &-indicator {
+    @width: 12px;
+    position: absolute;
+    left: calc(-@width / 2);
+    top: -@width;
+    width: @width;
+    height: 100%;
+    z-index: -1;
+    padding: @width 0;
+    opacity: 0;
+    i {
+      position: absolute;
+      font-size: @width;
+      color: crimson;
+      opacity: 0.9;
+      &:first-child {
+        top: @offset;
+      }
+      &:last-child {
+        bottom: @offset;
+        transform: rotate(180deg);
+      }
     }
   }
 }
