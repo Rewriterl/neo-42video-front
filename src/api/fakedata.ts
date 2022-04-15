@@ -1,3 +1,15 @@
+export function fakeRequest<T>(data: T): Promise<{
+  data: T
+}> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        data: data
+      })
+    }, 1000)
+  })
+}
+
 export const FAKE_SEARCH = {
   code: 200,
   message: '请求成功',
