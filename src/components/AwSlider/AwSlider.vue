@@ -158,6 +158,7 @@ export default defineComponent({
   width: 100%;
   background: rgba(255, 255, 255, 0.3);
   border-radius: @radius;
+  cursor: pointer;
   &__runway {
     position: relative;
     width: 100%;

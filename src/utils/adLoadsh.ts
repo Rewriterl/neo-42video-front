@@ -45,7 +45,7 @@ export function throttle(callback: DefaultFn, delay = 300) {
  * @param insert 插入的字符串
  * @returns 结果字符串
  */
-export function insertStr(str: string, index: number, insert: string): string {
+export function insertStr(str: string, index: number, insert: string) {
   return str.slice(0, index) + insert + str.slice(index)
 }
 
@@ -55,7 +55,7 @@ export function insertStr(str: string, index: number, insert: string): string {
  * @param max 最大
  * @returns 结果
  */
-export function getRandom(min = 0, max = 1): number {
+export function getRandom(min = 0, max = 1) {
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
@@ -64,7 +64,7 @@ export function getRandom(min = 0, max = 1): number {
  * @param time 时间戳
  * @returns xx:xx
  */
-export function sToMs(time: number): string {
+export function sToMs(time: number) {
   let m: number | string = parseInt(((time % 3600) / 60).toString()),
     s: number | string = parseInt(((time % 3600) % 60).toString())
   m = m < 10 ? '0' + m : m
@@ -77,7 +77,7 @@ export function sToMs(time: number): string {
  * @param time 00:00.0格式的时间
  * @returns 秒钟
  */
-export function timeToS(time: string): number {
+export function timeToS(time: string) {
   const times = time.split(':')
   return Number(times[0]) * 60 + Number(times[1])
 }
@@ -87,7 +87,7 @@ export function timeToS(time: string): number {
  * @param time 时间
  * @returns xxxx.xx.xx
  */
-export function msToYmd(time: string | number): string {
+export function msToYmd(time: string | number) {
   const date = new Date(time)
   return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`
 }
@@ -99,7 +99,7 @@ export function msToYmd(time: string | number): string {
  * @param max 最大值
  * @returns 区间内的值
  */
-export function numLimit(num: number, min = 0, max = 100): number {
+export function numLimit(num: number, min = 0, max = 100) {
   return Math.max(min, Math.min(num, max))
 }
 
