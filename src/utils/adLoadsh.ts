@@ -21,6 +21,39 @@ export function debounce(callback: DefaultFn, delay = 300) {
   }
 }
 
+// todo 严格ts类型的防抖函数
+// export function debounce<T = Window, P>(
+//   callback: (...args: P) => void,
+//   delay = 300,
+//   immediate = false
+// ) {
+//   let timer: NodeJS.Timeout | null = null
+//   const cb = function (this: T, ...args: P) {
+//     const ctx = this
+//     timer && clearTimeout(timer)
+//     if (immediate) {
+//       const isEnter = !timer
+//       timer = setTimeout(() => {
+//         timer = null
+//       }, delay)
+//       isEnter && callback.apply(ctx, args)
+//     } else {
+//       timer = setTimeout(() => {
+//         callback.apply(ctx, args)
+//       }, delay)
+//     }
+//   }
+//   return cb
+// }
+
+document.body.addEventListener(
+  'click',
+  debounce((e) => {
+    console.log(this)
+    console.log('123')
+  }, 1000)
+)
+
 /**
  * 节流
  * @param callback 执行方法

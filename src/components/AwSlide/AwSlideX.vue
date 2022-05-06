@@ -146,7 +146,7 @@ export default defineComponent({
       callback()
       setTimeout(() => {
         slider.transitioning = false
-      }, 625)
+      }, 800)
     }
     const prev = () =>
       sliderActiveControler(() => arrowVisible.value('left') && slider.active--)

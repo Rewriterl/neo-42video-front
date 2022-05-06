@@ -349,46 +349,40 @@ export default defineComponent({
       fastProgressChange
     } =
       /** 进度模块 */
-      (() => {
+      (() => ({
         /**
          * 进度修改
          * @param val ms
          */
-        const changeProgress = (val: number) => {
+        changeProgress(val: number) {
           videoInstance.value?.setCurrentTime(val)
-        }
+        },
         /**
          * 计算进度预览图
          * @param val ms
          */
-        const computedPreview = debounce(async (val: number) => {
+        computedPreview: debounce(async (val: number) => {
           player.preview = await getVideoScreenshot(props.src, val)
-        }, 100)
+        }, 100),
         /**
          * 进度切换
          * @param val 0-100
          */
-        const onProgressChange = (val: any) => {
+        onProgressChange(val: any) {
           const realTime = player.duration * (+val / 100)
           changeProgress(realTime)
           controlBar.isProgressing = false
-        }
+        },
         /**
          * 进度快速切换
          * @param limit s
          */
-        const fastProgressChange = (limit: number) => {
+        fastProgressChange(limit: number) {
           const num = player.currentTime + limit
           if (num < 0 || num > player.duration) return
           changeProgress(num)
         }
-        return {
-          changeProgress,
-          computedPreview,
-          onProgressChange,
-          fastProgressChange
-        }
-      })()
+      }))()
     const play = () => {
       player.status = 1
       videoInstance.value?.play()
