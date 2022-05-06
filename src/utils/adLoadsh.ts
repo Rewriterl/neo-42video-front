@@ -46,14 +46,6 @@ export function debounce(callback: DefaultFn, delay = 300) {
 //   return cb
 // }
 
-document.body.addEventListener(
-  'click',
-  debounce((e) => {
-    console.log(this)
-    console.log('123')
-  }, 1000)
-)
-
 /**
  * 节流
  * @param callback 执行方法
