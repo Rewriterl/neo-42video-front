@@ -22,13 +22,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, onMounted, CSSProperties } from 'vue'
+import {
+  defineComponent,
+  reactive,
+  onMounted,
+  CSSProperties,
+  computed
+} from 'vue'
 
 import AwTab from './AwTab.vue'
 
 import { useChildren } from '@/utils/vant/useRelation'
 import { AWTABS_KEY } from './static'
-import { computed } from '@vue/reactivity'
 
 export default defineComponent({
   name: 'AwTabs',
@@ -36,6 +41,10 @@ export default defineComponent({
     active: {
       type: String,
       default: ''
+    },
+    lazy: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['update:active'],
@@ -48,13 +57,13 @@ export default defineComponent({
     }>({
       child: []
     })
+
     const tabsList = computed(() =>
       tabs.child.map((item) => ({
         name: item.name,
         title: item.title
       }))
     )
-
     const panelStyle = computed(() => {
       let activeIndex = tabsList.value.findIndex(
         (item) => item.name === props.active
@@ -68,9 +77,11 @@ export default defineComponent({
 
     const init = () => {
       tabs.child = children
+      tabs.child[0]?.changeLoaded(true)
     }
     const changeNav = (name: typeof tabsList.value[0]['title']) => {
       emit('update:active', name)
+      tabs.child.find((item) => item.name === name)?.changeLoaded(true)
     }
 
     onMounted(() => {

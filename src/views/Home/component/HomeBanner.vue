@@ -14,57 +14,62 @@
         </el-carousel-item>
       </el-carousel>
     </div>
-    <div v-if="isReady" class="home-banner__info">
-      <div class="home-banner__info-msg">
-        <template v-if="carousel.current">
-          <transition
-            enter-active-class="carousel-info-in"
-            leave-active-class="carousel-info-out"
-          >
-            <div v-show="carousel.infoVisible" class="inner">
-              <span>俺也不知道</span>
-              <h1>{{ carousel.current.title }}</h1>
-              <p>
-                越是漂亮华丽 令人振奋的烟花，在消逝之后就让人越感觉到寂寞。
-                但即便烟花消逝了 回忆却还留着
-              </p>
-              <div class="inner-rate">
-                <el-rate :value="5" disabled />
-                <span>999 <i>views</i></span>
+    <transition enter-active-class="animate__animated animate__fadeIn">
+      <div v-if="isReady" class="home-banner__info">
+        <div class="home-banner__info-msg">
+          <template v-if="carousel.current">
+            <transition
+              enter-active-class="carousel-info-in"
+              leave-active-class="carousel-info-out"
+            >
+              <div v-show="carousel.infoVisible" class="inner">
+                <span>俺也不知道</span>
+                <h1>{{ carousel.current.title }}</h1>
+                <p>
+                  越是漂亮华丽 令人振奋的烟花，在消逝之后就让人越感觉到寂寞。
+                  但即便烟花消逝了 回忆却还留着
+                </p>
+                <div class="inner-rate">
+                  <el-rate :value="5" disabled />
+                  <span>999 <i>views</i></span>
+                </div>
+                <div class="inner-control">
+                  <el-button
+                    type="warning"
+                    round
+                    @click="toComicMain(carousel.current.id)"
+                    >前往播放<Icon name="play"
+                  /></el-button>
+                  <el-button round plain>详情</el-button>
+                </div>
               </div>
-              <div class="inner-control">
-                <el-button
-                  type="warning"
-                  round
-                  @click="toComicMain(carousel.current.id)"
-                  >前往播放<Icon name="play"
-                /></el-button>
-                <el-button round plain>详情</el-button>
-              </div>
-            </div>
-          </transition>
-        </template>
+            </transition>
+          </template>
+        </div>
+        <div class="home-banner__info-section">
+          <AwTabs v-model:active="tabs.active" class="tabs">
+            <AwTab
+              v-for="tab in tabs.list"
+              :key="tab.key"
+              :name="tab.key"
+              :title="tab.name"
+            >
+              <AwSlideX @on-change="(index) => (tab.index = index)">
+                <AwSlideItem
+                  v-for="(item, index) in comicTabs[tab.key]"
+                  :key="index"
+                >
+                  <HomeSectionCard
+                    :detail="item"
+                    :active="index === tab.index"
+                  />
+                </AwSlideItem>
+              </AwSlideX>
+            </AwTab>
+          </AwTabs>
+        </div>
       </div>
-      <div class="home-banner__info-section">
-        <AwTabs v-model:active="tabs.active" class="tabs">
-          <AwTab
-            v-for="tab in tabs.list"
-            :key="tab.key"
-            :name="tab.key"
-            :title="tab.name"
-          >
-            <AwSlideX @on-change="(index) => (tab.index = index)">
-              <AwSlideItem
-                v-for="(item, index) in comicTabs[tab.key]"
-                :key="index"
-              >
-                <HomeSectionCard :detail="item" :active="index === tab.index" />
-              </AwSlideItem>
-            </AwSlideX>
-          </AwTab>
-        </AwTabs>
-      </div>
-    </div>
+    </transition>
   </div>
 
   <div v-if="!isInit" class="home-banner fake">

@@ -169,6 +169,7 @@ function comicInfoModule(comicId: Ref<number | string>, init: () => void) {
             comic[k] = data[k] as any
           }
         })
+        document.title = comic.title
         Api.getComicImglist({
           name: comic.title
         }).then((res) => (comicImglist.value = res))

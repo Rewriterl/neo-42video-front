@@ -1,11 +1,11 @@
 <template>
-  <div class="aw-tab">
+  <div v-if="loaded" class="aw-tab">
     <slot />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { useParent } from '@/utils/vant/useRelation'
 import { AWTABS_KEY } from './static'
 export default defineComponent({
@@ -22,7 +22,16 @@ export default defineComponent({
   },
   setup() {
     useParent(AWTABS_KEY)
-    return {}
+    const loaded = ref(false)
+
+    const changeLoaded = (res: boolean) => {
+      loaded.value = res
+    }
+
+    return {
+      loaded,
+      changeLoaded
+    }
   }
 })
 </script>
