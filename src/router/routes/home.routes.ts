@@ -4,8 +4,8 @@ export default {
   name: 'Home',
   component: Home,
   meta: {
-    title: 'Χαλαρό',
-    dom: '#home'
+    title: 'Anime-首页',
+    elName: '#home'
   },
   children: []
 }

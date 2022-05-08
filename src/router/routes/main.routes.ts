@@ -4,8 +4,7 @@ export default {
   name: 'ComicMain',
   component: Main,
   meta: {
-    title: 'Χαλαρό',
-    dom: '.comic-main'
+    title: 'Anime-详情'
   },
   props: true,
   children: []

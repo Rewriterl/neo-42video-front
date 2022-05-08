@@ -4,8 +4,8 @@ export default {
   name: 'Search',
   component: Search,
   meta: {
-    title: 'Χαλαρό',
-    dom: '#search'
+    title: 'Anime-搜索',
+    elName: '#search .search-main'
   },
   children: []
 }
