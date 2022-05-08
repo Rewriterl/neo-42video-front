@@ -2,8 +2,14 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import RouteList from './routes/index'
 import { getServerIp } from '@/stores/systemConfig.store'
 import { ElNotification } from 'element-plus'
+import {
+  getRouteSCMInstance,
+  createRouteSCM
+} from '@/class/routeScrollCache.class'
 
-const routes: Array<RouteRecordRaw> = [
+createRouteSCM()
+
+const routes: RouteRecordRaw[] = [
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
@@ -29,6 +35,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  getRouteSCMInstance().addCache(from.path, from.meta)
+
   if (to.name !== 'Setting' && !getServerIp()) {
     ElNotification({
       type: 'error',
@@ -38,6 +46,10 @@ router.beforeEach((to, from, next) => {
     next({ name: 'Setting' })
   }
   next()
+})
+router.afterEach((to) => {
+  getRouteSCMInstance().setScroll(to.path)
+  document.title = String(to.meta.title) || 'Anime'
 })
 
 export default router

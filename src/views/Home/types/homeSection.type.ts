@@ -7,5 +7,6 @@ export interface Tabs<T> {
   list: {
     name: string
     key: T
+    index?: number
   }[]
 }

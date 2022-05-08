@@ -9,11 +9,6 @@
     @mousedown="progressing"
     @touchstart="progressing"
   >
-    <AwSlider
-      v-model="sliderVal"
-      :parts="bufferedListPercent"
-      v-bind="$attrs"
-    />
     <div class="aw-video__progress-tooltip" :style="tooltipStyle">
       <div class="preview">
         <img v-if="previewImg" :src="previewImg" />
@@ -24,6 +19,11 @@
       <Icon name="icon_love_hover" />
       <Icon name="icon_love_hover" />
     </div>
+    <AwSlider
+      v-model="sliderVal"
+      :parts="bufferedListPercent"
+      v-bind="$attrs"
+    />
   </div>
 </template>
 
@@ -158,7 +158,6 @@ export default defineComponent({
   top: -@offset;
   width: 100%;
   padding: 4px 0;
-  cursor: pointer;
   &:hover {
     .aw-video__progress-tooltip,
     .aw-video__progress-indicator {

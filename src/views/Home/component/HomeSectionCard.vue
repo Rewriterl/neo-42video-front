@@ -45,6 +45,16 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 .home-section__card {
   position: relative;
   width: 340px;
@@ -53,6 +63,7 @@ export default defineComponent({
   background-clip: content-box;
   filter: brightness(0.5);
   transition: all 0.25s;
+  animation: enter 0.25s forwards;
   &.active {
     filter: brightness(1);
     .cover-play {

@@ -14,68 +14,62 @@
         </el-carousel-item>
       </el-carousel>
     </div>
-    <div v-if="isReady" class="home-banner__info">
-      <div class="home-banner__info-msg">
-        <template v-if="carousel.current">
-          <transition
-            enter-active-class="carousel-info-in"
-            leave-active-class="carousel-info-out"
-          >
-            <div v-show="carousel.infoVisible" class="inner">
-              <span>俺也不知道</span>
-              <h1>{{ carousel.current.title }}</h1>
-              <p>
-                越是漂亮华丽 令人振奋的烟花，在消逝之后就让人越感觉到寂寞。
-                但即便烟花消逝了 回忆却还留着
-              </p>
-              <div class="inner-rate">
-                <el-rate :value="5" disabled />
-                <span>999 <i>views</i></span>
-              </div>
-              <div class="inner-control">
-                <el-button
-                  type="warning"
-                  round
-                  @click="toComicMain(carousel.current.id)"
-                  >前往播放<Icon name="play"
-                /></el-button>
-                <el-button round plain>详情</el-button>
-              </div>
-            </div>
-          </transition>
-        </template>
-      </div>
-      <div class="home-banner__info-section">
-        <div class="tabs">
-          <div class="tabs-nav">
-            <div
-              v-for="item in tabs.list"
-              :key="item.key"
-              class="tabs-nav__item"
-              :class="{ active: tabs.active === item.key }"
-              @click="changeTab(item.key)"
+    <transition enter-active-class="animate__animated animate__fadeIn">
+      <div v-if="isReady" class="home-banner__info">
+        <div class="home-banner__info-msg">
+          <template v-if="carousel.current">
+            <transition
+              enter-active-class="carousel-info-in"
+              leave-active-class="carousel-info-out"
             >
-              {{ item.name }}
-            </div>
-          </div>
-          <div class="tabs-inner">
-            <AwSlideX
-              v-if="currentComic.length > 0"
-              :key="tabs.active"
-              class="card-content"
-              @onChange="onAwSlideXChange"
+              <div v-show="carousel.infoVisible" class="inner">
+                <span>俺也不知道</span>
+                <h1>{{ carousel.current.title }}</h1>
+                <p>
+                  越是漂亮华丽 令人振奋的烟花，在消逝之后就让人越感觉到寂寞。
+                  但即便烟花消逝了 回忆却还留着
+                </p>
+                <div class="inner-rate">
+                  <el-rate :value="5" disabled />
+                  <span>999 <i>views</i></span>
+                </div>
+                <div class="inner-control">
+                  <el-button
+                    type="warning"
+                    round
+                    @click="toComicMain(carousel.current.id)"
+                    >前往播放<Icon name="play"
+                  /></el-button>
+                  <el-button round plain>详情</el-button>
+                </div>
+              </div>
+            </transition>
+          </template>
+        </div>
+        <div class="home-banner__info-section">
+          <AwTabs v-model:active="tabs.active" class="tabs">
+            <AwTab
+              v-for="tab in tabs.list"
+              :key="tab.key"
+              :name="tab.key"
+              :title="tab.name"
             >
-              <AwSlideItem v-for="(item, index) in currentComic" :key="index">
-                <HomeSectionCard
-                  :detail="item"
-                  :active="index === awSlideXActive"
-                />
-              </AwSlideItem>
-            </AwSlideX>
-          </div>
+              <AwSlideX @on-change="(index) => (tab.index = index)">
+                <AwSlideItem
+                  v-for="(item, index) in comicTabs[tab.key]"
+                  :key="index"
+                >
+                  <HomeSectionCard
+                    :detail="item"
+                    :active="index === tab.index"
+                  />
+                </AwSlideItem>
+              </AwSlideX>
+            </AwTab>
+          </AwTabs>
         </div>
       </div>
-    </div>
+    </transition>
   </div>
 
   <div v-if="!isInit" class="home-banner fake">
@@ -90,6 +84,8 @@ import AwSlideX from '@comps/AwSlide/AwSlideX.vue'
 import AwSlideItem from '@comps/AwSlide/AwSlideItem.vue'
 import HomeSectionCard from './HomeSectionCard.vue'
 import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
+import AwTabs from '@/components/AwTabs/AwTabs.vue'
+import AwTab from '@/components/AwTabs/AwTab.vue'
 
 import * as Type from '../types/homeSection.type'
 import { toComicMain } from '@/hooks/router'
@@ -101,7 +97,9 @@ export default defineComponent({
     AwSlideX,
     AwSlideItem,
     HomeSectionCard,
-    LoadingBlockRun
+    LoadingBlockRun,
+    AwTabs,
+    AwTab
   },
   props: {
     banner: {
@@ -136,22 +134,20 @@ export default defineComponent({
     const tabs = reactive<Type.Tabs<ComicKey>>({
       active: 'hots',
       list: [
-        // {
-        //   name: '日排行',
-        //   key: 'perday'
-        // },
         {
           name: '热门',
-          key: 'hots'
+          key: 'hots',
+          index: 0
         },
         {
           name: '最新更新',
-          key: 'latest'
+          key: 'latest',
+          index: 0
         }
       ]
     })
 
-    const currentComic = computed(() => {
+    const comicTabs = computed(() => {
       return {
         latest: props.latest.map((item) => ({
           cover: item.cover,
@@ -165,7 +161,7 @@ export default defineComponent({
           id: item.id,
           desc: item.season
         }))
-      }[tabs.active]
+      }
     })
 
     const onCarouselChange = async (e: any) => {
@@ -173,13 +169,6 @@ export default defineComponent({
       await wait(500)
       carousel.active = +e
       carousel.infoVisible = true
-    }
-    const changeTab = (key: ComicKey) => {
-      tabs.active = key
-      awSlideXActive.value = 0
-    }
-    const onAwSlideXChange = (e: number) => {
-      awSlideXActive.value = e
     }
 
     watch(
@@ -194,11 +183,9 @@ export default defineComponent({
     return {
       tabs,
       awSlideXActive,
-      currentComic,
+      comicTabs,
       onCarouselChange,
       carousel,
-      changeTab,
-      onAwSlideXChange,
       toComicMain,
       isReady
     }
@@ -321,40 +308,9 @@ export default defineComponent({
         transform: scaleX(1.4);
       }
       .tabs {
-        position: relative;
-        display: flex;
-        flex-direction: column;
         width: 100%;
         height: 100%;
         z-index: 4;
-        &-nav {
-          display: flex;
-          width: 100%;
-          height: 40px;
-          &__item {
-            display: flex;
-            align-items: center;
-            height: 100%;
-            color: rgba(255, 255, 255, 0.7);
-            margin-right: 40px;
-            cursor: pointer;
-            user-select: none;
-            font-weight: 800;
-            &.active {
-              color: var(--primary-color);
-              border-bottom: 2px solid var(--primary-color);
-            }
-          }
-        }
-        &-inner {
-          flex: 1;
-          padding-top: 20px;
-          box-sizing: border-box;
-          overflow: hidden;
-          .card-content {
-            width: 100%;
-          }
-        }
       }
     }
   }

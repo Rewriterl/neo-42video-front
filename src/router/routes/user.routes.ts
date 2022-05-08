@@ -5,8 +5,8 @@ export default {
   name: 'User',
   component: User,
   meta: {
-    title: 'Χαλαρό',
-    dom: '#user'
+    title: 'Anime-小窝',
+    elName: '#user .play-history'
   },
   children: []
 }

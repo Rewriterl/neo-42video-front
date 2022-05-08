@@ -6,28 +6,14 @@
     @mousemove="controlBarVisibleHandler"
     @touchmove="controlBarVisibleHandler"
   >
-    <div class="aw-video__mask" :class="{ disable: !src }" @click="playHandler">
-      <Icon
-        v-show="player.status === 2"
-        class="aw-video__play"
-        name="player-fill"
-      />
-    </div>
-    <div v-show="player.status === 0" class="aw-video__loading">
-      <LoadingBlockRun />
-    </div>
-    <div v-show="isBad" class="aw-video__bad">
-      <img src="~static/img/video-bad.png" />
-      <span>加载失败了，好耶！</span>
-    </div>
-    <div v-if="!src" class="aw-video__bad">
-      <img src="~static/img/video-empty.png" />
-      <span>暂无播放内容~</span>
-    </div>
-
+    <AwVideoMask
+      :status="player.status"
+      :src="src"
+      :play-handler="playHandler"
+    />
     <div
-      :class="{ show: src && !isBad && controlBar.visible }"
-      class="aw-video__control"
+      :class="{ show: src && player.status !== -1 && controlBar.visible }"
+      class="aw-video__control show"
     >
       <AwVideoProgress
         ref="awVideoProgressComp"
@@ -46,7 +32,7 @@
       />
       <el-tooltip effect="dark" content="下一集" placement="top-start">
         <Icon
-          class="control-icon control-icon__next"
+          class="control-icon control-icon__next scale"
           name="iconfontsvgnext"
           @click="$emit('next')"
         />
@@ -56,7 +42,7 @@
         <span>/</span>
         {{ sToMs(player.duration) }}
       </div>
-      <div
+      <!-- <div
         v-if="quality.length > 0"
         v-click-outside="() => (qualitySelectVisible = false)"
         class="control-select quality"
@@ -74,7 +60,7 @@
             {{ name }}
           </li>
         </ul>
-      </div>
+      </div> -->
       <div
         v-click-outside="() => (playbackRate.visible = false)"
         class="control-select playback-rate"
@@ -125,7 +111,7 @@
       </div>
       <el-tooltip effect="dark" content="网页全屏" placement="top-start">
         <Icon
-          class="control-icon"
+          class="control-icon scale"
           :name="
             player.webFullScreen ? 'exit-fullscreen-4-3' : 'fullscreen-4-3'
           "
@@ -134,7 +120,7 @@
       </el-tooltip>
       <el-tooltip effect="dark" content="画中画" placement="top-start">
         <Icon
-          class="control-icon"
+          class="control-icon scale"
           :name="
             player.pip
               ? 'picture-in-picture-exit-fill'
@@ -145,7 +131,7 @@
       </el-tooltip>
       <el-tooltip effect="dark" content="全屏" placement="top-start">
         <Icon
-          class="control-icon"
+          class="control-icon scale"
           :name="player.fullScreen ? 'exit-full-screen' : 'full-screen'"
           @click="fullScreenCutover"
         />
@@ -177,9 +163,9 @@
 import { computed, defineComponent, PropType, reactive, Ref, ref } from 'vue'
 
 import AwVideoProgress from './AwVideoProgress.vue'
-import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
 import AwVideoMsg, { NotifyItem, NotifyReturns } from './AwVideoMsg.vue'
 import VideoRender from './VideoRender.vue'
+import AwVideoMask from './AwVideoMask.vue'
 
 import {
   checkFullscreen,
@@ -245,8 +231,8 @@ export default defineComponent({
   name: 'AwVideo',
   components: {
     AwVideoProgress,
-    LoadingBlockRun,
     AwVideoMsg,
+    AwVideoMask,
     VideoRender
   },
   inheritAttrs: true,
@@ -257,24 +243,23 @@ export default defineComponent({
       default: ''
     },
     /** 画质列表 */
-    quality: {
-      type: Array as PropType<Type.Quality[]>,
-      default: () => []
-      // [
-      //   {
-      //     name: '1080p 超清',
-      //     value: 0
-      //   },
-      //   {
-      //     name: '720p 高清',
-      //     value: 1
-      //   },
-      //   {
-      //     name: '自动',
-      //     value: -1
-      //   }
-      // ]
-    },
+    // quality: {
+    //   type: Array as PropType<Type.Quality[]>,
+    //   default: () => [
+    //     {
+    //       name: '1080p 超清',
+    //       value: 0
+    //     },
+    //     {
+    //       name: '720p 高清',
+    //       value: 1
+    //     },
+    //     {
+    //       name: '自动',
+    //       value: -1
+    //     }
+    //   ]
+    // },
     /** 初始化时是否静音 */
     muted: {
       type: Boolean,
@@ -293,14 +278,14 @@ export default defineComponent({
       duration: 0,
       status: -2,
       volume: 60,
+      bufferedList: [],
+      preview: '',
       get realVolume() {
         return this.volume / 100
       },
       fullScreen: false,
       isMute: props.muted,
-      preview: '',
       isListened: false,
-      bufferedList: [],
       pip: false,
       webFullScreen: false
     })
@@ -320,45 +305,42 @@ export default defineComponent({
     const controlBar = reactive({
       /** 是否显示 */
       visible: false,
-      // todo 类型完善
+      /**  */
       timer: null as null | NodeJS.Timeout,
       /** 是否在进度拖拽中 */
       isProgressing: false
     })
-    /** 视频是否错误 */
-    const isBad = computed(() => player.status === -1)
+    // const qualityModule =
+    //   /** 画质切换模块 */
+    //   (() => {
+    //     /** 当前画质 */
+    //     const currentQuality = ref<Type.Quality['value']>(-1)
+    //     /** 画质选项选项显隐 */
+    //     const qualitySelectVisible = ref(false)
+    //     /** 当前选择的画质名称 */
+    //     const currentQualityName = computed(
+    //       () =>
+    //         props.quality.find((item) => item.value === currentQuality.value)
+    //           ?.name || '-'
+    //     )
 
-    const qualityModule =
-      /** 画质切换模块 */
-      (() => {
-        /** 当前画质 */
-        const currentQuality = ref<Type.Quality['value']>(-1)
-        /** 画质选项选项显隐 */
-        const qualitySelectVisible = ref(false)
-        /** 当前选择的画质名称 */
-        const currentQualityName = computed(
-          () =>
-            props.quality.find((item) => item.value === currentQuality.value)
-              ?.name || '-'
-        )
+    //     /**
+    //      * 画质切换
+    //      * @param value 画质值
+    //      */
+    //     const changeQuality = (value: Type.Quality['value']) => {
+    //       currentQuality.value = value
+    //       qualitySelectVisible.value = false
+    //       ctx.emit('changeQuality', value)
+    //     }
 
-        /**
-         * 画质切换
-         * @param value 画质值
-         */
-        const changeQuality = (value: Type.Quality['value']) => {
-          currentQuality.value = value
-          qualitySelectVisible.value = false
-          ctx.emit('changeQuality', value)
-        }
-
-        return {
-          currentQuality,
-          currentQualityName,
-          changeQuality,
-          qualitySelectVisible
-        }
-      })()
+    //     return {
+    //       currentQuality,
+    //       currentQualityName,
+    //       changeQuality,
+    //       qualitySelectVisible
+    //     }
+    //   })()
 
     const {
       changeProgress,
@@ -367,47 +349,44 @@ export default defineComponent({
       fastProgressChange
     } =
       /** 进度模块 */
-      (() => {
+      (() => ({
         /**
          * 进度修改
          * @param val ms
          */
-        const changeProgress = (val: number) => {
+        changeProgress(val: number) {
           videoInstance.value?.setCurrentTime(val)
-        }
+        },
         /**
          * 计算进度预览图
          * @param val ms
          */
-        const computedPreview = debounce(async (val: number) => {
+        computedPreview: debounce(async (val: number) => {
           player.preview = await getVideoScreenshot(props.src, val)
-        }, 100)
+        }, 100),
         /**
          * 进度切换
          * @param val 0-100
          */
-        const onProgressChange = (val: any) => {
+        onProgressChange(val: any) {
           const realTime = player.duration * (+val / 100)
           changeProgress(realTime)
           controlBar.isProgressing = false
-        }
+        },
         /**
          * 进度快速切换
          * @param limit s
          */
-        const fastProgressChange = (limit: number) => {
+        fastProgressChange(limit: number) {
           const num = player.currentTime + limit
           if (num < 0 || num > player.duration) return
           changeProgress(num)
         }
-        return {
-          changeProgress,
-          computedPreview,
-          onProgressChange,
-          fastProgressChange
-        }
-      })()
-
+      }))()
+    const play = () => {
+      player.status = 1
+      videoInstance.value?.play()
+    }
     /** 播放控制 */
     const playHandler = () => {
       switch (player.status) {
@@ -500,9 +479,10 @@ export default defineComponent({
     }
     /** 视频响应事件 */
     const videoEvents = {
+      /** 准备就绪 */
       canplay(e: Event) {
-        player.status = 2
         const { duration } = e.target as HTMLVideoElement
+        player.status = 2
         player.duration = duration
         notifys.canplay && notifys.canplay.remove()
         notifys.canplay = notify({
@@ -559,8 +539,9 @@ export default defineComponent({
       }, 100),
       /** 缓冲结束 监听 */
       playing: debounce((e: Event) => {
-        const { paused } = e.target as HTMLVideoElement
-        player.status = paused ? 2 : 1
+        // const { paused } = e.target as HTMLVideoElement
+        // player.status = paused ? 2 : 1
+        play()
         notifys.buffer && notifys.buffer.remove()
       }, 100)
     }
@@ -606,7 +587,6 @@ export default defineComponent({
       awVideoMsgComp,
       player,
       controlBar,
-      isBad,
       hideControlBar,
       playHandler,
       sToMs,
@@ -622,8 +602,8 @@ export default defineComponent({
       onProgressChange,
       fastProgressChange,
       controlBarVisibleHandler,
-      ...playbackRateModule(videoInstance),
-      ...qualityModule
+      ...playbackRateModule(videoInstance)
+      // ...qualityModule
     }
   }
 })
@@ -631,12 +611,14 @@ export default defineComponent({
 <style lang="less" scoped>
 .aw-video {
   @controlHeight: 38px;
+  --control-height: @controlHeight;
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
   color: var(--font-unactive-color);
   background: #000;
   overflow: hidden;
+
   &.web-fullscreen {
     position: fixed;
     left: 0;
@@ -646,69 +628,14 @@ export default defineComponent({
     height: 100vh;
     z-index: 9999;
   }
+
   ::v-deep(.video-render) {
     position: absolute;
     left: 0;
     top: 0;
     z-index: 1;
   }
-  .mask(@height: 100%) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: @height;
-  }
-  &__play {
-    position: absolute;
-    right: 30px;
-    bottom: 16px;
-    font-size: 50px;
-    cursor: pointer;
-    text-shadow: 0 4px 16px rgb(0 0 0 / 25%);
-  }
-  &__mask {
-    .mask(calc(100% - @controlHeight - 10px));
-    z-index: 2;
-  }
-  &__bad {
-    .mask;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 5;
-    background: #000;
-    img {
-      width: 100px;
-    }
-    span {
-      font-weight: 600;
-      font-size: 20px;
-      margin-top: 30px;
-    }
-    &::after {
-      content: '';
-      .mask;
-    }
-  }
-  &__loading {
-    .mask;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 3;
-    background: rgb(0 0 0 / 25%);
-    span {
-      margin-top: 30px;
-    }
-  }
-  // &:hover {
-  //   .aw-video__control {
-  //     opacity: 1;
-  //   }
-  // }
+
   &__control {
     @padding: 16px;
     position: absolute;
@@ -729,12 +656,15 @@ export default defineComponent({
     border-bottom-right-radius: 10px;
     transform: translateY(150%);
     z-index: 4;
+
     &.show {
       transform: translateY(0%);
     }
+
     i {
       cursor: pointer;
     }
+
     .control {
       &-icon {
         display: flex;
@@ -743,19 +673,56 @@ export default defineComponent({
         width: @controlHeight;
         height: 100%;
         font-size: 18px;
+
         &:active {
           opacity: 0.7;
         }
+
+        &.scale {
+          &:hover {
+            animation: icon-hover 0.8s forwards;
+          }
+
+          @keyframes icon-hover {
+            0% {
+              transform: scale(1);
+            }
+
+            20% {
+              transform: scale(1.1);
+            }
+
+            40% {
+              transform: scale(0.9);
+            }
+
+            60% {
+              transform: scale(1.1);
+            }
+
+            80% {
+              transform: scale(0.8);
+            }
+
+            100% {
+              transform: scale(1);
+            }
+          }
+        }
+
         &__play {
           font-size: 24px;
+
           &.icon-pause {
             font-size: 16px;
           }
         }
+
         &__next {
           font-size: 14px;
         }
       }
+
       &-time {
         display: flex;
         align-items: center;
@@ -763,24 +730,30 @@ export default defineComponent({
         margin: 0 20px;
         font-size: 14px;
         line-height: 14px;
+
         span {
           margin: 0 6px;
         }
       }
+
       &-select {
         position: relative;
         margin-left: auto;
         margin-right: 8px;
         text-align: center;
+
         &.quality {
           width: 100px;
         }
+
         &.playback-rate {
           width: 60px;
+
           ul {
             overflow: hidden;
           }
         }
+
         span {
           display: inline-block;
           cursor: pointer;
@@ -790,6 +763,7 @@ export default defineComponent({
           height: 15px;
           font-weight: 500;
         }
+
         ul {
           position: absolute;
           bottom: @controlHeight;
@@ -803,20 +777,24 @@ export default defineComponent({
           background: var(--bg-color);
           border-radius: 14px;
           transition: all 0.25s;
+
           li {
             cursor: pointer;
             padding: 6px 0;
             transition: all 0.25s;
+
             &.active {
               color: var(--font-color);
               background: none !important;
             }
+
             &:hover {
               background: var(--primary-color);
             }
           }
         }
       }
+
       &-volume {
         &:hover {
           .control-volume__inner {
@@ -824,6 +802,7 @@ export default defineComponent({
             transform: translateY(0);
           }
         }
+
         &__inner {
           position: absolute;
           bottom: calc(@controlHeight);
@@ -834,20 +813,25 @@ export default defineComponent({
           opacity: 0;
           transform: translateY(160%);
           box-shadow: 0 0 12px rgba(0 0 0 / 0.1);
+
           ::v-deep(.el-slider) {
             .el-slider__bar {
               background: var(--font-color);
             }
+
             .el-slider__runway {
               width: 2px;
               background: var(--font-unactive-color);
             }
+
             .el-slider__bar {
               width: 2px;
             }
+
             .el-slider__button-wrapper {
               left: calc(var(--el-slider-button-wrapper-offset) - 2px);
             }
+
             .el-slider__button {
               border-color: var(--font-color);
               transform: scale(0.7);

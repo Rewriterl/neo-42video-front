@@ -5,8 +5,7 @@ export default {
   name: 'Setting',
   component: Setting,
   meta: {
-    title: 'Χαλαρό',
-    dom: '#Setting'
+    title: 'Anime-系统设置'
   },
   children: []
 }

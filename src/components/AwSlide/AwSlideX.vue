@@ -46,12 +46,16 @@ import {
 import { AWSLIDE_KEY } from './const'
 import { useChildren } from '@/utils/vant/useRelation/index'
 import { onWindowSizeChange } from '@/utils/vant/useWindowSize'
+
 interface Slider {
   /** 当前激活下标 */
   active: number
   /** 每屏最大内容数量 */
   perScreenChildcount: number
+  /** 是否正在动画过渡中 */
+  transitioning: boolean
 }
+
 function linkChild() {
   const { children, linkChildren } = useChildren(AWSLIDE_KEY)
   linkChildren({})
@@ -63,6 +67,7 @@ function linkChild() {
     childrenEls
   }
 }
+
 function styleModule(childrenEls: ComputedRef<HTMLElement[]>, slider: Slider) {
   const selfDom = ref<HTMLElement>()
 
@@ -112,6 +117,7 @@ function styleModule(childrenEls: ComputedRef<HTMLElement[]>, slider: Slider) {
     selfDom
   }
 }
+
 export default defineComponent({
   name: 'AwSlideX',
   emits: {
@@ -125,15 +131,30 @@ export default defineComponent({
     const { children, childrenEls } = linkChild()
     const slider = reactive<Slider>({
       active: 0,
-      perScreenChildcount: 0
+      perScreenChildcount: 0,
+      transitioning: false
     })
 
     const { arrowVisible, ...styleModuleArgs } = styleModule(
       childrenEls,
       slider
     )
-    const prev = () => arrowVisible.value('left') && slider.active--
-    const next = () => arrowVisible.value('right') && slider.active++
+
+    const sliderActiveControler = (callback: () => void) => {
+      if (slider.transitioning) return
+      slider.transitioning = true
+      callback()
+      setTimeout(() => {
+        slider.transitioning = false
+      }, 800)
+    }
+    const prev = () =>
+      sliderActiveControler(() => arrowVisible.value('left') && slider.active--)
+    const next = () =>
+      sliderActiveControler(
+        () => arrowVisible.value('right') && slider.active++
+      )
+
     watch(
       () => slider.active,
       (active) => {
@@ -143,6 +164,7 @@ export default defineComponent({
         immediate: true
       }
     )
+
     return {
       children,
       arrowVisible,
