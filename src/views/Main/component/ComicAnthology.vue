@@ -45,9 +45,10 @@
 </template>
 
 <script lang="ts">
-import { videoUrlFormat } from '@/api/utils'
-import { arrAvgSplit } from '@/utils/adLoadsh'
 import { computed, defineComponent, PropType, ref } from 'vue'
+import { arrAvgSplit } from 'adicw-utils'
+
+import { videoUrlFormat } from '@/api/utils'
 
 export interface Option {
   name: string | number

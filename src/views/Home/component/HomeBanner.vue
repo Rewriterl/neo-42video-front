@@ -79,6 +79,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import { wait } from 'adicw-utils'
 
 import AwSlideX from '@comps/AwSlide/AwSlideX.vue'
 import AwSlideItem from '@comps/AwSlide/AwSlideItem.vue'
@@ -89,7 +90,6 @@ import AwTab from '@/components/AwTabs/AwTab.vue'
 
 import * as Type from '../types/homeSection.type'
 import { toComicMain } from '@/hooks/router'
-import { wait } from '@/utils/adLoadsh'
 
 export default defineComponent({
   name: 'HomeBanner',

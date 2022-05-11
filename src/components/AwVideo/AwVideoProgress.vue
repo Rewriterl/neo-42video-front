@@ -38,7 +38,7 @@ import {
   ref,
   watch
 } from 'vue'
-import { sToMs } from '@/utils/adLoadsh'
+import { sToMs } from 'adicw-utils'
 import { onWindowSizeChange } from '@/utils/vant/useWindowSize'
 import AwSlider from '@/components/AwSlider/AwSlider.vue'
 export default defineComponent({

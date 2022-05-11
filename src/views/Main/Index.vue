@@ -89,6 +89,7 @@ import {
   watch
 } from 'vue'
 import { useRoute } from 'vue-router'
+import { sToMs, getVal, wait } from 'adicw-utils'
 
 import AwVideo from '@comps/AwVideo/AwVideo.vue'
 import ComicAnthology, { ChangeReturns } from './component/ComicAnthology.vue'
@@ -99,7 +100,6 @@ import { ElNotification } from 'element-plus'
 import * as Api from '@apis/index'
 import * as Type from './types/index.type'
 import { GetComicMainReturn } from '@apis/index'
-import { getVal, sToMs, wait } from '@/utils/adLoadsh'
 import { usePlayCache } from '@/hooks/user'
 
 /**

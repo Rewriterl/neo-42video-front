@@ -161,20 +161,19 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType, reactive, Ref, ref } from 'vue'
+import {
+  fullscreen,
+  pictureInPicture,
+  checkFullscreen,
+  sToMs
+} from 'adicw-utils'
 
 import AwVideoProgress from './AwVideoProgress.vue'
 import AwVideoMsg, { NotifyItem, NotifyReturns } from './AwVideoMsg.vue'
 import VideoRender from './VideoRender.vue'
 import AwVideoMask from './AwVideoMask.vue'
 
-import {
-  checkFullscreen,
-  debounce,
-  fullscreen,
-  sToMs,
-  throttle,
-  pictureInPicture
-} from '@/utils/adLoadsh'
+import { debounce, throttle } from '@/utils/adLoadsh'
 import { useEventListener } from '@/utils/vant/useEventListener'
 import { getVideoScreenshot } from '@/utils/media'
 import * as Type from './type'

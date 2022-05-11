@@ -20,7 +20,7 @@ import {
 } from 'vue'
 import { onWindowSizeChange } from '@/utils/vant/useWindowSize'
 import { useEventListener } from '@/utils/vant/useEventListener'
-import { wait } from '@/utils/adLoadsh'
+import { wait } from 'adicw-utils'
 export default defineComponent({
   name: 'ScrollX',
   props: {

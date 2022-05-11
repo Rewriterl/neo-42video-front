@@ -1,5 +1,5 @@
 import { dfGetax, getax } from '@/common/request/index'
-import { getVal } from '@/utils/adLoadsh'
+import { getVal } from 'adicw-utils'
 import * as FnReturns from './type'
 import * as ApiReturns from './api.type'
 export * from './type'

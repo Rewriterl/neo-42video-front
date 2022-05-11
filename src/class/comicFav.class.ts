@@ -1,4 +1,4 @@
-import { jsonParse } from '@/utils/adLoadsh'
+import { jsonParse } from 'adicw-utils'
 import { ref } from 'vue'
 
 const COMIC_FAV_STORE_KEY = 'COMIC_FAV_STORE'

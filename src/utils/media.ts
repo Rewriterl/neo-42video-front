@@ -1,4 +1,4 @@
-import { wait } from './adLoadsh'
+import { wait } from 'adicw-utils'
 
 /**
  * 图片加载

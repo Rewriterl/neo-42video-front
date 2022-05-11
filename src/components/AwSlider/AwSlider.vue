@@ -32,7 +32,7 @@ import {
   onMounted
 } from 'vue'
 
-import { numLimit } from '@/utils/adLoadsh'
+import { numLimit } from 'adicw-utils'
 import { useEventListener } from '@/utils/vant/useEventListener'
 // todo 蜜汁鬼畜
 export default defineComponent({

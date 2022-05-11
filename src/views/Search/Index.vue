@@ -98,6 +98,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from 'vue'
+import { getVal, wait, smoothPush } from 'adicw-utils'
 
 import AwRadio from '@comps/Form/AwRadio.vue'
 import ComicCard from './component/ComicCard.vue'
@@ -106,7 +107,6 @@ import EmptyImgBlock from '@comps/Block/EmptyImgBlock.vue'
 
 import { SEARCH_FILTER } from './statics/form'
 import * as Api from '@/api'
-import { getVal, wait, smoothPush } from '@/utils/adLoadsh'
 import { ElNotification } from 'element-plus'
 
 /**
