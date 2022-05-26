@@ -51,7 +51,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const { children, linkChildren } =
       useChildren<InstanceType<typeof AwTab>>(AWTABS_KEY)
-    linkChildren({})
+    linkChildren()
     const tabs = reactive<{
       child: InstanceType<typeof AwTab>[]
     }>({

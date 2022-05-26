@@ -22,3 +22,7 @@ app.use(createPinia())
 elementPlusInit(app)
 createVueInit(app).useDirects(directs).useComps()
 app.use(router).mount('#app')
+
+window.addEventListener('unhandledrejection', (e) => {
+  e.preventDefault()
+})

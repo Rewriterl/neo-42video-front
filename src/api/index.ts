@@ -146,7 +146,7 @@ export async function getVideoUrl(
 export async function getHomeMixData(): Promise<FnReturns.GetHomeMixData | null> {
   try {
     const { data } = await getax<ApiReturns.GetIndex>('api/getIndex')
-    const listFormat = (list: any[]) =>
+    const listFormat = (list: ApiReturns.GetIndex['data']['latest']) =>
       list.slice(0, 10).map((item) => ({
         cover: item.cover,
         id: item.id,

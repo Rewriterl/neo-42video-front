@@ -8,8 +8,7 @@ import { defineComponent, ref } from 'vue'
 import { loadImg } from '@/utils/media'
 import { useDomObserver } from '@/hooks/utils'
 
-const BASE_IMG =
-  'https://api.adicw.cn/images/61e78c7e3d14b.JPG?path=StudyImg&w=600&h=600'
+const BASE_IMG = 'https://api.adicw.cn/images/StudyImg/20200204113055.jpg'
 
 export default defineComponent({
   name: 'BaseImg',

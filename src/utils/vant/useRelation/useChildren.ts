@@ -3,12 +3,14 @@ import {
   isVNode,
   provide,
   reactive,
+  InjectionKey,
   getCurrentInstance,
   VNodeNormalizedChildren,
   ComponentPublicInstance,
   ComponentInternalInstance
 } from 'vue'
-export function flattenVNodes(children: VNodeNormalizedChildren): VNode[] {
+
+export function flattenVNodes(children: VNodeNormalizedChildren) {
   const result: VNode[] = []
 
   const traverse = (children: VNodeNormalizedChildren) => {
@@ -17,7 +19,8 @@ export function flattenVNodes(children: VNodeNormalizedChildren): VNode[] {
         if (isVNode(child)) {
           result.push(child)
 
-          if (child.component && child.component.subTree) {
+          if (child.component?.subTree) {
+            result.push(child.component.subTree)
             traverse(child.component.subTree.children)
           }
 
@@ -39,14 +42,14 @@ export function sortChildren(
   parent: ComponentInternalInstance,
   publicChildren: ComponentPublicInstance[],
   internalChildren: ComponentInternalInstance[]
-): void {
+) {
   const vnodes = flattenVNodes(parent.subTree.children)
 
   internalChildren.sort(
     (a, b) => vnodes.indexOf(a.vnode) - vnodes.indexOf(b.vnode)
   )
 
-  const orderedPublicChildren = internalChildren.map((item) => item.proxy)
+  const orderedPublicChildren = internalChildren.map((item) => item.proxy!)
 
   publicChildren.sort((a, b) => {
     const indexA = orderedPublicChildren.indexOf(a)
@@ -56,18 +59,15 @@ export function sortChildren(
 }
 
 export function useChildren<
-  Child extends ComponentPublicInstance = ComponentPublicInstance
->(
-  key: string | symbol
-): {
-  children: Child[]
-  linkChildren: (value: any) => void
-} {
+  // eslint-disable-next-line
+  Child extends ComponentPublicInstance = ComponentPublicInstance<{}, any>,
+  ProvideValue = never
+>(key: InjectionKey<ProvideValue>) {
   const publicChildren: Child[] = reactive([])
   const internalChildren: ComponentInternalInstance[] = reactive([])
   const parent = getCurrentInstance()!
 
-  const linkChildren = (value?: any) => {
+  const linkChildren = (value?: ProvideValue) => {
     const link = (child: ComponentInternalInstance) => {
       if (child.proxy) {
         internalChildren.push(child)
@@ -82,13 +82,18 @@ export function useChildren<
       internalChildren.splice(index, 1)
     }
 
-    provide(key, {
-      link,
-      unlink,
-      children: publicChildren,
-      internalChildren,
-      ...value
-    })
+    provide(
+      key,
+      Object.assign(
+        {
+          link,
+          unlink,
+          children: publicChildren,
+          internalChildren
+        },
+        value
+      )
+    )
   }
 
   return {

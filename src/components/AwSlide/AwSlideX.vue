@@ -58,7 +58,7 @@ interface Slider {
 
 function linkChild() {
   const { children, linkChildren } = useChildren(AWSLIDE_KEY)
-  linkChildren({})
+  linkChildren()
   const childrenEls = computed<HTMLElement[]>(() =>
     children.map((item) => item.$el)
   )
