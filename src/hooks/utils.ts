@@ -1,6 +1,6 @@
 import { domObserver } from '@/utils/dom'
 import { useEventListener } from '@/utils/vant/useEventListener'
-import { isRef, onMounted, Ref } from 'vue'
+import { isRef, onDeactivated, onMounted, onUnmounted, Ref } from 'vue'
 
 /**
  * 节点入屏监听
@@ -25,4 +25,13 @@ export function useDomObserver(
 export function useReStyle(callback: () => void) {
   onMounted(callback)
   useEventListener('resize', callback)
+}
+
+/**
+ * 组件离开
+ * @param callback
+ */
+export function useComponentLeave(callback: () => void) {
+  onUnmounted(callback)
+  onDeactivated(callback)
 }

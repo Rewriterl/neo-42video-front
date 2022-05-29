@@ -64,6 +64,12 @@
                     >
                   </p>
                 </div>
+                <ComicFav
+                  :id="id"
+                  type="button"
+                  :leave-save="true"
+                  :info="comicFavInfo"
+                />
               </div>
             </div>
           </el-tab-pane>
@@ -101,6 +107,7 @@ import * as Api from '@apis/index'
 import * as Type from './types/index.type'
 import { GetComicMainReturn } from '@apis/index'
 import { usePlayCache } from '@/hooks/user'
+import { ComicFavInfo } from '@/stores/fav.store'
 
 /**
  * 动漫信息模块
@@ -153,6 +160,11 @@ function comicInfoModule(comicId: Ref<number | string>, init: () => void) {
       value: comic.master
     }
   ])
+  const comicFavInfo = computed<ComicFavInfo>(() => ({
+    comicId: comicId.value.toString(),
+    comicName: comic.title,
+    comicCover: comic.cover
+  }))
 
   /** 数据获取 */
   watch(
@@ -188,7 +200,8 @@ function comicInfoModule(comicId: Ref<number | string>, init: () => void) {
     comicUrls,
     comicTags,
     isPending,
-    comicImglist
+    comicImglist,
+    comicFavInfo
   }
 }
 
@@ -423,165 +436,5 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
-.comic-main {
-  @padding: 40px;
-  @radius: 24px;
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: var(--box-bg-color);
-  border-top-left-radius: 24px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  &__break {
-    position: sticky;
-    top: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 40px;
-    height: 40px;
-    margin-left: 20px;
-    background: var(--primary-color);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.25s;
-    z-index: 8;
-    i {
-      color: var(--font-color);
-      font-size: 24px;
-      transform: rotateY(180deg);
-    }
-    &:hover {
-      transform: scale(0.8);
-    }
-  }
-  &__inner {
-    width: 95%;
-    margin: 0 auto;
-    animation-duration: 0.5s;
-  }
-  &__video {
-    width: 100%;
-    margin-top: @padding;
-    border-radius: @radius;
-    overflow: hidden;
-  }
-  &__box {
-    width: 100%;
-    padding: 30px;
-    box-sizing: border-box;
-    background: var(--bg-color);
-    border-radius: @radius;
-    color: var(--font-color);
-    margin: @padding 0;
-    ::v-deep(.el-tabs) {
-      .el-tabs__nav-wrap {
-        &::after {
-          content: unset;
-        }
-      }
-      .el-tabs__nav {
-        padding-bottom: 12px;
-      }
-      .el-tabs__item {
-        color: var(--font-unactive-color);
-        font-weight: 600;
-        font-size: 28px;
-        &.is-active {
-          color: var(--font-color);
-        }
-      }
-      .el-tabs__content {
-        overflow: unset;
-      }
-    }
-  }
-  &__anthology {
-    position: relative;
-    width: 100%;
-    &-loading {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 3;
-    }
-  }
-  &__info {
-    display: flex;
-    width: 100%;
-    padding-top: 10px;
-    .cover {
-      width: 200px;
-      aspect-ratio: 1.4/2;
-      border-radius: 8px;
-    }
-    .message {
-      padding-left: 30px;
-      flex: 1;
-      box-sizing: border-box;
-      &-tags {
-        margin-top: 20px;
-        height: 46px;
-        li {
-          display: inline-flex;
-          height: 100%;
-          flex-direction: column;
-          justify-content: space-between;
-          align-items: flex-start;
-          border-right: 1px solid var(--font-color);
-          padding-right: 16px;
-          font-size: 12px;
-          margin-right: 16px;
-          &:last-child {
-            border: none;
-          }
-          span {
-            opacity: 0.6;
-          }
-          b {
-            margin-top: 6px;
-            font-size: 18px;
-            opacity: 0.85;
-          }
-        }
-      }
-      &-cates {
-        margin-top: 16px;
-        opacity: 0.9;
-        li {
-          font-size: 12px;
-          display: inline-block;
-          vertical-align: middle;
-          height: 20px;
-          padding: 0 4px;
-          margin: 4px 0;
-          margin-right: 10px;
-          line-height: 20px;
-          border: 1px solid var(--font-color);
-          border-radius: 3px;
-        }
-      }
-      &-desc {
-        display: flex;
-        align-items: flex-start;
-        width: 100%;
-        margin-top: 16px;
-        font-size: 14px;
-        b {
-          width: 44px;
-        }
-        a {
-          margin-right: 8px;
-          color: var(--primary-color);
-        }
-        p {
-          flex: 1;
-        }
-      }
-    }
-  }
-}
+@import './style/main';
 </style>

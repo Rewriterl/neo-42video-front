@@ -11,11 +11,13 @@ import { createVueInit } from '@/utils/vue/index'
 import { createPreloadCdn } from '@/plugins/preloadCdn.class'
 import { createPlayProgress } from '@/class/playProgress.class'
 import { createPlayHistory } from '@/class/playHistory.class'
+import { createComicFav } from '@/class/comicFav.class'
 
 createPreloadCdn()
 createTheme()
 createPlayProgress().getStore()
 createPlayHistory().getStore()
+createComicFav().getStore()
 
 const app = createApp(App)
 app.use(createPinia())

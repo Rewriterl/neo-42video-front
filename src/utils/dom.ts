@@ -1,5 +1,3 @@
-import { ValueOf } from 'element-plus/es/components/table/src/table-column/defaults'
-
 /**
  * 监听节点是否存在于当前屏幕视野
  * @param el 监听的节点

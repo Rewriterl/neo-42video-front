@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 const COMIC_FAV_STORE_KEY = 'COMIC_FAV_STORE'
 
-interface Comic {
+export interface Comic {
   /** 动漫id */
   comicId: string
   /** 动漫名称 */
