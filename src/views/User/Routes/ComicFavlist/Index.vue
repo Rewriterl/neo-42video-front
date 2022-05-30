@@ -15,7 +15,7 @@ import { computed, defineComponent } from 'vue'
 import { useFavStore } from '@/stores/fav.store'
 import ComicFavCard from '../../components/ComicFavCard.vue'
 import ListVueTransition from '@/components/Transition/ListVueTransition.vue'
-import { useComponentLeave } from '@/hooks/utils'
+import { usePageOut } from '@/hooks/utils'
 
 export default defineComponent({
   name: 'ComicFavlist',
@@ -26,7 +26,7 @@ export default defineComponent({
   setup() {
     const favStore = useFavStore()
     const favs = computed(() => favStore.comicFavs)
-    useComponentLeave(() => {
+    usePageOut(() => {
       favStore.saveComicFav()
     })
     return {

@@ -71,7 +71,9 @@ export default defineComponent({
       if (!~activeIndex) activeIndex = 0
       return {
         width: `${tabsList.value.length * 100}%`,
-        transform: `translateX(-${(activeIndex / tabs.child.length) * 100}%)`
+        transform: `translateX(-${
+          +(activeIndex / tabs.child.length).toFixed(4) * 100
+        }%)`
       } as CSSProperties
     })
 

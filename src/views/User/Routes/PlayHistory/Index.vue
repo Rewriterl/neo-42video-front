@@ -62,7 +62,7 @@ import moment from 'moment'
 
 import { toComicMain } from '@/hooks/router'
 import { usePlayCacheStore } from '@/stores/playCache.store'
-import { usePageOut } from '@/utils/hooks/usePageChange'
+import { usePageOut } from '@/hooks/utils'
 
 import CodepenCard, {
   Detail as CodepenCardDetail

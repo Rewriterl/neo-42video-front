@@ -613,7 +613,7 @@ export default defineComponent({
   --control-height: @controlHeight;
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   color: var(--font-unactive-color);
   background: #000;
   overflow: hidden;

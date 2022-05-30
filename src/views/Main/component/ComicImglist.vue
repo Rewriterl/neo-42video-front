@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 import { onBeforeUpdate, nextTick, ref } from 'vue'
 import * as Api from '@apis/index'
-import { useResizeListener } from '@/utils/hooks/useResizeListener'
+import { useResizeListener } from '@/hooks/utils'
 import { debounce } from '@/utils/adLoadsh'
 
 const props = withDefaults(

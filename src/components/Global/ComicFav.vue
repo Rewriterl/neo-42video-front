@@ -28,7 +28,7 @@
 import { computed, defineComponent, PropType } from 'vue'
 import { useFavStore, ComicFavInfo } from '@/stores/fav.store'
 import Icon from './Icon.vue'
-import { useComponentLeave } from '@/hooks/utils'
+import { usePageOut } from '@/hooks/utils'
 export default defineComponent({
   name: 'ComicFav',
   components: {
@@ -57,7 +57,7 @@ export default defineComponent({
     const isFav = computed(() => favStore.isFavComic(props.id))
     const fav = () => props.info && favStore.comicFav(props.info)
     props.leaveSave &&
-      useComponentLeave(() => {
+      usePageOut(() => {
         favStore.saveComicFav()
       })
     return {
