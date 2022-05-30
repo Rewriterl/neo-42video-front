@@ -160,7 +160,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, reactive, Ref, ref } from 'vue'
+import { defineComponent, reactive, Ref, ref } from 'vue'
 import {
   fullscreen,
   pictureInPicture,

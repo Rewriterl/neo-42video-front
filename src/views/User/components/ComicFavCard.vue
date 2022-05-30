@@ -1,10 +1,9 @@
 <template>
-  <div
-    v-if="detail"
-    class="comic-fav-card"
-    @click="toComicMain(detail!.comicId)"
-  >
-    <BaseImg :src="detail.comicCover" />
+  <div v-if="detail" class="comic-fav-card">
+    <div class="cover">
+      <BaseImg :src="detail.comicCover" />
+      <Icon name="play" @click="toComicMain(detail!.comicId)" />
+    </div>
     <div class="info">
       <el-tooltip effect="light" :content="detail.comicName">
         <p>{{ detail.comicName }}</p>
@@ -13,7 +12,7 @@
     </div>
     <div class="tools">
       <el-dropdown>
-        <Icon class="tools-icon" name="picture-in-picture-exit-fill" />
+        <Icon class="tools-icon" name="more" />
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item @click="deleteFav">取消收藏</el-dropdown-item>
@@ -60,13 +59,31 @@ export default defineComponent({
   user-select: none;
   transform: perspective(800px);
   transform-style: preserve-3d;
-  img {
+  .cover {
+    position: relative;
     width: 100%;
     aspect-ratio: 9/12.7;
     border-radius: 24px;
+    overflow: hidden;
     transition: all 0.25s;
-    cursor: pointer;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    i {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      text-shadow: 0 0 10px rgb(0 0 0 / 60%);
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.925);
+      opacity: 0.3;
+      transition: all 0.25s;
+    }
   }
+
   .info {
     padding: 0 4px;
     width: 100%;
@@ -89,13 +106,18 @@ export default defineComponent({
     top: 18px;
     z-index: 3;
     .tools-icon {
-      color: rgba(255, 255, 255, 0.8);
+      font-size: 22px;
+      color: rgba(255, 255, 255, 0.9);
       text-shadow: 0 0 14px rgb(0 0 0 / 44%);
+      cursor: pointer;
     }
   }
   &:hover {
-    img {
+    .cover {
       transform: rotateX(10deg) translateY(-10px);
+      i {
+        opacity: 1;
+      }
     }
     .info {
       transform: translateY(-10px);

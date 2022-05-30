@@ -82,7 +82,6 @@ export default defineComponent({
     }
     const reset = () => {
       tpage.value = 1
-      // console.log('reset')
     }
 
     onMounted(addEvent)
