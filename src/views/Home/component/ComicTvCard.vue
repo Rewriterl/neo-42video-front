@@ -12,8 +12,8 @@
 </template>
 
 <script lang="ts">
-import { toComicMain } from '@/hooks/router'
 import { defineComponent, PropType } from 'vue'
+import { toComicMain } from '@/hooks/router'
 import * as SectionType from '../types/homeSection.type'
 
 export default defineComponent({

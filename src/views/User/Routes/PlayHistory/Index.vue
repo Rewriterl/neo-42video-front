@@ -145,7 +145,6 @@ export default defineComponent({
   overflow-x: hidden;
   padding: 30px;
   box-sizing: border-box;
-  background: var(--box-bg-color);
   border-top-left-radius: 24px;
   h2 {
     i {
@@ -157,7 +156,7 @@ export default defineComponent({
     display: grid;
     width: calc(100% - 20px);
     margin-top: 20px;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 60px 50px;
     padding: 0 0 40px 20px;
     ::v-deep(.codePen-card) {

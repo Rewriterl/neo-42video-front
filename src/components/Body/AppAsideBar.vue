@@ -15,37 +15,44 @@
 </template>
 
 <script lang="ts">
-import { computed, CSSProperties, defineComponent } from 'vue'
+import { computed, CSSProperties, defineComponent, watch } from 'vue'
 import { useRoute } from 'vue-router'
 export default defineComponent({
   name: 'AppAsideBar',
   setup() {
     const $route = useRoute()
+    watch($route, (e) => {
+      console.log(e)
+    })
     const routeList = [
       {
         name: '首页',
         routeName: 'Home',
+        routePath: 'home',
         icon: 'homefill'
       },
       {
         name: '搜索',
         routeName: 'Search',
+        routePath: 'search',
         icon: 'search'
       },
       {
         name: '关于我',
         routeName: 'User',
+        routePath: 'user',
         icon: 'user'
       },
       {
         name: '系统设置',
         routeName: 'Setting',
+        routePath: 'setting',
         icon: 'setting1'
       }
     ]
     const sliderStyle = computed(() => {
-      const routeIndex = routeList.findIndex(
-        (item) => item.routeName === $route.name
+      const routeIndex = routeList.findIndex((item) =>
+        $route.fullPath.includes(item.routePath)
       )
       return {
         transform: `translate(

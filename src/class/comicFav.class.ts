@@ -12,7 +12,7 @@ export interface Comic {
   comicCover: string
 }
 
-type ComicFavItem = Comic & {
+export type ComicFavItem = Comic & {
   /** 收藏时间 */
   favDate: number
 }
