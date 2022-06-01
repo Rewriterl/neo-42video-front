@@ -13,7 +13,8 @@ import {
   ref,
   computed,
   onMounted,
-  onBeforeUnmount
+  onBeforeUnmount,
+  watch
 } from 'vue'
 import videojs from 'video.js'
 
@@ -26,6 +27,13 @@ export default defineComponent({
     src: {
       type: String,
       default: ''
+    },
+    /**
+     * 0-100
+     */
+    volume: {
+      type: Number,
+      default: 0
     }
   },
   emits: {
@@ -41,7 +49,10 @@ export default defineComponent({
     waiting: (e: Event) => e,
     playing: (e: Event) => e,
     seeking: (e: Event) => e,
-    seeked: (e: Event) => e
+    seeked: (e: Event) => e,
+    volumechange: (e: Event) => e,
+    loadedmetadata: (e: Event) => e,
+    'update:volume': (e: number) => true
   },
   setup(props, { emit }) {
     const isDev = inject('isDev')
@@ -53,6 +64,13 @@ export default defineComponent({
         ({
           // opacity: isDev ? 0.2 : 1
         } as CSSProperties)
+    )
+    watch(
+      () => props.volume,
+      (volume) => {
+        emit('update:volume', volume)
+        setVolume(volume)
+      }
     )
 
     /**
@@ -109,7 +127,8 @@ export default defineComponent({
     }
 
     /** 修改音量 */
-    const setVolume = (volume: number) => (videoEl.value!.volume = volume)
+    const setVolume = (volume: number) =>
+      (videoEl.value!.volume = +(volume / 100).toFixed(1))
     /** 修改播放倍数 */
     const setPlaybackRate = (rate: number) =>
       (videoEl.value!.playbackRate = rate)
@@ -117,21 +136,11 @@ export default defineComponent({
     const setCurrentTime = (currentTime: number) =>
       (videoEl.value!.currentTime = currentTime)
     /** 播放 */
-    const play = () => {
-      if (videoInstance.value) {
-        videoInstance.value.play()
-      }
-    }
+    const play = () => videoInstance.value?.play()
     /** 暂停 */
-    const pause = () => {
-      if (videoInstance.value) {
-        videoInstance.value.pause()
-      }
-    }
+    const pause = () => videoInstance.value?.pause()
     /** 销毁(此方法会删除video节点 暂时不用) */
-    const destroy = () => {
-      videoInstance.value && videoInstance.value.dispose()
-    }
+    const destroy = () => videoInstance.value?.dispose()
 
     /** 监听 */
     ;(() => {
@@ -139,7 +148,14 @@ export default defineComponent({
         target: videoEl
       }
       /** 可播放  */
-      useEventListener('canplay', (e) => emit('canplay', e), op)
+      useEventListener(
+        'canplay',
+        (e) => {
+          emit('canplay', e)
+          setVolume(props.volume)
+        },
+        op
+      )
       /** 进度  */
       useEventListener('timeupdate', (e) => emit('timeupdate', e), op)
       /** 播放结束  */
@@ -158,6 +174,10 @@ export default defineComponent({
       useEventListener('seeking', (e) => emit('seeking', e), op)
       /** 进度跳转结束 */
       useEventListener('seeked', (e) => emit('seeked', e), op)
+      /** 音量变化 */
+      useEventListener('volumechange', (e) => emit('volumechange', e), op)
+      /** 数据加载就绪 */
+      useEventListener('loadedmetadata', (e) => emit('loadedmetadata', e), op)
     })()
 
     onMounted(() => {

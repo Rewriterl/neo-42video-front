@@ -3,6 +3,7 @@
     ref="selfEl"
     class="aw-video"
     :class="{ 'web-fullscreen': player.webFullScreen }"
+    :style="{ opacity: src ? 1 : 0 }"
     @mousemove="controlBarVisibleHandler"
     @touchmove="controlBarVisibleHandler"
   >
@@ -27,7 +28,7 @@
       />
       <Icon
         class="control-icon control-icon__play"
-        :name="player.status === 1 ? 'pause' : 'play'"
+        :name="player.status === PlayerStatus.Playing ? 'pause' : 'play'"
         @click="playHandler"
       />
       <el-tooltip effect="dark" content="下一集" placement="top-start">
@@ -81,7 +82,7 @@
       </div>
       <el-tooltip effect="dark" content="快退15秒" placement="top-start">
         <Icon
-          class="control-icon"
+          class="control-icon active-style"
           style="transform: rotateY(180deg)"
           name="rotate_b"
           @click="fastProgressChange(-15)"
@@ -89,14 +90,14 @@
       </el-tooltip>
       <el-tooltip effect="dark" content="快进15秒" placement="top-start">
         <Icon
-          class="control-icon"
+          class="control-icon active-style"
           name="rotate_b"
           @click="fastProgressChange(15)"
         />
       </el-tooltip>
       <div class="control-icon control-volume">
         <Icon
-          :name="player.isMute ? 'mute' : 'volume'"
+          :name="player.isMuted ? 'mute' : 'volume'"
           @click="volumeCutover"
         />
         <div class="control-volume__inner">
@@ -105,13 +106,12 @@
             vertical
             height="100px"
             :show-tooltip="false"
-            @change="changeVolume(player.realVolume)"
           />
         </div>
       </div>
       <el-tooltip effect="dark" content="网页全屏" placement="top-start">
         <Icon
-          class="control-icon scale"
+          class="control-icon scale active-style"
           :name="
             player.webFullScreen ? 'exit-fullscreen-4-3' : 'fullscreen-4-3'
           "
@@ -120,7 +120,7 @@
       </el-tooltip>
       <el-tooltip effect="dark" content="画中画" placement="top-start">
         <Icon
-          class="control-icon scale"
+          class="control-icon scale active-style"
           :name="
             player.pip
               ? 'picture-in-picture-exit-fill'
@@ -131,7 +131,7 @@
       </el-tooltip>
       <el-tooltip effect="dark" content="全屏" placement="top-start">
         <Icon
-          class="control-icon scale"
+          class="control-icon scale active-style"
           :name="player.fullScreen ? 'exit-full-screen' : 'full-screen'"
           @click="fullScreenCutover"
         />
@@ -141,11 +141,13 @@
     <VideoRender
       ref="videoInstance"
       :key="src"
+      v-model:volume="player.volume"
       :src="src"
       @initStart="videoInits.start"
       @initSuccessed="videoInits.successed"
       @initFailed="videoInits.failed"
       @error="videoEvents.error"
+      @loadedmetadata="videoEvents.loadedmetadata"
       @canplay="videoEvents.canplay"
       @timeupdate="videoEvents.timeupdate"
       @ended="videoEvents.ended"
@@ -155,6 +157,7 @@
       @playing="videoEvents.playing"
       @seeking="videoEvents.waiting"
       @seeked="videoEvents.playing"
+      @volumechange="videoEvents.volumechange"
     />
   </div>
 </template>
@@ -263,6 +266,13 @@ export default defineComponent({
     muted: {
       type: Boolean,
       default: false
+    },
+    /**
+     * 视频初始进度，ms
+     */
+    initCurrentTime: {
+      type: Number,
+      default: 0
     }
   },
   emits: ['changeQuality', 'ended', 'error', 'next'],
@@ -272,18 +282,18 @@ export default defineComponent({
     const videoInstance = ref<VideoInstance>()
     const selfEl = ref<HTMLElement>()
 
-    const player = reactive<Type.Player>({
+    const player: Type.Player = reactive({
       currentTime: 0,
       duration: 0,
-      status: -2,
-      volume: 60,
+      status: Type.PlayerStatus.None,
+      volume: props.muted ? 0 : 60,
       bufferedList: [],
       preview: '',
-      get realVolume() {
-        return this.volume / 100
-      },
+      oldVolume: 0,
       fullScreen: false,
-      isMute: props.muted,
+      get isMuted() {
+        return this.volume === 0
+      },
       isListened: false,
       pip: false,
       webFullScreen: false
@@ -383,24 +393,24 @@ export default defineComponent({
         }
       }))()
     const play = () => {
-      player.status = 1
+      player.status = Type.PlayerStatus.Playing
       videoInstance.value?.play()
     }
     /** 播放控制 */
     const playHandler = () => {
       switch (player.status) {
-        case 0: {
+        case Type.PlayerStatus.Loading: {
           break
         }
-        case 1: {
+        case Type.PlayerStatus.Playing: {
           videoInstance.value?.pause()
           break
         }
-        case 2: {
+        case Type.PlayerStatus.Paused: {
           videoInstance.value?.play()
           break
         }
-        case -1: {
+        case Type.PlayerStatus.Failed: {
           break
         }
       }
@@ -427,16 +437,12 @@ export default defineComponent({
     }
     /** 静音切换 */
     const volumeCutover = () => {
-      player.isMute = !player.isMute
-      changeVolume(player.isMute ? 0 : player.realVolume)
-    }
-    /**
-     * 音量修改
-     * @param val 0-100
-     */
-    const changeVolume = (val: number) => {
-      player.isMute = val === 0
-      videoInstance.value?.setVolume(val)
+      if (player.isMuted) {
+        player.volume = player.oldVolume
+      } else {
+        player.oldVolume = player.volume
+        player.volume = 0
+      }
     }
     /**
      * 消息提示
@@ -462,27 +468,46 @@ export default defineComponent({
       controlBar.visible = true
       controlBar.timer = setTimeout(hideControlBar, 3000)
     }, 100)
+    /** 增加音量 */
+    const increaseVolume = () => {
+      let newVol = player.volume + 10
+      if (newVol >= 100) {
+        newVol = 100
+      }
+      player.volume = newVol
+    }
+    /** 减少音量 */
+    const lowerVolume = () => {
+      let newVol = player.volume - 10
+      if (newVol <= 0) {
+        newVol = 0
+      }
+      player.volume = newVol
+    }
 
     /** 视频初始化钩子 */
     const videoInits = {
       start() {
-        player.status = 0
-        changeVolume(player.realVolume)
+        player.status = Type.PlayerStatus.Loading
       },
       successed() {
         // player.status = 2
       },
       failed() {
-        player.status = -1
+        player.status = Type.PlayerStatus.Failed
       }
     }
     /** 视频响应事件 */
     const videoEvents = {
       /** 准备就绪 */
-      canplay(e: Event) {
+      loadedmetadata(e: Event) {
         const { duration } = e.target as HTMLVideoElement
-        player.status = 2
         player.duration = duration
+        changeProgress(props.initCurrentTime)
+      },
+      /** 每次播放就绪 */
+      canplay() {
+        player.status = Type.PlayerStatus.Paused
         notifys.canplay && notifys.canplay.remove()
         notifys.canplay = notify({
           content: '电波获取完成~',
@@ -503,7 +528,7 @@ export default defineComponent({
       },
       /** 播放结束 监听 */
       ended() {
-        player.status = 2
+        player.status = Type.PlayerStatus.Paused
         notify({
           content: '本集已播放完成~',
           duration: 5000
@@ -512,16 +537,16 @@ export default defineComponent({
       },
       /** 播放 监听 */
       play() {
-        player.status = 1
+        player.status = Type.PlayerStatus.Playing
       },
       /** 暂停 监听 */
       pause() {
-        player.status = 2
+        player.status = Type.PlayerStatus.Paused
       },
       /** 错误 监听 */
       error(e: Error) {
         console.error(e)
-        player.status = -1
+        player.status = Type.PlayerStatus.Failed
         ctx.emit('error')
         notify({
           content: '视频加载错误，emmm~',
@@ -530,7 +555,7 @@ export default defineComponent({
       },
       /** 缓冲开始 监听 */
       waiting: debounce(() => {
-        player.status = 0
+        player.status = Type.PlayerStatus.Loading
         notifys.buffer = notify({
           content: '电波获取中，请稍后~',
           duration: 3000
@@ -542,7 +567,11 @@ export default defineComponent({
         // player.status = paused ? 2 : 1
         play()
         notifys.buffer && notifys.buffer.remove()
-      }, 100)
+      }, 100),
+      volumechange(e: Event) {
+        console.log('change', (e.target as HTMLMediaElement).volume)
+        player.volume = (e.target as HTMLMediaElement).volume * 100
+      }
     }
 
     /** 监听 */
@@ -568,6 +597,14 @@ export default defineComponent({
             fastProgressChange(10)
             break
           }
+          case 'ArrowUp': {
+            increaseVolume()
+            break
+          }
+          case 'ArrowDown': {
+            lowerVolume()
+            break
+          }
           // 空格键
           case ' ': {
             playHandler()
@@ -578,6 +615,7 @@ export default defineComponent({
     })()
 
     return {
+      PlayerStatus: Type.PlayerStatus,
       videoInits,
       videoEvents,
       awVideoProgressComp,
@@ -592,7 +630,6 @@ export default defineComponent({
       fullScreenCutover,
       pipCutover,
       volumeCutover,
-      changeVolume,
       changeProgress,
       computedPreview,
       notify,
@@ -673,8 +710,10 @@ export default defineComponent({
         height: 100%;
         font-size: 18px;
 
-        &:active {
-          opacity: 0.7;
+        &.active-style {
+          &:active {
+            opacity: 0.7;
+          }
         }
 
         &.scale {

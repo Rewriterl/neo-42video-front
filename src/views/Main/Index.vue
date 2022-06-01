@@ -5,18 +5,19 @@
     </div>
 
     <div class="comic-main__inner">
-      <div v-if="defer(0)" class="comic-main__video">
+      <div class="comic-main__video">
         <AwVideo
           ref="awVideoComp"
           :key="id"
           :src="anthology.current"
+          :init-current-time="initPlayerCurrentTime"
           autoplay
           @next="nextAnthology"
           @ended="nextAnthology"
           @error="onVideoError"
         />
       </div>
-      <div v-if="defer(1)" class="comic-main__box">
+      <div class="comic-main__box">
         <el-tabs>
           <el-tab-pane label="选集" lazy>
             <div class="comic-main__anthology">
@@ -68,7 +69,6 @@ import * as Api from '@apis/index'
 import * as Type from './types/index.type'
 import { GetComicMainReturn } from '@apis/index'
 import { usePlayCache } from '@/hooks/user'
-import { useDeferredRender } from '@/hooks/utils'
 
 /**
  * 动漫信息模块
@@ -152,7 +152,6 @@ export default defineComponent({
     const awVideoComp = ref<InstanceType<typeof AwVideo>>()
     const route = useRoute()
     const { playProgressCache, playHistoryCache } = usePlayCache()
-    const { defer, runDeferredRender } = useDeferredRender(2)
 
     const routeParam = reactive({
       get episode() {
@@ -168,7 +167,6 @@ export default defineComponent({
     const { comic, comicUrls, ...comicInfoModuleArgs } = comicInfoModule(
       toRef(props, 'id'),
       () => {
-        runDeferredRender()
         !!~routeParam.episode ? initInRoute() : init()
       }
     )
@@ -193,6 +191,8 @@ export default defineComponent({
         }))
       }
     })
+    /** 播放器初始化进度 */
+    const initPlayerCurrentTime = ref(0)
     /** 选集列表-map */
     const anthologyListMap = computed(() =>
       anthology.list.reduce<{
@@ -283,6 +283,7 @@ export default defineComponent({
         // 查找缓存对应集
         const value = list.values.find((item) => item.name === cache.name)
         if (!value) return
+        initPlayerCurrentTime.value = cache.progress
         changeAnthology(
           {
             ...value,
@@ -290,9 +291,6 @@ export default defineComponent({
           },
           false
         )
-        await wait(2000)
-        // 定位缓存进度
-        awVideoComp.value?.changeProgress(cache.progress)
         awVideoComp.value?.notify({
           content: `上次播放到 ${value.name} ${sToMs(cache.progress)}`,
           duration: 3000
@@ -359,10 +357,10 @@ export default defineComponent({
       anthology,
       awVideoComp,
       routeParam,
+      initPlayerCurrentTime,
       changeAnthology,
       onVideoError,
-      nextAnthology,
-      defer
+      nextAnthology
     }
   }
 })

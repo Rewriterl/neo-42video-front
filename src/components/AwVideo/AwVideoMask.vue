@@ -1,11 +1,15 @@
 <template>
   <div class="aw-video__mask" @click="playHandler">
-    <Icon v-show="status === 2" class="aw-video__play" name="player-fill" />
+    <Icon
+      v-show="status === PlayerStatus.Paused"
+      class="aw-video__play"
+      name="player-fill"
+    />
   </div>
-  <div v-show="status === 0" class="aw-video__loading">
+  <div v-show="status === PlayerStatus.Loading" class="aw-video__loading">
     <LoadingBlockRun />
   </div>
-  <div v-show="status === -1" class="aw-video__bad">
+  <div v-show="status === PlayerStatus.Failed" class="aw-video__bad">
     <img src="~static/img/video-bad.png" />
     <span>加载失败了，好耶！</span>
   </div>
@@ -28,7 +32,7 @@ export default defineComponent({
   props: {
     status: {
       type: Number as PropType<Type.Player['status']>,
-      default: -2
+      default: Type.PlayerStatus.None
     },
     src: {
       type: String,
@@ -37,6 +41,11 @@ export default defineComponent({
     playHandler: {
       type: Function as PropType<(e: Event) => void>,
       default: () => false
+    }
+  },
+  setup() {
+    return {
+      PlayerStatus: Type.PlayerStatus
     }
   }
 })
