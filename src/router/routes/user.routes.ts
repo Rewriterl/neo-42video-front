@@ -9,8 +9,7 @@ export default {
   component: User,
   redirect: '/user/play-history',
   meta: {
-    title: 'Anime-小窝',
-    elName: '#user .play-history'
+    title: 'Anime-小窝'
   },
   children: [
     {
@@ -18,7 +17,8 @@ export default {
       name: 'PlayHistory',
       component: PlayHistory,
       meta: {
-        // title: 'Anime-',
+        title: 'Anime-播放历史',
+        elName: '#user .play-history'
       }
     },
     {
@@ -26,7 +26,8 @@ export default {
       name: 'ComicFavlist',
       component: ComicFavlist,
       meta: {
-        // title: 'Anime-',
+        title: 'Anime-追番',
+        elName: '#user .comic-favlist'
       }
     }
   ]

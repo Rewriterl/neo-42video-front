@@ -14,7 +14,7 @@
     <div class="user-frame__content">
       <router-view v-slot="{ Component }">
         <transition name="route-transition">
-          <keep-alive exclude="ComicMain">
+          <keep-alive>
             <component :is="Component" v-bind="$attrs" />
           </keep-alive>
         </transition>
