@@ -8,7 +8,8 @@
       <el-tooltip effect="light" :content="detail.comicName">
         <p>{{ detail.comicName }}</p>
       </el-tooltip>
-      <span>收藏时间：{{ showDate }}</span>
+      <span>{{ comicUpdateInfo }}</span>
+      <!-- <span>收藏时间：{{ showDate }}</span> -->
     </div>
     <div class="tools">
       <el-dropdown>
@@ -30,6 +31,8 @@ import moment from 'moment'
 import { ComicFavItem } from '@/class/comicFav.class'
 import { toComicMain } from '@/hooks/router'
 import { useFavStore } from '@/stores/fav.store'
+import { useComicUpdate } from '@/stores/comicUpdate.store'
+
 export default defineComponent({
   name: 'ComicFavCard',
   props: {
@@ -40,14 +43,20 @@ export default defineComponent({
   },
   setup(props) {
     const favStore = useFavStore()
+    const comicUpdate = useComicUpdate()
     const showDate = computed(() =>
       moment(props.detail?.favDate).format('YYYY-MM-DD')
     )
     const deleteFav = () => favStore.comicFav(props.detail!)
+    const comicUpdateInfo = computed(() => {
+      const info = comicUpdate.getComicUpdateInfo(props.detail?.comicId || -1)
+      return !info ? '' : `${info.updateTime}更新 - 已${info.status}`
+    })
     return {
       showDate,
       toComicMain,
-      deleteFav
+      deleteFav,
+      comicUpdateInfo
     }
   }
 })
@@ -91,7 +100,7 @@ export default defineComponent({
     transition: all 0.25s;
     p {
       .p-truncate(1);
-      margin-top: 4px;
+      margin-top: 8px;
       margin-bottom: 2px;
       color: var(--font-color);
     }

@@ -43,6 +43,7 @@ export default defineComponent({
   height: 100%;
   padding: 30px;
   box-sizing: border-box;
+  overflow-y: auto;
   &__content {
     flex: 1;
     display: grid;
