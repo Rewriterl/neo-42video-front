@@ -351,47 +351,38 @@ export default defineComponent({
     //     }
     //   })()
 
-    const {
-      changeProgress,
-      computedPreview,
-      onProgressChange,
-      fastProgressChange
-    } =
-      /** 进度模块 */
-      (() => ({
-        /**
-         * 进度修改
-         * @param val ms
-         */
-        changeProgress(val: number) {
-          videoInstance.value?.setCurrentTime(val)
-        },
-        /**
-         * 计算进度预览图
-         * @param val ms
-         */
-        computedPreview: debounce(async (val: number) => {
-          player.preview = await getVideoScreenshot(props.src, val)
-        }, 100),
-        /**
-         * 进度切换
-         * @param val 0-100
-         */
-        onProgressChange(val: any) {
-          const realTime = player.duration * (+val / 100)
-          changeProgress(realTime)
-          controlBar.isProgressing = false
-        },
-        /**
-         * 进度快速切换
-         * @param limit s
-         */
-        fastProgressChange(limit: number) {
-          const num = player.currentTime + limit
-          if (num < 0 || num > player.duration) return
-          changeProgress(num)
-        }
-      }))()
+    /**
+     * 进度修改
+     * @param val ms
+     */
+    const changeProgress = (val: number) => {
+      videoInstance.value?.setCurrentTime(val)
+    }
+    /**
+     * 计算进度预览图
+     * @param val ms
+     */
+    const computedPreview = debounce(async (val: number) => {
+      player.preview = await getVideoScreenshot(props.src, val)
+    }, 100)
+    /**
+     * 进度切换
+     * @param val 0-100
+     */
+    const onProgressChange = (val: any) => {
+      const realTime = player.duration * (+val / 100)
+      changeProgress(realTime)
+      controlBar.isProgressing = false
+    }
+    /**
+     * 进度快速切换
+     * @param limit s
+     */
+    const fastProgressChange = (limit: number) => {
+      const num = player.currentTime + limit
+      if (num < 0 || num > player.duration) return
+      changeProgress(num)
+    }
     const play = () => {
       player.status = Type.PlayerStatus.Playing
       videoInstance.value?.play()
@@ -503,7 +494,7 @@ export default defineComponent({
       loadedmetadata(e: Event) {
         const { duration } = e.target as HTMLVideoElement
         player.duration = duration
-        changeProgress(props.initCurrentTime)
+        props.initCurrentTime && changeProgress(props.initCurrentTime)
       },
       /** 每次播放就绪 */
       canplay() {
@@ -562,14 +553,13 @@ export default defineComponent({
         })
       }, 100),
       /** 缓冲结束 监听 */
-      playing: debounce((e: Event) => {
+      playing: debounce(() => {
         // const { paused } = e.target as HTMLVideoElement
         // player.status = paused ? 2 : 1
         play()
         notifys.buffer && notifys.buffer.remove()
       }, 100),
       volumechange(e: Event) {
-        console.log('change', (e.target as HTMLMediaElement).volume)
         player.volume = (e.target as HTMLMediaElement).volume * 100
       }
     }

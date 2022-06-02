@@ -8,17 +8,31 @@
     </div>
     <div ref="$innerEl" class="comic-imglist__content">
       <div class="comic-imglist__content-inner">
-        <BaseImg v-for="img in imgs" :key="img.id" :src="img.url" />
+        <BaseImg
+          v-for="img in imgs"
+          :key="img.id"
+          :src="img.url"
+          @click="imgPreview(img)"
+        />
       </div>
     </div>
+    <ImagePreview
+      v-if="imgs.length > 0"
+      v-model:visible="preview.visible"
+      :list="imgUrls"
+      :current="preview.current"
+      @artwork="artwork"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUpdate, nextTick, ref } from 'vue'
+import { onBeforeUpdate, nextTick, ref, reactive, computed } from 'vue'
 import * as Api from '@apis/index'
 import { useResizeListener } from '@/hooks/utils'
 import { debounce } from '@/utils/adLoadsh'
+import ImagePreview from '@/components/AwImagePreview/ImagePreview.vue'
+import { getComicImgmain } from '@apis/index'
 
 const props = withDefaults(
   defineProps<{
@@ -28,6 +42,7 @@ const props = withDefaults(
     imgs: () => []
   }
 )
+const imgUrls = computed(() => props.imgs.map((item) => item.url))
 
 const imgElInfolist = ref<
   {
@@ -37,6 +52,10 @@ const imgElInfolist = ref<
 >([])
 const $innerEl = ref<HTMLElement>()
 const activeIndex = ref(0)
+const preview = reactive({
+  visible: false,
+  current: imgUrls.value[0]
+})
 
 const styleInit = debounce(async () => {
   if (!$innerEl.value) return
@@ -72,6 +91,16 @@ const scroll = () => {
     .slice(0, activeIndex.value)
     .reduce((totol, item) => totol + item.width + 20, 0)
 }
+const imgPreview = (e: Api.GetComicImglistReturn[0]) => {
+  preview.visible = true
+  preview.current = e.url
+}
+const artwork = async (img: string) => {
+  // const imgOrg = props.imgs.find((item) => item.url === img)
+  // if (!imgOrg) return
+  // getComicImgmain({ id: imgOrg.id })
+  // console.log(imgOrg)
+}
 
 onBeforeUpdate(styleInit)
 useResizeListener($innerEl, styleInit)
@@ -95,6 +124,11 @@ useResizeListener($innerEl, styleInit)
       gap: 20px;
       img {
         height: 100%;
+        cursor: pointer;
+        transition: all 0.25s;
+        &:hover {
+          transform: scale(0.98);
+        }
       }
     }
   }

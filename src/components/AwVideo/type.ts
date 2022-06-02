@@ -1,5 +1,4 @@
 import { VideoJsPlayer } from 'video.js'
-import { readonly } from 'vue'
 
 export type FlvInstance = VideoJsPlayer | null
 

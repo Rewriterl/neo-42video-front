@@ -225,7 +225,10 @@ export interface GetIndex {
 export interface VilipixIllust {
   /** 结果 */
   rows: {
+    /** 图片id */
     id: string
+    /** 作者id */
+    user_id: string
     /** 创建时间 */
     create_date: string
     /** 简介 */
@@ -235,7 +238,7 @@ export interface VilipixIllust {
     /** 分类 字符串，逗号分割 */
     tags: string
     /** 图片地址 */
-    url: string
+    regular_url: string
     /** 图片宽度 */
     width: number
     /** 图片高度 */
@@ -243,4 +246,11 @@ export interface VilipixIllust {
   }[]
   /** 结果总数 */
   count: number
+}
+
+export interface VilipixTranslate {
+  data: {
+    /** json */
+    source_json: string
+  }
 }

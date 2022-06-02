@@ -104,7 +104,6 @@ function comicInfoModule(comicId: Ref<ComicId>, init: () => void) {
 
     comicUrls.value = urls
     if (main) {
-      document.title = comic.title
       comic.playlist = main.playlist
       ;(Object.keys(comic) as (keyof GetComicMainReturn)[]).forEach((k) => {
         if (typeof main[k] !== 'undefined') {
@@ -116,6 +115,7 @@ function comicInfoModule(comicId: Ref<ComicId>, init: () => void) {
         name: comic.title
       }).then((res) => (comicImglist.value = res))
 
+      document.title = comic.title
       isPending.value = false
       init()
     }
