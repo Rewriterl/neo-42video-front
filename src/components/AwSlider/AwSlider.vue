@@ -198,11 +198,18 @@ export default defineComponent({
       .mask(1,#fff);
       border-radius: 4px;
       transition: all 0.25s;
-      transform: scale(0.9);
+      transform: scale(0);
     }
     &.active {
       &::before {
         transform: scale(1.1);
+      }
+    }
+  }
+  &:hover {
+    .aw-slider__btn {
+      &::before {
+        transform: scale(0.9);
       }
     }
   }

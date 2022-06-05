@@ -1,6 +1,8 @@
 <template>
   <LazyBlock class="home-tv" :class="{ 'aw-skeleton': !isInit }">
-    <h3>番外</h3>
+    <h2>
+      <span>番外</span>
+    </h2>
     <div class="home-tv__inner">
       <ComicTvCard v-for="item in tv" :key="item.id" :detail="item" />
     </div>
@@ -34,6 +36,7 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
+@import '../style/home-child';
 .home-tv {
   position: relative;
   width: 800px;
@@ -41,6 +44,9 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   border-radius: 14px;
+  h2 {
+    .home-child-title('SIDE SHOW');
+  }
   &__inner {
     display: flex;
     flex: 1;

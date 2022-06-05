@@ -91,6 +91,9 @@ export default defineComponent({
       opacity: 0.3;
       transition: all 0.25s;
     }
+    &:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
   }
 
   .info {
@@ -129,7 +132,7 @@ export default defineComponent({
       }
     }
     .info {
-      transform: translateY(-10px);
+      transform: translateY(-6px);
     }
   }
 }

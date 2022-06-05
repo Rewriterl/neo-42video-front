@@ -57,12 +57,14 @@ export default defineComponent({
   padding: 30px;
   box-sizing: border-box;
   overflow-y: auto;
+
   &__content {
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(var(--favcomic-col-count), 1fr);
     gap: 30px;
   }
+
   &__empty {
     margin: 0 auto;
     margin-top: 100px;

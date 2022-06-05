@@ -6,9 +6,14 @@
       name="player-fill"
     />
   </div>
-  <div v-show="status === PlayerStatus.Loading" class="aw-video__loading">
-    <LoadingBlockRun />
-  </div>
+  <transition
+    enter-active-class="animate__fadeIn"
+    leave-active-class="animate__fadeOut"
+  >
+    <div v-show="status === PlayerStatus.Loading" class="aw-video__loading">
+      <LoadingBlockRun />
+    </div>
+  </transition>
   <div v-show="status === PlayerStatus.Failed" class="aw-video__bad">
     <img src="~static/img/video-bad.png" />
     <span>加载失败了，好耶！</span>
@@ -69,7 +74,7 @@ export default defineComponent({
     bottom: 16px;
     font-size: 50px;
     cursor: pointer;
-    text-shadow: 0 4px 16px rgb(0 0 0 / 25%);
+    text-shadow: 0 4px 16px rgb(0 0 0 / 40%);
   }
   &__bad {
     .mask;
@@ -99,7 +104,8 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
     z-index: 3;
-    background: rgb(0 0 0 / 25%);
+    background: rgb(0 0 0 / 40%);
+    animation-duration: 0.25s;
     span {
       margin-top: 30px;
     }

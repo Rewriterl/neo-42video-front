@@ -1,6 +1,8 @@
 <template>
   <LazyBlock class="home-block-comic slide-in-up">
-    <h2>{{ title }}</h2>
+    <h2>
+      <span>{{ title }}</span>
+    </h2>
     <div class="cards">
       <div
         v-for="item in list"
@@ -47,10 +49,14 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
+@import '../style/home-child';
 .home-block-comic {
   position: relative;
   width: 100%;
   max-width: 1800px;
+  h2 {
+    .home-child-title('OTHER ANIME');
+  }
   .cards {
     width: 100%;
     display: flex;
