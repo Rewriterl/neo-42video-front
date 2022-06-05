@@ -29,7 +29,12 @@
                 :label="item.name"
                 :list="item.values"
                 :bad-anthology="anthology.bads"
-                @change="changeAnthology"
+                @change="
+                  (e) =>
+                    changeAnthology(e, {
+                      resetInitPlayerCurrentTime: false
+                    })
+                "
               />
             </div>
           </el-tab-pane>
@@ -57,7 +62,7 @@ import {
   watch
 } from 'vue'
 import { useRoute } from 'vue-router'
-import { sToMs, getVal, wait } from 'adicw-utils'
+import { sToMs, getVal } from 'adicw-utils'
 
 import AwVideo from '@comps/AwVideo/AwVideo.vue'
 import ComicAnthology, { ChangeReturns } from './component/ComicAnthology.vue'
@@ -204,12 +209,20 @@ export default defineComponent({
     )
 
     /**
-     * 修改选集
+     *  修改选集
      * @param item 选择集信息
-     * @param isAddCache 是否添加到播放缓存
+     * @param option {
+     *  isAddCache是否添加到播放缓存
+     *  resetInitPlayerCurrentTime是否重置播放器初始化进度
+     * }
      */
-    const changeAnthology = (item: ChangeReturns, isAddCache = true) => {
+    const changeAnthology = (
+      item: ChangeReturns,
+      { isAddCache = true, resetInitPlayerCurrentTime = false } = {}
+    ) => {
       const { value } = item
+      resetInitPlayerCurrentTime && (initPlayerCurrentTime.value = 0)
+
       // 错误地址判断
       if (['kol-fans.fp.ps'].some((key) => value.includes(key))) {
         anthology.bads.push(value)
@@ -229,6 +242,7 @@ export default defineComponent({
     /** 下一集 */
     const nextAnthology = () => {
       if (!anthology.currentItem) return
+      initPlayerCurrentTime.value = 0
       const list = anthologyListMap.value[anthology.currentItem.orgId]
       if (!list) return
       const nextIndex =
@@ -277,6 +291,8 @@ export default defineComponent({
       // 获取对应缓存
       const cache = playProgressCache.getLatestCache(+props.id)
       if (cache) {
+        console.log('cache', cache)
+
         // 查找缓存对应源
         const list = anthologyListMap.value[cache.orgId]
         if (!list) return
@@ -289,7 +305,9 @@ export default defineComponent({
             ...value,
             orgId: list.orgId
           },
-          false
+          {
+            isAddCache: false
+          }
         )
         awVideoComp.value?.notify({
           content: `上次播放到 ${value.name} ${sToMs(cache.progress)}`,
@@ -304,7 +322,9 @@ export default defineComponent({
               ...item,
               orgId: anthology.list[0].orgId
             },
-            false
+            {
+              isAddCache: false
+            }
           ) &&
           ElNotification({
             type: 'error',
@@ -327,16 +347,17 @@ export default defineComponent({
       if (!list) return
       const value = list.values[routeParam.episode]
 
+      initPlayerCurrentTime.value = routeParam.progress
+
       changeAnthology(
         {
           ...value,
           orgId: list.orgId
         },
-        false
+        {
+          isAddCache: false
+        }
       )
-      await wait(2000)
-      // 定位缓存进度
-      awVideoComp.value?.changeProgress(routeParam.progress)
       awVideoComp.value?.notify({
         content: `已为您定位到 ${value.name} ${sToMs(routeParam.progress)}`,
         duration: 3000

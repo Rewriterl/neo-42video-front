@@ -1,27 +1,40 @@
 <template>
   <div class="comic-favlist">
-    <ListVueTransition class="comic-favlist__content">
+    <ListVueTransition v-if="favs.length > 0" class="comic-favlist__content">
       <ComicFavCard
         v-for="comic in favs"
         :key="comic.comicId"
         :detail="comic"
       />
     </ListVueTransition>
+    <EmptyImgBlock
+      v-else
+      class="comic-favlist__empty"
+      content="啥也没有"
+      width="400px"
+      height="max-content"
+    >
+      <img src="~static/img/history-empty.png" />
+    </EmptyImgBlock>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import { useFavStore } from '@/stores/fav.store'
+
+import EmptyImgBlock from '@comps/Block/EmptyImgBlock.vue'
 import ComicFavCard from '../../components/ComicFavCard.vue'
 import ListVueTransition from '@/components/Transition/ListVueTransition.vue'
+
 import { usePageOut } from '@/hooks/utils'
+import { useFavStore } from '@/stores/fav.store'
 
 export default defineComponent({
   name: 'ComicFavlist',
   components: {
     ComicFavCard,
-    ListVueTransition
+    ListVueTransition,
+    EmptyImgBlock
   },
   setup() {
     const favStore = useFavStore()
@@ -49,6 +62,11 @@ export default defineComponent({
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 30px;
+  }
+  &__empty {
+    margin: 0 auto;
+    margin-top: 100px;
+    position: relative;
   }
 }
 </style>

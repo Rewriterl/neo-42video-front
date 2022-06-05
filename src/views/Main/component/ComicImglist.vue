@@ -32,7 +32,6 @@ import * as Api from '@apis/index'
 import { useResizeListener } from '@/hooks/utils'
 import { debounce } from '@/utils/adLoadsh'
 import ImagePreview from '@/components/AwImagePreview/ImagePreview.vue'
-import { getComicImgmain } from '@apis/index'
 
 const props = withDefaults(
   defineProps<{
@@ -106,6 +105,7 @@ onBeforeUpdate(styleInit)
 useResizeListener($innerEl, styleInit)
 </script>
 <style lang="less" scoped>
+// column-count: 4;
 .comic-imglist {
   position: relative;
   width: 100%;

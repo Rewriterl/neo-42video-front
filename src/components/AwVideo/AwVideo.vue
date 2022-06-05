@@ -369,7 +369,7 @@ export default defineComponent({
      * 进度切换
      * @param val 0-100
      */
-    const onProgressChange = (val: any) => {
+    const onProgressChange = (val: number) => {
       const realTime = player.duration * (+val / 100)
       changeProgress(realTime)
       controlBar.isProgressing = false
@@ -644,6 +644,7 @@ export default defineComponent({
   color: var(--font-unactive-color);
   background: #000;
   overflow: hidden;
+  transition: all 0.25s;
 
   &.web-fullscreen {
     position: fixed;
@@ -674,7 +675,7 @@ export default defineComponent({
     display: flex;
     align-items: center;
     color: #fff;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(43, 51, 63, 0.7);
     height: @controlHeight;
     user-select: none;
     transition: all 0.25s;

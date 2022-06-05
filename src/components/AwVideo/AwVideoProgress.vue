@@ -23,6 +23,7 @@
       v-model="sliderVal"
       :parts="bufferedListPercent"
       v-bind="$attrs"
+      @change="(e) => $emit('change', e)"
     />
   </div>
 </template>
@@ -64,7 +65,14 @@ export default defineComponent({
       default: ''
     }
   },
-  emits: ['timeChange', 'timePreview', 'progressing', 'progressend'],
+  emits: {
+    timeChange: (e: number) => e,
+    timePreview: (e: number) => e,
+    /** 继承于AwSlider组件 */
+    change: (e: number) => e,
+    progressing: null,
+    progressend: null
+  },
   setup(props, { emit }) {
     const selfDom = ref<HTMLElement>()
 

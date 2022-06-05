@@ -7,7 +7,7 @@
         arrow="never"
         :interval="6000"
         :pause-on-hover="false"
-        @change="onCarouselChange"
+        @change="(e) => onCarouselChange(+e)"
       >
         <el-carousel-item v-for="(item, index) in banner" :key="index">
           <BaseImg :src="item.cover" :lazy="false" />
@@ -164,7 +164,7 @@ export default defineComponent({
       }
     })
 
-    const onCarouselChange = async (e: any) => {
+    const onCarouselChange = async (e: number) => {
       carousel.infoVisible = false
       await wait(500)
       carousel.active = +e

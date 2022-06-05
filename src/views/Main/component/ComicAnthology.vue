@@ -1,8 +1,5 @@
 <template>
   <div class="comic-anthology">
-    <!-- <ul v-if="realSection.length > 0" class="comic-anthology__section">
-      <li v-for="item in realSection" :key="item.key">{{ item.name }}</li>
-    </ul> -->
     <div class="comic-anthology__section">
       <label>{{ label }}</label>
       <div class="line"></div>
@@ -82,7 +79,9 @@ export default defineComponent({
       default: ''
     }
   },
-  emits: ['change'],
+  emits: {
+    change: (e: ChangeReturns) => e
+  },
   setup(props, { emit }) {
     const activeTab = ref(0)
     /** 当前显示的列表排序 0顺序 1倒序 */
