@@ -1,11 +1,20 @@
 <template>
   <div class="aw-video__mask" @click="playHandler">
-    <Icon v-show="status === 2" class="aw-video__play" name="player-fill" />
+    <Icon
+      v-show="status === PlayerStatus.Paused"
+      class="aw-video__play"
+      name="player-fill"
+    />
   </div>
-  <div v-show="status === 0" class="aw-video__loading">
-    <LoadingBlockRun />
-  </div>
-  <div v-show="status === -1" class="aw-video__bad">
+  <transition
+    enter-active-class="animate__fadeIn"
+    leave-active-class="animate__fadeOut"
+  >
+    <div v-show="status === PlayerStatus.Loading" class="aw-video__loading">
+      <LoadingBlockRun />
+    </div>
+  </transition>
+  <div v-show="status === PlayerStatus.Failed" class="aw-video__bad">
     <img src="~static/img/video-bad.png" />
     <span>加载失败了，好耶！</span>
   </div>
@@ -28,7 +37,7 @@ export default defineComponent({
   props: {
     status: {
       type: Number as PropType<Type.Player['status']>,
-      default: -2
+      default: Type.PlayerStatus.None
     },
     src: {
       type: String,
@@ -37,6 +46,11 @@ export default defineComponent({
     playHandler: {
       type: Function as PropType<(e: Event) => void>,
       default: () => false
+    }
+  },
+  setup() {
+    return {
+      PlayerStatus: Type.PlayerStatus
     }
   }
 })
@@ -60,7 +74,7 @@ export default defineComponent({
     bottom: 16px;
     font-size: 50px;
     cursor: pointer;
-    text-shadow: 0 4px 16px rgb(0 0 0 / 25%);
+    text-shadow: 0 4px 16px rgb(0 0 0 / 40%);
   }
   &__bad {
     .mask;
@@ -90,7 +104,8 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
     z-index: 3;
-    background: rgb(0 0 0 / 25%);
+    background: rgb(0 0 0 / 40%);
+    animation-duration: 0.25s;
     span {
       margin-top: 30px;
     }

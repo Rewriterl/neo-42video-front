@@ -98,6 +98,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref } from 'vue'
+import { getVal, wait, smoothPush } from 'adicw-utils'
 
 import AwRadio from '@comps/Form/AwRadio.vue'
 import ComicCard from './component/ComicCard.vue'
@@ -106,7 +107,6 @@ import EmptyImgBlock from '@comps/Block/EmptyImgBlock.vue'
 
 import { SEARCH_FILTER } from './statics/form'
 import * as Api from '@/api'
-import { getVal, wait, smoothPush } from '@/utils/adLoadsh'
 import { ElNotification } from 'element-plus'
 
 /**
@@ -359,7 +359,7 @@ export default defineComponent({
       .box;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       width: 100%;
       padding: 16px 30px;
       box-sizing: border-box;
@@ -375,25 +375,12 @@ export default defineComponent({
       overflow-y: scroll;
       &__content {
         display: grid;
-        grid-template-columns: repeat(8, 1fr);
+        grid-template-columns: repeat(var(--search-col-count), 1fr);
         gap: 24px;
         width: 100%;
         padding: 30px;
         box-sizing: border-box;
         animation-duration: 0.25s;
-
-        @media screen and (max-width: 1600px) {
-          grid-template-columns: repeat(6, 1fr);
-        }
-        @media screen and (max-width: 1200px) {
-          grid-template-columns: repeat(4, 1fr);
-        }
-        @media screen and (min-width: 2300px) {
-          grid-template-columns: repeat(10, 1fr);
-        }
-        @media screen and (min-width: 3000px) {
-          grid-template-columns: repeat(14, 1fr);
-        }
       }
       &__loading {
         position: absolute;

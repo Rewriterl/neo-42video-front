@@ -57,8 +57,8 @@ export const DF_SYSTEM_COLOR: ThemeColorVar[] = [
     prop: 'font',
     value: '',
     var: '--font-color',
-    descr: '主字体颜色',
-    elementPlusVars: ['--el-text-color-regular']
+    descr: '主字体颜色'
+    // elementPlusVars: ['--el-text-color-regular']
   },
   {
     prop: 'font-unactive',

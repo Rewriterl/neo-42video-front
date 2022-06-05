@@ -1,15 +1,23 @@
-import { getComicFavInstance } from '@/class/comicFav.class'
 import { defineStore } from 'pinia'
+import { getComicFavInstance, Comic } from '@/class/comicFav.class'
 
-export const useFavStore = defineStore('playCache', {
+export type ComicFavInfo = Comic
+
+export const useFavStore = defineStore('favStore', {
   getters: {
     comicFavs() {
       return getComicFavInstance().fav
     }
   },
   actions: {
-    // comicFav: getComicFavInstance().favHandler,
-    // isFavComic: getComicFavInstance().has,
-    // saveComicFav: getComicFavInstance().saveStore
+    comicFav(comic: Comic) {
+      getComicFavInstance().favHandler(comic)
+    },
+    isFavComic(id: string) {
+      return getComicFavInstance().has(id)
+    },
+    saveComicFav() {
+      getComicFavInstance().saveStore()
+    }
   }
 })

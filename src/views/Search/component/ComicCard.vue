@@ -52,7 +52,6 @@ export default defineComponent({
     flex: 1;
     width: 100%;
     aspect-ratio: 1/1.4;
-    // border-radius: 6px;
   }
   .info {
     p {

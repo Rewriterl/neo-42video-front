@@ -15,20 +15,19 @@ export default defineComponent({
   name: 'AppRouter',
   setup() {
     const $route = useRoute()
-    const routeNames = ['Home', 'Search', 'User', 'Setting', 'ComicMain']
+    const routePaths = ['home', 'search', 'user', 'setting', 'comicmain']
     const transition = ref('')
 
     watch(
-      () => $route.name,
+      () => $route.fullPath,
       (toName, fromName) => {
         toName = String(toName)
         fromName = String(fromName)
-        const toDepth = routeNames.indexOf(toName)
-        const fromDepth = routeNames.indexOf(fromName)
-        if (
-          routeNames.indexOf(fromName) === -1 ||
-          routeNames.indexOf(toName) === -1
-        ) {
+        const toDepth = routePaths.findIndex((path) => toName.includes(path))
+        const fromDepth = routePaths.findIndex((path) =>
+          fromName.includes(path)
+        )
+        if (fromDepth === -1 || toDepth === -1) {
           transition.value = ''
         } else {
           transition.value = toDepth > fromDepth ? 'flod-up' : 'flod-down'

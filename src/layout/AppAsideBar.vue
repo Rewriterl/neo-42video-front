@@ -25,27 +25,31 @@ export default defineComponent({
       {
         name: '首页',
         routeName: 'Home',
+        routePath: 'home',
         icon: 'homefill'
       },
       {
         name: '搜索',
         routeName: 'Search',
+        routePath: 'search',
         icon: 'search'
       },
       {
         name: '关于我',
         routeName: 'User',
+        routePath: 'user',
         icon: 'user'
       },
       {
         name: '系统设置',
         routeName: 'Setting',
+        routePath: 'setting',
         icon: 'setting1'
       }
     ]
     const sliderStyle = computed(() => {
-      const routeIndex = routeList.findIndex(
-        (item) => item.routeName === $route.name
+      const routeIndex = routeList.findIndex((item) =>
+        $route.fullPath.includes(item.routePath)
       )
       return {
         transform: `translate(

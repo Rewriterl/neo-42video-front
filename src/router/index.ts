@@ -6,6 +6,7 @@ import {
   getRouteSCMInstance,
   createRouteSCM
 } from '@/class/routeScrollCache.class'
+import { WEB_NAME } from '@/common/static'
 
 createRouteSCM()
 
@@ -15,14 +16,14 @@ const routes: RouteRecordRaw[] = [
     name: 'NotFound',
     component: () => import('@/views/Error/404.vue'),
     meta: {
-      title: 'Anime - 404not found'
+      title: WEB_NAME + '-404not found'
     }
   },
   {
     path: '/',
     component: () => import('@/views/Home/Index.vue'),
     meta: {
-      title: 'Anime',
+      title: WEB_NAME,
       dom: '#home'
     }
   },
@@ -49,7 +50,7 @@ router.beforeEach((to, from, next) => {
 })
 router.afterEach((to) => {
   getRouteSCMInstance().setScroll(to.path)
-  document.title = String(to.meta.title) || 'Anime'
+  document.title = String(to.meta.title) || WEB_NAME
 })
 
 export default router

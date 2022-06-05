@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import moment from 'moment'
 
-import { sToMs } from '@/utils/adLoadsh'
+import { sToMs } from 'adicw-utils'
 import { getPlayHistoryInstance } from '@/class/playHistory.class'
 import { getPlayProgressInstance } from '@/class/playProgress.class'
 

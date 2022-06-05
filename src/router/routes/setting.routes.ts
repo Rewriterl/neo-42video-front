@@ -1,3 +1,5 @@
+import { WEB_NAME } from '@/common/static'
+
 const Setting = () => import('@/views/Setting/Index.vue')
 
 export default {
@@ -5,7 +7,7 @@ export default {
   name: 'Setting',
   component: Setting,
   meta: {
-    title: 'Anime-系统设置'
+    title: WEB_NAME + '-系统设置'
   },
   children: []
 }

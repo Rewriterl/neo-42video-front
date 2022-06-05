@@ -1,4 +1,4 @@
-import { jsonParse } from '@/utils/adLoadsh'
+import { jsonParse } from 'adicw-utils'
 import { ref } from 'vue'
 import { DF_SYSTEM_COLOR, THEME_DARK } from './static'
 import { ThemeColorVar } from './type'

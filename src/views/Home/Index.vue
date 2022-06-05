@@ -32,6 +32,7 @@ import HomeTv from './component/HomeTv.vue'
 import HomeBlockComic from './component/HomeBlockComic.vue'
 
 import * as Api from '@apis/index'
+import { useComicUpdate } from '@/stores/comicUpdate.store'
 
 export default defineComponent({
   name: 'Home',
@@ -42,6 +43,8 @@ export default defineComponent({
     HomeBlockComic
   },
   setup() {
+    const comicUpdate = useComicUpdate()
+
     const isInit = ref(false)
     const comic = reactive<Api.GetHomeMixData>({
       perweek: [],
@@ -56,6 +59,7 @@ export default defineComponent({
     ;(async () => {
       const data = await Api.getHomeMixData()
       if (data) {
+        comicUpdate.setComic(data.perweek)
         Object.entries(data).forEach(([k, v]) => {
           comic[k as keyof Api.GetHomeMixData] = v
         })

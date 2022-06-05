@@ -2,6 +2,20 @@ import { VideoJsPlayer } from 'video.js'
 
 export type FlvInstance = VideoJsPlayer | null
 
+/** 播放器状态 */
+export enum PlayerStatus {
+  /** 无状态 */
+  None = -2,
+  /** 加载失败 */
+  Failed = -1,
+  /** 加载中 */
+  Loading = 0,
+  /** 播放中 */
+  Playing = 1,
+  /** 暂停中 */
+  Paused = 2
+}
+
 /** 播放器信息 */
 export interface Player {
   /** 当前进度 */
@@ -10,10 +24,10 @@ export interface Player {
   duration: number
   /** 音量 0-100 */
   volume: number
-  /** 实际使用的音量 0-1 */
-  readonly realVolume: number
-  /** 状态 -2无状态 -1加载失败 0加载中 1播放中 2暂停中  */
-  status: -2 | -1 | 0 | 1 | 2
+  /** 音量-old */
+  oldVolume: number
+  /** 状态  */
+  status: PlayerStatus
   /** 全屏 */
   fullScreen: boolean
   /** 画中画 */
@@ -21,7 +35,7 @@ export interface Player {
   /** 网站全屏 */
   webFullScreen: boolean
   /** 是否静音 */
-  isMute: boolean
+  readonly isMuted: boolean
   /** 进度预览图 */
   preview: string
   /** 是否已经进行监听 */

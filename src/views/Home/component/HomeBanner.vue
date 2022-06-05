@@ -7,7 +7,7 @@
         arrow="never"
         :interval="6000"
         :pause-on-hover="false"
-        @change="onCarouselChange"
+        @change="(e) => onCarouselChange(+e)"
       >
         <el-carousel-item v-for="(item, index) in banner" :key="index">
           <BaseImg :src="item.cover" :lazy="false" />
@@ -79,6 +79,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import { wait } from 'adicw-utils'
 
 import AwSlideX from '@comps/AwSlide/AwSlideX.vue'
 import AwSlideItem from '@comps/AwSlide/AwSlideItem.vue'
@@ -89,7 +90,6 @@ import AwTab from '@/components/AwTabs/AwTab.vue'
 
 import * as Type from '../types/homeSection.type'
 import { toComicMain } from '@/hooks/router'
-import { wait } from '@/utils/adLoadsh'
 
 export default defineComponent({
   name: 'HomeBanner',
@@ -164,7 +164,7 @@ export default defineComponent({
       }
     })
 
-    const onCarouselChange = async (e: any) => {
+    const onCarouselChange = async (e: number) => {
       carousel.infoVisible = false
       await wait(500)
       carousel.active = +e

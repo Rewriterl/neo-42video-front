@@ -1,9 +1,9 @@
-import { jsonParse } from '@/utils/adLoadsh'
+import { jsonParse } from 'adicw-utils'
 import { ref } from 'vue'
 
 const COMIC_FAV_STORE_KEY = 'COMIC_FAV_STORE'
 
-interface Comic {
+export interface Comic {
   /** 动漫id */
   comicId: string
   /** 动漫名称 */
@@ -12,7 +12,7 @@ interface Comic {
   comicCover: string
 }
 
-type ComicFavItem = Comic & {
+export type ComicFavItem = Comic & {
   /** 收藏时间 */
   favDate: number
 }

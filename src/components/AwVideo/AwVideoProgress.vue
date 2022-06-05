@@ -23,6 +23,7 @@
       v-model="sliderVal"
       :parts="bufferedListPercent"
       v-bind="$attrs"
+      @change="(e) => $emit('change', e)"
     />
   </div>
 </template>
@@ -38,7 +39,7 @@ import {
   ref,
   watch
 } from 'vue'
-import { sToMs } from '@/utils/adLoadsh'
+import { sToMs } from 'adicw-utils'
 import { onWindowSizeChange } from '@/utils/vant/useWindowSize'
 import AwSlider from '@/components/AwSlider/AwSlider.vue'
 export default defineComponent({
@@ -64,7 +65,14 @@ export default defineComponent({
       default: ''
     }
   },
-  emits: ['timeChange', 'timePreview', 'progressing', 'progressend'],
+  emits: {
+    timeChange: (e: number) => e,
+    timePreview: (e: number) => e,
+    /** 继承于AwSlider组件 */
+    change: (e: number) => e,
+    progressing: null,
+    progressend: null
+  },
   setup(props, { emit }) {
     const selfDom = ref<HTMLElement>()
 

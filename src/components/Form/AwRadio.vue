@@ -1,6 +1,8 @@
 <template>
   <div class="aw-radio">
-    <div v-if="label" class="aw-radio__label">{{ label }}：</div>
+    <div v-if="label" class="aw-radio__label">
+      {{ label }}<Icon name="play" />
+    </div>
     <!-- <div class="aw-radio__options"> -->
     <div
       v-for="{ name, value } in options"
@@ -69,8 +71,18 @@ export default defineComponent({
   flex-wrap: wrap;
   line-height: 16px;
   &__label {
+    display: flex;
+    align-items: center;
     color: var(--font-color);
     width: max-content;
+    font-weight: 800;
+    i {
+      display: block;
+      font-size: 12px;
+      color: var(--font-unactive-color);
+      margin: 0 6px;
+      transform: scale(0.7);
+    }
   }
   &__item {
     display: flex;
@@ -82,6 +94,7 @@ export default defineComponent({
     user-select: none;
     color: var(--font-unactive-color);
     cursor: pointer;
+    font-size: 14px;
     &.active {
       color: #fff;
       background: var(--primary-color);

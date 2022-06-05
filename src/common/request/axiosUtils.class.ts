@@ -23,7 +23,6 @@ export default class AxiosUtils {
       },
       (error) => {
         const status = error.toString()
-        console.log(status)
         if (
           ['timeout ', 'Invalid URL', '401', '403', '404'].some((item) =>
             status.includes(item)

@@ -51,7 +51,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const { children, linkChildren } =
       useChildren<InstanceType<typeof AwTab>>(AWTABS_KEY)
-    linkChildren({})
+    linkChildren()
     const tabs = reactive<{
       child: InstanceType<typeof AwTab>[]
     }>({
@@ -71,7 +71,9 @@ export default defineComponent({
       if (!~activeIndex) activeIndex = 0
       return {
         width: `${tabsList.value.length * 100}%`,
-        transform: `translateX(-${(activeIndex / tabs.child.length) * 100}%)`
+        transform: `translateX(-${
+          +(activeIndex / tabs.child.length).toFixed(4) * 100
+        }%)`
       } as CSSProperties
     })
 

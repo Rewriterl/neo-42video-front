@@ -17,8 +17,8 @@ export default defineComponent({
   },
   setup() {
     const beforeLeave = (el: Element) => {
-      const { width, height } = el.getBoundingClientRect()
       const realEl = el as HTMLElement
+      const { width, height } = realEl.getBoundingClientRect()
       realEl.style.width = `${width}px`
       realEl.style.height = `${height}px`
     }

@@ -32,7 +32,7 @@ import {
   onMounted
 } from 'vue'
 
-import { numLimit } from '@/utils/adLoadsh'
+import { numLimit } from 'adicw-utils'
 import { useEventListener } from '@/utils/vant/useEventListener'
 // todo 蜜汁鬼畜
 export default defineComponent({
@@ -198,11 +198,18 @@ export default defineComponent({
       .mask(1,#fff);
       border-radius: 4px;
       transition: all 0.25s;
-      transform: scale(0.9);
+      transform: scale(0);
     }
     &.active {
       &::before {
         transform: scale(1.1);
+      }
+    }
+  }
+  &:hover {
+    .aw-slider__btn {
+      &::before {
+        transform: scale(0.9);
       }
     }
   }

@@ -7,7 +7,7 @@
         :title="asideVisible ? '隐藏' : '展开'"
         @click="asideVisible = !asideVisible"
       ></div>
-      <b v-show="asideVisible" class="animate__jello">Anime</b>
+      <b v-show="asideVisible" class="animate__jello">{{ WEB_NAME }}</b>
       <AppAsideBar v-show="asideVisible" />
     </aside>
     <main class="app-contain__main">
@@ -21,11 +21,12 @@ import { defineComponent, provide, ref } from 'vue'
 import '@/assets/icon/iconfont.css'
 import '@/assets/icon/iconfont.js'
 
-import AppAsideBar from '@comps/Body/AppAsideBar.vue'
-import AppTabBar from '@comps/Body/AppTabBar.vue'
-import AppRouter from '@comps/Body/AppRouter.vue'
+import AppAsideBar from '@/layout/AppAsideBar.vue'
+import AppTabBar from '@/layout/AppTabBar.vue'
+import AppRouter from '@/layout/AppRouter.vue'
 
 import { useSystemConfigStore } from './stores/systemConfig.store'
+import { WEB_NAME } from './common/static'
 
 function provideModule() {
   const isDev = import.meta.env.MODE === 'development'
@@ -52,6 +53,7 @@ export default defineComponent({
     const systemConfigStore = useSystemConfigStore()
     systemConfigStore.getServerIp()
     return {
+      WEB_NAME,
       ...asideModule(),
       ...provideModule()
     }
