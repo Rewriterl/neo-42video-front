@@ -1,6 +1,7 @@
 const User = () => import('@/views/User/Index.vue')
 const PlayHistory = () => import('@/views/User/Routes/PlayHistory/Index.vue')
 const ComicFavlist = () => import('@/views/User/Routes/ComicFavlist/Index.vue')
+import { WEB_NAME } from '@/common/static'
 import { RouteRecordRaw } from 'vue-router'
 
 export default {
@@ -9,7 +10,7 @@ export default {
   component: User,
   redirect: '/user/play-history',
   meta: {
-    title: 'Anime-小窝'
+    title: WEB_NAME + '-小窝'
   },
   children: [
     {
@@ -17,7 +18,7 @@ export default {
       name: 'PlayHistory',
       component: PlayHistory,
       meta: {
-        title: 'Anime-播放历史',
+        title: WEB_NAME + '-播放历史',
         elName: '#user .play-history'
       }
     },
@@ -26,7 +27,7 @@ export default {
       name: 'ComicFavlist',
       component: ComicFavlist,
       meta: {
-        title: 'Anime-追番',
+        title: WEB_NAME + '-追番',
         elName: '#user .comic-favlist'
       }
     }
