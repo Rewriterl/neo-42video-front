@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div
     ref="selfEl"
     class="stage"
@@ -146,4 +146,4 @@ svg {
   top: 50%;
   transform: translate(-50%, -50%);
 }
-</style>
+</style> -->
