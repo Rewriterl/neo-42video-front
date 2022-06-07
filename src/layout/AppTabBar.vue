@@ -49,9 +49,7 @@
       </transition>
     </div>
     <div class="avatar">
-      <BaseImg
-        src="https://api.adicw.cn/images/DfImg/ea81-hiycyfw6936247.jpg"
-      />
+      <BaseImg src="https://api.adicw.cn/uploads/UserAvatar/default.jpg" />
     </div>
   </div>
 </template>
@@ -104,6 +102,7 @@ export default defineComponent({
     overflow: hidden;
     img {
       width: 100%;
+      height: 100%;
     }
   }
   .tool {
