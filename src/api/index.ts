@@ -2,6 +2,15 @@ import { getax } from '@/common/request/index'
 import { getVal } from 'adicw-utils'
 import * as FnReturns from './type'
 import * as ApiReturns from './api.type'
+import {
+  fakeRequest,
+  FAKE_Filter,
+  FAKE_GETANIME,
+  FAKE_GETCONFIG,
+  FAKE_GETINDEX,
+  FAKE_GETVIDEO,
+  FAKE_SEARCH
+} from './fakedata'
 export * from './type'
 export * from './pixiv'
 
@@ -21,9 +30,10 @@ export async function searchComic(param: {
       data: {
         data: { results, pagetotal }
       }
-    } = await getax<ApiReturns.Search>(
-      `api/search/${param.name}?page=${param.page}`
-    )
+    } = await fakeRequest(FAKE_SEARCH)
+    // await getax<ApiReturns.Search>(
+    //   `api/search/${param.name}?page=${param.page}`
+    // )
     if (results instanceof Array) {
       return {
         data: results,
@@ -63,7 +73,8 @@ export async function filterComic(param: {
       return v !== '' ? `${total}&${k}=${v}` : total
     }, 'api/filter?')
 
-    const { data } = await getax<ApiReturns.Filter>(api)
+    const { data } = await fakeRequest(FAKE_Filter)
+    // await getax<ApiReturns.Filter>(api)
     return {
       data: getVal(() => data.data.results, []).map((item) => ({
         cover: item.cover,
@@ -92,7 +103,8 @@ export async function getComicMain(
   try {
     const {
       data: { data }
-    } = await getax<ApiReturns.GetAnime>(`api/getAnime/${id}`)
+    } = await fakeRequest(FAKE_GETANIME)
+    // await getax<ApiReturns.GetAnime>(`api/getAnime/${id}`)
     const playlist = getVal(() => data.playlist[0], []).map((item, index) => ({
       name: String(item.title),
       value: index
@@ -125,8 +137,9 @@ export async function getVideoUrl(
 ): Promise<FnReturns.GetVideoUrlReturn> {
   try {
     const {
-      data: { data = {} }
-    } = await getax<ApiReturns.GetVideo>(`api/getVideo/${key}`)
+      data: { data }
+    } = await fakeRequest(FAKE_GETVIDEO)
+    // await getax<ApiReturns.GetVideo>(`api/getVideo/${key}`)
     return Object.entries(data).map(([k, v]) => ({
       key: k,
       value: (v instanceof Array ? v : []).map((url) =>
@@ -145,8 +158,9 @@ export async function getVideoUrl(
  */
 export async function getHomeMixData(): Promise<FnReturns.GetHomeMixData | null> {
   try {
-    const { data } = await getax<ApiReturns.GetIndex>('api/getIndex')
-    const listFormat = (list: ApiReturns.GetIndex['data']['latest']) =>
+    const { data } = await fakeRequest(FAKE_GETINDEX)
+    // await getax<ApiReturns.GetIndex>('api/getIndex')
+    const listFormat = (list: any[]) =>
       list.slice(0, 10).map((item) => ({
         cover: item.cover,
         id: item.id,
@@ -194,7 +208,8 @@ export async function getHomeMixData(): Promise<FnReturns.GetHomeMixData | null>
  */
 export async function getComicFilterConfig(): Promise<FnReturns.GetComicFilterConfig> {
   try {
-    const { data } = await getax<ApiReturns.GetConfig>('api/getConfig')
+    const { data } = await fakeRequest(FAKE_GETCONFIG)
+    //  await getax<ApiReturns.GetConfig>('api/getConfig')
     return getVal(() => data.data.filtersConfig, []).map((item) => ({
       id: item.id,
       name: item.name,
