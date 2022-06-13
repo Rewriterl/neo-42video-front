@@ -5,7 +5,7 @@ const COMIC_FAV_STORE_KEY = 'COMIC_FAV_STORE'
 
 export interface Comic {
   /** 动漫id */
-  comicId: string
+  comicId: ComicId
   /** 动漫名称 */
   comicName: string
   /** 动漫封面 */

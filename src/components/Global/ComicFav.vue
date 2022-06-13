@@ -36,7 +36,7 @@ export default defineComponent({
   },
   props: {
     id: {
-      type: String,
+      type: String as PropType<ComicId>,
       default: ''
     },
     info: {

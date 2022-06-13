@@ -10,9 +10,9 @@ declare module '*.vue' {
 /**
  * 对象值类型
  */
-type ValueOf<T> = T[keyof T]
+declare type ValueOf<T> = T[keyof T]
 
 /**
  * 动漫id
  */
-type ComicId = string | number
+declare type ComicId = string | number

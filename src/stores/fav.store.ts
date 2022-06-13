@@ -13,7 +13,7 @@ export const useFavStore = defineStore('favStore', {
     comicFav(comic: Comic) {
       getComicFavInstance().favHandler(comic)
     },
-    isFavComic(id: string) {
+    isFavComic(id: ComicId) {
       return getComicFavInstance().has(id)
     },
     saveComicFav() {
