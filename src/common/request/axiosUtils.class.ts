@@ -24,9 +24,14 @@ export default class AxiosUtils {
       (error) => {
         const status = error.toString()
         if (
-          ['timeout ', 'Invalid URL', '401', '403', '404'].some((item) =>
-            status.includes(item)
-          )
+          [
+            'timeout ',
+            'Invalid URL',
+            '401',
+            '403',
+            '404',
+            'Network Error'
+          ].some((item) => status.includes(item))
         ) {
           // store.dispatch('logout')
           ElNotification({
