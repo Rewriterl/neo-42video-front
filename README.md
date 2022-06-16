@@ -11,12 +11,13 @@
 
 ## 技术栈
 
-- 🍭 vue3+pinia
+- 👆 vue3+pinia
 - 🌍 vite
 - 💪 typescript
-- 💪 less
+- 🍭 less
 - 📖 video.js
-- 📖 element-plus
+- 🌷 element-plus
+- 🍀 iconfont
 
 ## 功能
 
