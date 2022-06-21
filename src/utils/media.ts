@@ -2,15 +2,16 @@ import { wait } from 'adicw-utils'
 
 /**
  * 图片加载
+ * todo 403判断 https://ae04.alicdn.com/kf/H5277280fe1cb4b069055c3df27ef8255t.jpg
  * @param path 图片地址
  * @returns
  */
 export function loadImg(path: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    const iamge = new Image()
-    iamge.src = path
-    iamge.onload = () => resolve(path)
-    iamge.onerror = reject
+    const image = new Image()
+    image.src = path
+    image.onload = () => resolve(path)
+    image.onerror = reject
   })
 }
 

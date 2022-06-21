@@ -10,4 +10,3 @@ declare module 'vue' {
     Icon: typeof Icon
   }
 }
-export {}
