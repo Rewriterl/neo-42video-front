@@ -1,18 +1,19 @@
 <template>
   <div id="search">
-    <header class="search-header">
-      <div class="search-header__search">
-        <input
-          v-model="filter.name"
-          type="text"
-          placeholder="请输入搜索关键字..."
-          @keyup.enter="searchByName()"
-        />
-        <Icon
-          :name="hasSearchKey ? 'delete1' : 'iconsearch'"
-          @click="!hasSearchKey ? searchByName() : resetName()"
-        />
-      </div>
+    <header class="search-header" :class="{ using: searchInput.using }">
+      <SearchInput
+        v-model="filter.name"
+        v-model:using="searchInput.using"
+        class="search-header__search"
+        @search="searchByName()"
+      >
+        <template #icon>
+          <Icon
+            :name="hasSearchKey ? 'delete1' : 'iconsearch'"
+            @click="!hasSearchKey ? searchByName() : resetName()"
+          />
+        </template>
+      </SearchInput>
       <Icon
         class="search-header__filter"
         name="filter"
@@ -102,12 +103,15 @@ import { getVal, wait, smoothPush } from 'adicw-utils'
 
 import AwRadio from '@comps/Form/AwRadio.vue'
 import ComicCard from './component/ComicCard.vue'
+import SearchInput from './component/SearchInput.vue'
 import LoadingCodeRun from '@comps/Loading/LoadingCodeRun.vue'
 import EmptyImgBlock from '@comps/Block/EmptyImgBlock.vue'
 
 import { SEARCH_FILTER } from './statics/form'
 import * as Api from '@/api'
 import { ElNotification } from 'element-plus'
+import { useSearchHistory } from '@/stores/searchHistory.store'
+import { usePageOut } from '@/hooks/utils'
 
 /**
  * 筛选模组
@@ -180,17 +184,27 @@ function filterModule(init: () => void) {
     resetName
   }
 }
+function searchInputModule() {
+  const searchInput = reactive({
+    using: false
+  })
+  return {
+    searchInput
+  }
+}
 export default defineComponent({
   name: 'Search',
   components: {
     AwRadio,
     ComicCard,
     LoadingCodeRun,
-    EmptyImgBlock
+    EmptyImgBlock,
+    SearchInput
   },
   setup() {
     const searchMainEl = ref<HTMLElement>()
     const searchResult = ref<Api.ComicPageList[]>([])
+    const searchHistory = useSearchHistory()
 
     /** 搜索延迟等待时间 */
     const FETCH_WAIT_TIME = 500
@@ -233,6 +247,7 @@ export default defineComponent({
       isEmptySearch.value = false
       searchMainEl.value!.scrollTop = 0
       clear && resetFilter()
+      searchHistory.add(filter.name)
       const { data, total } = await Api.searchComic({
         name: filter.name,
         page: pager.currnet - 1
@@ -265,6 +280,10 @@ export default defineComponent({
       isSearchFetching.value = false
     }
 
+    usePageOut(() => {
+      searchHistory.save()
+    })
+
     // onMounted(() => {
     //   searchByFilter()
     // })
@@ -282,7 +301,8 @@ export default defineComponent({
       resetName,
       resetFilter,
       isEmptySearch,
-      ...filterModuleArgs
+      ...filterModuleArgs,
+      ...searchInputModule()
     }
   }
 })
@@ -305,28 +325,25 @@ export default defineComponent({
       background: var(--box-bg-color);
     }
     &-header {
+      position: relative;
       display: flex;
+      justify-content: flex-start;
       align-items: center;
       gap: 26px;
-      width: 800px;
+      width: 100%;
       height: @headerHeight;
-      // background: #fff;
-      &__search {
-        position: relative;
-        width: 50%;
-        height: 100%;
-        color: var(--font-color);
-        input {
-          width: 100%;
-          height: 100%;
-          background: var(--box-bg-color);
-          outline: none;
-          border: none;
-          text-indent: 20px;
-          border-radius: 12px;
-          color: var(--font-color);
-          font-size: 16px;
+      transition: all 0.625s;
+      z-index: 333;
+      &.using {
+        transform: translate(50% - 20%, 100%);
+        .search-header__search {
+          width: 40% !important;
         }
+      }
+
+      &__search {
+        width: 26%;
+        height: 100%;
         i {
           position: absolute;
           right: 16px;
