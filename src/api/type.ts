@@ -146,8 +146,10 @@ export type GetComicImglistReturn = {
   id: string
   /** 名称 */
   title: string
-  /** 图片地址 */
-  url: string
+  /** 源图地址 */
+  orgurl: string
+  /** 预览图地址 */
+  preurl: string
   /** 简介 */
   desc: string
   /** 时间 */

@@ -190,29 +190,33 @@ export type GetIndex = ApiFormat<{
 }>
 
 export interface VilipixIllust {
-  /** 结果 */
-  rows: {
-    /** 图片id */
-    id: string
-    /** 作者id */
-    user_id: string
-    /** 创建时间 */
-    create_date: string
-    /** 简介 */
-    description: string
-    /** 名称 */
-    alt: string
-    /** 分类 字符串，逗号分割 */
-    tags: string
-    /** 图片地址 */
-    regular_url: string
-    /** 图片宽度 */
-    width: number
-    /** 图片高度 */
-    height: number
-  }[]
-  /** 结果总数 */
-  count: number
+  data: {
+    /** 结果 */
+    rows: {
+      /** 图片id */
+      picture_id: string
+      /** 作者id */
+      // user_id: string
+      /** 创建时间 */
+      created_at: string
+      /** 简介 */
+      // description: string
+      /** 名称 */
+      title: string
+      /** 分类 字符串，逗号分割 */
+      tags: string
+      /** 预览图地址 */
+      regular_url: string
+      /** 原图地址 */
+      original_url: string
+      /** 图片宽度 */
+      width: number
+      /** 图片高度 */
+      height: number
+    }[]
+    /** 结果总数 */
+    count: number
+  }
 }
 
 export interface VilipixTranslate {

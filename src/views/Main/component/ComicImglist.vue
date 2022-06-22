@@ -11,7 +11,7 @@
         <BaseImg
           v-for="img in imgs"
           :key="img.id"
-          :src="img.url"
+          :src="img.preurl"
           @click="imgPreview(img)"
         />
       </div>
@@ -41,7 +41,7 @@ const props = withDefaults(
     imgs: () => []
   }
 )
-const imgUrls = computed(() => props.imgs.map((item) => item.url))
+const imgUrls = computed(() => props.imgs.map((item) => item.orgurl))
 
 const imgElInfolist = ref<
   {
@@ -92,7 +92,7 @@ const scroll = () => {
 }
 const imgPreview = (e: Api.GetComicImglistReturn[0]) => {
   preview.visible = true
-  preview.current = e.url
+  preview.current = e.orgurl
 }
 const artwork = async (img: string) => {
   // const imgOrg = props.imgs.find((item) => item.url === img)

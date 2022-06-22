@@ -29,14 +29,15 @@ export async function getComicImglist({
         ''
       )
     const { data } = await dfGetax<ApiReturns.VilipixIllust>(
-      `https://www.vilipix.com/api/illust/tag/${realName}?limit=${limit}&offset=${offset}`
+      `https://www.vilipix.com/api/v1/picture/public?limit=${limit}&tags=${realName}&sort=new&offset=${offset}`
     )
-    return (data.rows || []).map((item) => ({
-      date: item.create_date,
-      title: item.alt,
-      url: item.regular_url,
-      id: item.id,
-      desc: item.description,
+    return getVal(() => data.data.rows, []).map((item) => ({
+      date: item.created_at,
+      title: item.title,
+      orgurl: item.original_url,
+      preurl: item.regular_url,
+      id: item.picture_id,
+      desc: '',
       w: item.width,
       h: item.height
     }))
