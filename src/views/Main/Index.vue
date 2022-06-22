@@ -292,8 +292,6 @@ export default defineComponent({
       // 获取对应缓存
       const cache = playProgressCache.getLatestCache(+props.id)
       if (cache) {
-        console.log('cache', cache)
-
         // 查找缓存对应源
         const list = anthologyListMap.value[cache.orgId]
         if (!list) return

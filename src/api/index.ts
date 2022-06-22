@@ -133,8 +133,8 @@ export async function getVideoUrl(
         url.replaceAll("'", '').split('?url=').pop()
       ) as string[]
     }))
-  } catch {
-    console.log('bad')
+  } catch (e) {
+    console.error(e)
     return []
   }
 }
