@@ -11,6 +11,7 @@
       :status="player.status"
       :src="src"
       :play-handler="playHandler"
+      @notify="notify"
     />
     <div
       :class="{ show: src && player.status !== -1 && controlBar.visible }"
@@ -109,15 +110,6 @@
           />
         </div>
       </div>
-      <el-tooltip effect="dark" content="网页全屏" placement="top-start">
-        <Icon
-          class="control-icon scale active-style"
-          :name="
-            player.webFullScreen ? 'exit-fullscreen-4-3' : 'fullscreen-4-3'
-          "
-          @click="webFullScreenCutover"
-        />
-      </el-tooltip>
       <el-tooltip effect="dark" content="画中画" placement="top-start">
         <Icon
           class="control-icon scale active-style"
@@ -127,6 +119,15 @@
               : 'picture-in-picture-2-fill'
           "
           @click="pipCutover"
+        />
+      </el-tooltip>
+      <el-tooltip effect="dark" content="网页全屏" placement="top-start">
+        <Icon
+          class="control-icon scale active-style"
+          :name="
+            player.webFullScreen ? 'exit-fullscreen-4-3' : 'fullscreen-4-3'
+          "
+          @click="webFullScreenCutover"
         />
       </el-tooltip>
       <el-tooltip effect="dark" content="全屏" placement="top-start">
@@ -299,16 +300,6 @@ export default defineComponent({
       webFullScreen: false
     })
     /**
-     * 提示框集合
-     * ps: 用于存储当前展示的提示框，方便处理
-     */
-    const notifys = reactive<{
-      [prop: string]: NotifyReturns | null
-    }>({
-      buffer: null,
-      canplay: null
-    })
-    /**
      * 底部控制bar集合
      */
     const controlBar = reactive({
@@ -424,7 +415,7 @@ export default defineComponent({
       player.webFullScreen = !player.webFullScreen
       setTimeout(() => {
         awVideoProgressComp.value?.initStyle()
-      }, 300)
+      }, 1000)
     }
     /** 静音切换 */
     const volumeCutover = () => {
@@ -499,11 +490,6 @@ export default defineComponent({
       /** 每次播放就绪 */
       canplay() {
         player.status = Type.PlayerStatus.Paused
-        notifys.canplay && notifys.canplay.remove()
-        notifys.canplay = notify({
-          content: '电波获取完成~',
-          duration: 3000
-        })
       },
       /** 进度 监听 */
       timeupdate(e: Event) {
@@ -545,20 +531,13 @@ export default defineComponent({
         })
       },
       /** 缓冲开始 监听 */
-      waiting: debounce(() => {
+      waiting: () => {
         player.status = Type.PlayerStatus.Loading
-        notifys.buffer = notify({
-          content: '电波获取中，请稍后~',
-          duration: 3000
-        })
-      }, 100),
+      },
       /** 缓冲结束 监听 */
-      playing: debounce(() => {
-        // const { paused } = e.target as HTMLVideoElement
-        // player.status = paused ? 2 : 1
+      playing: () => {
         play()
-        notifys.buffer && notifys.buffer.remove()
-      }, 100),
+      },
       volumechange(e: Event) {
         player.volume = (e.target as HTMLMediaElement).volume * 100
       }
@@ -598,6 +577,11 @@ export default defineComponent({
           // 空格键
           case ' ': {
             playHandler()
+            break
+          }
+          // esc
+          case 'Escape': {
+            player.webFullScreen && webFullScreenCutover()
             break
           }
         }

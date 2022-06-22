@@ -28,6 +28,7 @@ export interface NotifyItem {
 export interface NotifyReturns {
   remove: () => void
 }
+export type Notify = (item: NotifyItem) => NotifyReturns
 
 export default defineComponent({
   name: 'AwVideoMsg',
@@ -49,7 +50,7 @@ export default defineComponent({
      * 发送信息
      * @param notifyItem
      */
-    const notify = (notifyItem: NotifyItem) => {
+    const notify: Notify = (notifyItem: NotifyItem) => {
       const key = Math.random()
       notifys.value.unshift({
         ...notifyItem,

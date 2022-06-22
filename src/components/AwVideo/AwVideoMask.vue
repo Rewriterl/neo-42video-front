@@ -1,7 +1,7 @@
 <template>
   <div class="aw-video__mask" @click="playHandler">
     <Icon
-      v-show="status === PlayerStatus.Paused"
+      v-show="status === Type.PlayerStatus.Paused"
       class="aw-video__play"
       name="player-fill"
     />
@@ -10,11 +10,11 @@
     enter-active-class="animate__fadeIn"
     leave-active-class="animate__fadeOut"
   >
-    <div v-show="status === PlayerStatus.Loading" class="aw-video__loading">
+    <div v-show="loading.visible" class="aw-video__loading">
       <LoadingBlockRun />
     </div>
   </transition>
-  <div v-show="status === PlayerStatus.Failed" class="aw-video__bad">
+  <div v-show="status === Type.PlayerStatus.Failed" class="aw-video__bad">
     <img src="~static/img/video-bad.png" />
     <span>加载失败了，好耶！</span>
   </div>
@@ -24,36 +24,63 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
+<script lang="ts" setup>
+import { reactive, watch } from 'vue'
 import LoadingBlockRun from '@comps/Loading/LoadingBlockRun.vue'
 import * as Type from './type'
+import type { NotifyItem } from './AwVideoMsg.vue'
 
-export default defineComponent({
-  name: 'AwVideoMask',
-  components: {
-    LoadingBlockRun
-  },
-  props: {
-    status: {
-      type: Number as PropType<Type.Player['status']>,
-      default: Type.PlayerStatus.None
-    },
-    src: {
-      type: String,
-      default: ''
-    },
-    playHandler: {
-      type: Function as PropType<(e: Event) => void>,
-      default: () => false
-    }
-  },
-  setup() {
-    return {
-      PlayerStatus: Type.PlayerStatus
+const props = withDefaults(
+  defineProps<{
+    status: Type.Player['status']
+    src: string
+    playHandler: (e: Event) => void
+  }>(),
+  {
+    status: Type.PlayerStatus.None,
+    src: '',
+    playHandler: () => false
+  }
+)
+
+const emits = defineEmits<{
+  (e: 'notify', item: NotifyItem): void
+}>()
+
+const loading: {
+  visible: boolean
+  timer: NodeJS.Timeout | null
+} = reactive({
+  visible: false,
+  timer: null
+})
+
+watch(
+  () => props.status,
+  (status) => {
+    if (status === Type.PlayerStatus.Loading) {
+      loading.timer = setTimeout(() => {
+        loading.visible = true
+        emits('notify', {
+          content: '电波获取中，请稍后~',
+          duration: 3000
+        })
+      }, 2000)
+    } else {
+      if (loading.timer) {
+        clearTimeout(loading.timer)
+        loading.timer = null
+      }
+      if (loading.visible) {
+        loading.visible = false
+        emits('notify', {
+          content: '电波获取完成~',
+          duration: 3000
+        })
+      }
     }
   }
-})
+)
 </script>
 <style lang="less" scoped>
 .aw-video {
@@ -104,7 +131,7 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
     z-index: 3;
-    background: rgb(0 0 0 / 40%);
+    // background: rgb(0 0 0 / 10%);
     animation-duration: 0.25s;
     span {
       margin-top: 30px;
