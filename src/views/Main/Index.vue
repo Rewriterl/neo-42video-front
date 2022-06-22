@@ -32,7 +32,7 @@
                 @change="
                   (e) =>
                     changeAnthology(e, {
-                      resetInitPlayerCurrentTime: false
+                      resetInitPlayerCurrentTime: true
                     })
                 "
               />
