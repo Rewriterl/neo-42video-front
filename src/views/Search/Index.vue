@@ -98,7 +98,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref } from 'vue'
+import { computed, defineComponent, reactive, ref, shallowReactive } from 'vue'
 import { getVal, wait, smoothPush } from 'adicw-utils'
 
 import AwRadio from '@comps/Form/AwRadio.vue'
@@ -128,7 +128,7 @@ function filterModule(init: () => void) {
     year: 0
   })
   /** 筛选参数 */
-  const filterConfig = reactive({
+  const filterConfig = shallowReactive({
     org: [] as Api.GetComicFilterConfig,
     get cate() {
       return this.org.map((item) => ({

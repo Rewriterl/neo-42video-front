@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, ref, shallowReactive } from 'vue'
 
 import HomeBanner from './component/HomeBanner.vue'
 import HomeArticle from './component/HomeArticle.vue'
@@ -46,7 +46,7 @@ export default defineComponent({
     const comicUpdate = useComicUpdate()
 
     const isInit = ref(false)
-    const comic = reactive<Api.GetHomeMixData>({
+    const comic = shallowReactive<Api.GetHomeMixData>({
       perweek: [],
       hots: [],
       latest: [],

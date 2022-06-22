@@ -9,7 +9,6 @@
 import {
   defineComponent,
   CSSProperties,
-  inject,
   ref,
   computed,
   onMounted,
@@ -20,6 +19,7 @@ import videojs from 'video.js'
 
 import * as Type from './type'
 import { useEventListener } from '@/utils/vant/useEventListener'
+import { useIsDev } from '@/hooks/utils'
 
 export default defineComponent({
   name: 'VideoRender',
@@ -55,7 +55,7 @@ export default defineComponent({
     'update:volume': (e: number) => true
   },
   setup(props, { emit }) {
-    const isDev = inject('isDev')
+    const isDev = useIsDev().get()
     const videoInstance = ref<Type.FlvInstance>(null)
     const videoEl = ref<HTMLVideoElement>()
 

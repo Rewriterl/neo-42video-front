@@ -58,6 +58,7 @@ import {
   reactive,
   Ref,
   ref,
+  shallowReactive,
   toRef,
   watch
 } from 'vue'
@@ -83,7 +84,7 @@ import { usePlayCache } from '@/hooks/user'
 function comicInfoModule(comicId: Ref<ComicId>, init: () => void) {
   const isPending = ref(false)
   /** 动漫信息 */
-  const comic = reactive<GetComicMainReturn>({
+  const comic = shallowReactive<GetComicMainReturn>({
     title: '',
     season: '',
     region: '',
@@ -176,7 +177,7 @@ export default defineComponent({
       }
     )
     /** 选集 */
-    const anthology = reactive<
+    const anthology = shallowReactive<
       Type.Anthology & {
         /** 当前选中的集信息 */
         currentItem: ChangeReturns | null

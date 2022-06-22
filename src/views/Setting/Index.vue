@@ -32,14 +32,7 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  CSSProperties,
-  defineComponent,
-  inject,
-  reactive,
-  ref
-} from 'vue'
+import { computed, CSSProperties, defineComponent, reactive, ref } from 'vue'
 
 import { getThemeInstance } from '@/theme/theme.class'
 
@@ -49,6 +42,7 @@ import ThemeColorEditor, {
 import { ElForm, ElNotification } from 'element-plus'
 import { useSystemConfigStore } from '@/stores/systemConfig.store'
 import { FormRulesMap } from 'element-plus/lib/components/form/src/form.type'
+import { useIsDev } from '@/hooks/utils'
 
 function themeColorModule() {
   const themeColorEditorComp = ref<InstanceType<typeof ThemeColorEditor>>()
@@ -129,7 +123,7 @@ export default defineComponent({
     ThemeColorEditor
   },
   setup() {
-    const isDev = inject('isDev')
+    const isDev = useIsDev().get()
     const hideStyle = computed(
       () =>
         ({

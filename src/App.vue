@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, provide, ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 import '@/assets/icon/iconfont.css'
 import '@/assets/icon/iconfont.js'
 
@@ -27,10 +27,10 @@ import AppRouter from '@/layout/AppRouter.vue'
 
 import { useSystemConfigStore } from './stores/systemConfig.store'
 import { WEB_NAME } from './common/static'
+import { useIsDev } from './hooks/utils'
 
 function provideModule() {
-  const isDev = import.meta.env.MODE === 'development'
-  provide('isDev', isDev)
+  const { isDev } = useIsDev()
   return {
     isDev
   }

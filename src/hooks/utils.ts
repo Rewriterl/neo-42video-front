@@ -8,7 +8,10 @@ import {
   unref,
   nextTick,
   onActivated,
-  onBeforeUnmount
+  onBeforeUnmount,
+  provide,
+  InjectionKey,
+  inject
 } from 'vue'
 import { domObserver } from '@/utils/dom'
 import { useEventListener } from '@/utils/vant/useEventListener'
@@ -130,4 +133,15 @@ export function usePageIn(hook: () => void) {
 export function usePageOut(hook: () => void) {
   onBeforeUnmount(hook)
   onDeactivated(hook)
+}
+
+export const IS_DEV_PROVIDE_KEY = Symbol() as InjectionKey<boolean>
+export function useIsDev() {
+  const isDev = import.meta.env.MODE === 'development'
+  provide(IS_DEV_PROVIDE_KEY, isDev)
+  const get = () => inject(IS_DEV_PROVIDE_KEY)
+  return {
+    get,
+    isDev
+  }
 }

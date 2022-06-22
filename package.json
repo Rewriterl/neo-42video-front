@@ -10,7 +10,6 @@
     "@types/node": "^15.12.2",
     "adicw-utils": "^1.0.3",
     "axios": "^0.21.1",
-    "better-scroll": "^2.4.2",
     "element-plus": "^2.0.5",
     "moment": "^2.29.1",
     "path": "^0.12.7",

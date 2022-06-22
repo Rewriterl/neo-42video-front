@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, reactive } from 'vue'
+import { computed, defineComponent, PropType, shallowReactive } from 'vue'
 import HomeSectionCard from './HomeSectionCard.vue'
 import TransUl from '@comps/Animate/TransUl.vue'
 import * as Type from '../types/homeSection.type'
@@ -66,7 +66,7 @@ export default defineComponent({
   setup(props) {
     type ComicKey = 'hots' | 'latest'
 
-    const tabs = reactive<Type.Tabs<ComicKey>>({
+    const tabs = shallowReactive<Type.Tabs<ComicKey>>({
       active: 'hots',
       list: [
         // {

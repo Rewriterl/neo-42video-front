@@ -78,7 +78,15 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, reactive, ref, watch } from 'vue'
+import {
+  computed,
+  defineComponent,
+  PropType,
+  reactive,
+  ref,
+  shallowReactive,
+  watch
+} from 'vue'
 import { wait } from 'adicw-utils'
 
 import AwSlideX from '@comps/AwSlide/AwSlideX.vue'
@@ -131,7 +139,7 @@ export default defineComponent({
         return props.banner[this.active]
       }
     })
-    const tabs = reactive<Type.Tabs<ComicKey>>({
+    const tabs = shallowReactive<Type.Tabs<ComicKey>>({
       active: 'hots',
       list: [
         {

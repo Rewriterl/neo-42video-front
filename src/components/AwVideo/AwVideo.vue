@@ -163,7 +163,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, Ref, ref } from 'vue'
+import { defineComponent, reactive, Ref, ref, shallowReactive } from 'vue'
 import {
   fullscreen,
   pictureInPicture,
@@ -189,7 +189,7 @@ type VideoInstance = InstanceType<typeof VideoRender>
 /** 播放倍数模块 */
 function playbackRateModule(videoInstance: Ref<VideoInstance | undefined>) {
   /** 播放倍数集合 */
-  const playbackRate = reactive({
+  const playbackRate = shallowReactive({
     /** 选项显隐 */
     visible: false,
     /** 当前倍数名称 */
