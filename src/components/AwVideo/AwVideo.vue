@@ -173,7 +173,7 @@ import {
 } from 'adicw-utils'
 
 import AwVideoProgress from './AwVideoProgress.vue'
-import AwVideoMsg, { NotifyItem, NotifyReturns } from './AwVideoMsg.vue'
+import AwVideoMsg, { NotifyItem } from './AwVideoMsg.vue'
 import VideoRender from './VideoRender.vue'
 import AwVideoMask from './AwVideoMask.vue'
 
@@ -238,7 +238,6 @@ export default defineComponent({
     AwVideoMask,
     VideoRender
   },
-  inheritAttrs: true,
   props: {
     /** 视频源地址 */
     src: {

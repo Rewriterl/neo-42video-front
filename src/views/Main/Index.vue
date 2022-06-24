@@ -11,7 +11,6 @@
           :key="id"
           :src="anthology.current"
           :init-current-time="initPlayerCurrentTime"
-          autoplay
           @next="nextAnthology"
           @ended="nextAnthology"
           @error="onVideoError"
@@ -55,7 +54,6 @@ import {
   computed,
   defineComponent,
   onBeforeUnmount,
-  reactive,
   Ref,
   ref,
   shallowReactive,
@@ -159,30 +157,23 @@ export default defineComponent({
     const route = useRoute()
     const { playProgressCache, playHistoryCache } = usePlayCache()
 
-    const routeParam = reactive({
-      get episode() {
-        return Number(route.query.episode) || -1
-      },
-      get progress() {
-        return Number(route.query.progress) || -1
-      },
-      get orgId() {
-        return String(route.query.orgId) || ''
-      }
-    })
+    const routeParam = computed(() => ({
+      episode: Number(route.query.episode) || -1,
+      progress: Number(route.query.progress) || -1,
+      orgId: String(route.query.orgId) || ''
+    }))
+
     const { comic, comicUrls, ...comicInfoModuleArgs } = comicInfoModule(
       toRef(props, 'id'),
       () => {
-        !!~routeParam.episode ? initInRoute() : init()
+        !!~routeParam.value.episode ? initInRoute() : init()
       }
     )
     /** 选集 */
-    const anthology = shallowReactive<
-      Type.Anthology & {
-        /** 当前选中的集信息 */
-        currentItem: ChangeReturns | null
-      }
-    >({
+    const anthology: Type.Anthology & {
+      /** 当前选中的集信息 */
+      currentItem: ChangeReturns | null
+    } = shallowReactive({
       current: '',
       currentItem: null,
       bads: [],
@@ -342,11 +333,11 @@ export default defineComponent({
      * 初始化-从路由中获取信息
      */
     const initInRoute = async () => {
-      const list = anthologyListMap.value[routeParam.orgId]
+      const list = anthologyListMap.value[routeParam.value.orgId]
       if (!list) return
-      const value = list.values[routeParam.episode]
+      const value = list.values[routeParam.value.episode]
 
-      initPlayerCurrentTime.value = routeParam.progress
+      initPlayerCurrentTime.value = routeParam.value.progress
 
       changeAnthology(
         {
@@ -358,7 +349,9 @@ export default defineComponent({
         }
       )
       awVideoComp.value?.notify({
-        content: `已为您定位到 ${value.name} ${sToMs(routeParam.progress)}`,
+        content: `已为您定位到 ${value.name} ${sToMs(
+          routeParam.value.progress
+        )}`,
         duration: 3000
       })
     }
@@ -376,7 +369,6 @@ export default defineComponent({
       comicUrls,
       anthology,
       awVideoComp,
-      routeParam,
       initPlayerCurrentTime,
       changeAnthology,
       onVideoError,

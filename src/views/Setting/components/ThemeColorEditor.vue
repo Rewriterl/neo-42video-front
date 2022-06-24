@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive, watch } from 'vue'
+import { defineComponent, PropType, reactive } from 'vue'
 import { THEMES } from '@/theme/static'
 import { getThemeInstance } from '@/theme/theme.class'
 

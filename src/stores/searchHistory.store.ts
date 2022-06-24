@@ -17,7 +17,7 @@ export const useSearchHistory = defineStore('searchHistory', {
   }),
   getters: {
     list(state) {
-      return state.handler.list.sort((a, b) => b.date - a.date)
+      return [...state.handler.list].sort((a, b) => b.date - a.date)
     }
   },
   actions: {

@@ -60,9 +60,13 @@ export default defineComponent({
   }
 })
 </script>
+
 <style lang="less">
 @import '~styles/common';
 @import '~styles/app';
+</style>
+
+<style lang="less" scoped>
 @import '~styles/var';
 .app-contain {
   position: relative;

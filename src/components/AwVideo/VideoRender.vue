@@ -52,7 +52,7 @@ export default defineComponent({
     seeked: (e: Event) => e,
     volumechange: (e: Event) => e,
     loadedmetadata: (e: Event) => e,
-    'update:volume': (e: number) => true
+    'update:volume': (e: number) => e
   },
   setup(props, { emit }) {
     const isDev = useIsDev().get()
