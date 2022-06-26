@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import RouteList from './routes/index'
 import { getServerIp } from '@/stores/systemConfig.store'
 import { ElNotification } from 'element-plus'
 import {
@@ -8,7 +7,13 @@ import {
 } from '@/class/routeScrollCache.class'
 import { WEB_NAME } from '@/common/static'
 
-createRouteSCM()
+/**
+ * 自动导入路由
+ */
+function loadRoutes(): RouteRecordRaw[] {
+  const mods = import.meta.globEager('./routes/*.routes.ts')
+  return Object.values(mods).map((item) => item.default)
+}
 
 const routes: RouteRecordRaw[] = [
   {
@@ -27,7 +32,7 @@ const routes: RouteRecordRaw[] = [
       dom: '#home'
     }
   },
-  ...RouteList
+  ...loadRoutes()
 ]
 
 const router = createRouter({
@@ -35,6 +40,7 @@ const router = createRouter({
   routes
 })
 
+createRouteSCM()
 router.beforeEach((to, from, next) => {
   getRouteSCMInstance().addCache(from.path, from.meta)
 
