@@ -9,7 +9,7 @@
         :pause-on-hover="false"
         @change="(e) => onCarouselChange(+e)"
       >
-        <el-carousel-item v-for="(item, index) in banner" :key="index">
+        <el-carousel-item v-for="(item, index) in realBanner" :key="index">
           <BaseImg :src="item.cover" :lazy="false" />
         </el-carousel-item>
       </el-carousel>
@@ -23,15 +23,17 @@
               leave-active-class="carousel-info-out"
             >
               <div v-show="carousel.infoVisible" class="inner">
-                <span>俺也不知道</span>
+                <span>{{ carousel.current.season || '-' }}</span>
                 <h1>{{ carousel.current.title }}</h1>
                 <p>
                   越是漂亮华丽 令人振奋的烟花，在消逝之后就让人越感觉到寂寞。
                   但即便烟花消逝了 回忆却还留着
                 </p>
                 <div class="inner-rate">
-                  <el-rate :value="5" disabled />
-                  <span>999 <i>views</i></span>
+                  <el-rate
+                    :model-value="Number(carousel.current.rank || 0) / 2"
+                  />
+                  <span>{{ carousel.current.rank || 0 }} <i>评分</i></span>
                 </div>
                 <div class="inner-control">
                   <el-button
@@ -98,6 +100,7 @@ import AwTab from '@/components/AwTabs/AwTab.vue'
 
 import * as Type from '../types/homeSection.type'
 import { toComicMain } from '@/hooks/router'
+import { getComicMain, GetComicMainReturn } from '@/api'
 
 export default defineComponent({
   name: 'HomeBanner',
@@ -132,11 +135,14 @@ export default defineComponent({
 
     const isReady = ref(false)
     const awSlideXActive = ref(0)
+    const bannerInfoMap = shallowReactive(
+      new Map<ComicId, GetComicMainReturn>()
+    )
     const carousel = reactive({
       active: 0,
       infoVisible: true,
       get current() {
-        return props.banner[this.active]
+        return realBanner.value[this.active]
       }
     })
     const tabs = shallowReactive<Type.Tabs<ComicKey>>({
@@ -171,6 +177,12 @@ export default defineComponent({
         }))
       }
     })
+    const realBanner = computed(() =>
+      props.banner.map((item) => ({
+        ...item,
+        ...(bannerInfoMap.get(item.id) || {})
+      }))
+    )
 
     const onCarouselChange = async (e: number) => {
       carousel.infoVisible = false
@@ -187,6 +199,17 @@ export default defineComponent({
         isReady.value = true
       }
     )
+    watch(
+      () => props.banner,
+      async (banner) => {
+        await wait(2000)
+        banner.forEach(async ({ id }) => {
+          if (bannerInfoMap.get(id)) return
+          const data = await getComicMain(id)
+          data && bannerInfoMap.set(id, data)
+        })
+      }
+    )
 
     return {
       tabs,
@@ -195,7 +218,8 @@ export default defineComponent({
       onCarouselChange,
       carousel,
       toComicMain,
-      isReady
+      isReady,
+      realBanner
     }
   }
 })
