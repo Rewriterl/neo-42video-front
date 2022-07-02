@@ -6,7 +6,7 @@
         :key="routeName"
       >
         <div
-          v-if="logined"
+          v-if="logined.value"
           :class="{ active: active.includes(activeRouteName) }"
           class="user-frame__routes-item"
           @click="$router.push({ name: routeName })"
@@ -37,32 +37,33 @@ export default defineComponent({
   setup() {
     const userStore = useUserStore()
     const route = useRoute()
-    let logined = userStore.userAccessToken.length > 8
-    console.log(logined)
+    // let logined = userStore.userAccessToken.length > 8
+    const login = computed(() => userStore.userAccessToken.length > 8)
+    const unlogin = computed(() => !login.value)
     const routeList = [
       {
         name: '播放历史',
         routeName: 'PlayHistory',
         active: ['User', 'PlayHistory'],
-        logined: logined
+        logined: login
       },
       {
         name: '追番',
         routeName: 'ComicFavlist',
         active: ['ComicFavlist'],
-        logined: logined
+        logined: login
       },
       {
         name: '登录',
         routeName: 'Login',
         active: ['Login'],
-        logined: !logined
+        logined: unlogin
       },
       {
         name: '注册',
         routeName: 'Register',
         active: ['Register'],
-        logined: !logined
+        logined: unlogin
       }
     ]
     const activeRouteName = computed(() => String(route.name))

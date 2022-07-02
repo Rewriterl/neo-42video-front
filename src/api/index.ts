@@ -217,7 +217,9 @@ export async function login(
   try {
     const { data } = await postax<ApiReturns.Login>(`/api/token`, {
       phone: username,
-      password
+      password,
+      username: '',
+      email: ''
     })
     return {
       accessToken: data.data.accessToken,

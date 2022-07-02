@@ -1,6 +1,7 @@
 import router from '@/router'
 import { AxiosInstance } from 'axios'
 import { ElNotification } from 'element-plus'
+import { useUserStore } from '@/stores/user.store'
 /**
  * axios辅助函数
  */
@@ -20,7 +21,7 @@ export default class AxiosUtils {
       (response) => {
         // store.state.loading = true
         ElNotification({
-          type: 'success',
+          type: 'info',
           title: '通知',
           message: response.data.msg
         })
@@ -57,10 +58,10 @@ export default class AxiosUtils {
     if (this.instance === null) return
     this.instance.interceptors.request.use((request) => {
       // store.state.loading = false
-      // const token = this.getToken()
-      // if (token) {
-      //   request.headers['authorization'] = this.getToken()
-      // }
+      const token = useUserStore().userAccessToken
+      if (token.length > 7) {
+        request.headers['Authorization'] = token
+      }
       return request
     })
   }

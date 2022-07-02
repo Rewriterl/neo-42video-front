@@ -37,12 +37,11 @@ import { ElNotification } from 'element-plus'
 import { useUserStore } from '@/stores/user.store'
 
 export default defineComponent({
-  name: 'PlayHistory',
+  name: 'Login',
   setup() {
     onMounted(() => {
       Api.getRsaPub().then((res) => {
         state.rsaPub = res
-        console.log(state.rsaPub)
       })
     })
     const state = reactive({

@@ -58,7 +58,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, onBeforeMount } from 'vue'
 import moment from 'moment'
 
 import { toComicMain } from '@/hooks/router'

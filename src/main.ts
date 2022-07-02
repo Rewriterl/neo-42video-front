@@ -7,7 +7,7 @@ import { directs } from '@/utils/vue/directs'
 
 import { createTheme } from './theme/theme.class'
 import { elementPlusInit } from './plugins/elementPlus'
-import { createVueInit } from '@/utils/vue/index'
+import { createVueInit } from '@/utils/vue'
 import { createPreloadCdn } from '@/plugins/preloadCdn.class'
 import { createPlayProgress } from '@/class/playProgress.class'
 import { createPlayHistory } from '@/class/playHistory.class'

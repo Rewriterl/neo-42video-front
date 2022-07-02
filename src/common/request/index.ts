@@ -42,6 +42,14 @@ export function dfGetax<T>(url: string) {
   return instance.get<T>(url)
 }
 
+export function deleteax<T>(url: string) {
+  return instance.delete<T>(url)
+}
+
+export function putax<T>(url: string, params = {}, config = {}) {
+  return instance.put<T>(url, params, config)
+}
+
 /**
  * 创建一个请求驳回源
  * @returns
