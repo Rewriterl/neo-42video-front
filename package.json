@@ -11,6 +11,7 @@
     "adicw-utils": "^1.0.3",
     "axios": "^0.21.1",
     "element-plus": "^2.0.5",
+    "jsencrypt": "^3.2.1",
     "moment": "^2.29.1",
     "path": "^0.12.7",
     "pinia": "^2.0.9",

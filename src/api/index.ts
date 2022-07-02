@@ -1,4 +1,4 @@
-import { getax, postax } from '@/common/request/index'
+import { getax, postax } from '@/common/request'
 import { getVal } from 'adicw-utils'
 import * as FnReturns from './type'
 import * as ApiReturns from './api.type'
@@ -228,5 +228,14 @@ export async function login(
       accessToken: '',
       refreshToken: ''
     }
+  }
+}
+
+export async function getRsaPub(): Promise<string> {
+  try {
+    const { data } = await getax<ApiReturns.RsaPub>('api/rsa-pub')
+    return data.data
+  } catch {
+    return ''
   }
 }

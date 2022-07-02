@@ -30,30 +30,49 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
+import { defineComponent, onMounted, reactive } from 'vue'
 import * as Api from '@/api'
+import { JSEncrypt } from 'jsencrypt'
+import { ElNotification } from 'element-plus'
 import { useUserStore } from '@/stores/user.store'
 
 export default defineComponent({
   name: 'PlayHistory',
   setup() {
+    onMounted(() => {
+      Api.getRsaPub().then((res) => {
+        state.rsaPub = res
+        console.log(state.rsaPub)
+      })
+    })
     const state = reactive({
       form: {
         username: '',
         password: ''
-      }
+      },
+      rsaPub: ''
     })
     const rules = {
       username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
       password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
     }
     const doLogin = () => {
-      // 表单验证后提交
-      Api.login(state.form.username, state.form.password).then((res) => {
-        useUserStore().saveUser({
-          ...res
+      const jse = new JSEncrypt()
+      jse.setPublicKey(state.rsaPub)
+      const encryptedPassword = jse.encrypt(state.form.password)
+      if (encryptedPassword) {
+        // 表单验证后提交
+        Api.login(state.form.username, encryptedPassword).then((res) => {
+          useUserStore().saveUser({
+            ...res
+          })
         })
-      })
+      } else {
+        ElNotification.error({
+          title: '错误',
+          message: '登录失败'
+        })
+      }
     }
     return {
       state,

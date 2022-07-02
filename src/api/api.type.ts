@@ -232,3 +232,7 @@ export type Login = {
     refreshToken: string
   }
 }
+
+export type RsaPub = {
+  data: string
+}
