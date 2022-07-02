@@ -45,6 +45,7 @@ class User {
       USER_STORE_KEY,
       JSON.stringify(this.userDetails_.value)
     )
+    console.log(localStorage.getItem(USER_STORE_KEY))
   }
 
   public getStore() {

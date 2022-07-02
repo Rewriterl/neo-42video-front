@@ -13,7 +13,7 @@ export const useUserStore = defineStore('userStore', {
     },
     saveUser(userDetials: UserDetails) {
       getUserInstance().userDetails = userDetials
-      console.log(getUserInstance().userDetails)
+      this.saveStore()
     }
   }
 })
