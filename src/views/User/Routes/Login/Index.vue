@@ -1,26 +1,70 @@
 <template>
-  <BotLoad class="play-history" :data="timelist" :perpage="3">
-    <h1>登录</h1>
-  </BotLoad>
+  <div class="login-container">
+    <el-form
+      ref="form"
+      :model="state.form"
+      :rules="rules"
+      label-width="80px"
+      class="login-form"
+    >
+      <el-form-item label="用户名" prop="username">
+        <el-input
+          v-model="state.form.username"
+          size="large"
+          placeholder="请输入用户名"
+        ></el-input>
+      </el-form-item>
+      <el-form-item label="密码" prop="password">
+        <el-input
+          v-model="state.form.password"
+          type="password"
+          size="large"
+          placeholder="请输入密码"
+        ></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button round type="primary" @click="doLogin">登录</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
-
-import BotLoad from '@/components/Container/BotLoad.vue'
+import { defineComponent, reactive } from 'vue'
+import * as Api from '@/api'
+import { useUserStore } from '@/stores/user.store'
 
 export default defineComponent({
   name: 'PlayHistory',
-  components: {
-    BotLoad
-  },
   setup() {
-    return {}
+    const state = reactive({
+      form: {
+        username: '',
+        password: ''
+      }
+    })
+    const rules = {
+      username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+      password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+    }
+    const doLogin = () => {
+      // 表单验证后提交
+      Api.login(state.form.username, state.form.password).then((res) => {
+        useUserStore().saveUser({
+          ...res
+        })
+      })
+    }
+    return {
+      state,
+      rules,
+      doLogin
+    }
   }
 })
 </script>
 <style lang="less" scoped>
-.play-history {
+.login-container {
   position: relative;
   width: 100%;
   height: 100%;

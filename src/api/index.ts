@@ -1,7 +1,8 @@
-import { getax } from '@/common/request/index'
+import { getax, postax } from '@/common/request/index'
 import { getVal } from 'adicw-utils'
 import * as FnReturns from './type'
 import * as ApiReturns from './api.type'
+
 export * from './type'
 export * from './pixiv'
 
@@ -206,5 +207,26 @@ export async function getComicFilterConfig(): Promise<FnReturns.GetComicFilterCo
     }))
   } catch {
     return []
+  }
+}
+
+export async function login(
+  username: string,
+  password: string
+): Promise<FnReturns.LoginReturn> {
+  try {
+    const { data } = await postax<ApiReturns.Login>(`/api/token`, {
+      phone: username,
+      password
+    })
+    return {
+      accessToken: data.data.accessToken,
+      refreshToken: data.data.refreshToken
+    }
+  } catch {
+    return {
+      accessToken: '',
+      refreshToken: ''
+    }
   }
 }

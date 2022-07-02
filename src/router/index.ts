@@ -6,6 +6,7 @@ import {
   createRouteSCM
 } from '@/class/routeScrollCache.class'
 import { WEB_NAME } from '@/common/static'
+import { useUserStore } from '@/stores/user.store'
 
 /**
  * 自动导入路由
@@ -40,22 +41,20 @@ const router = createRouter({
   routes
 })
 
-const jwt = localStorage.getItem('jwt')
-
-const logined = jwt !== null && jwt !== '' && jwt.length > 7
+// const logined = jwt !== null && jwt !== '' && jwt.length > 7
 createRouteSCM()
 router.beforeEach((to, from, next) => {
   getRouteSCMInstance().addCache(from.path, from.meta)
 
-  if ((to.name === 'PlayHistory' || to.name === 'ComicFavlist') && !logined) {
-    console.log('未登录')
-    ElNotification({
-      type: 'error',
-      title: '通知',
-      message: '访问此页面需要先登录'
-    })
-    next({ name: 'Login' })
-  }
+  // if ((to.name === 'PlayHistory' || to.name === 'ComicFavlist') && !logined) {
+  //   console.log('未登录')
+  //   ElNotification({
+  //     type: 'error',
+  //     title: '通知',
+  //     message: '访问此页面需要先登录'
+  //   })
+  //   next({ name: 'Login' })
+  // }
   next()
 })
 router.afterEach((to) => {

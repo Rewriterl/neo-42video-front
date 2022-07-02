@@ -225,3 +225,10 @@ export interface VilipixTranslate {
     source_json: string
   }
 }
+
+export type Login = {
+  data: {
+    accessToken: string
+    refreshToken: string
+  }
+}

@@ -157,3 +157,8 @@ export type GetComicImglistReturn = {
   w: number
   h: number
 }[]
+
+export type LoginReturn = {
+  accessToken: string
+  refreshToken: string
+}

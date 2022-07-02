@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 const REQUEST_BASEURL_STORE_KEY = 'REQUEST_BASEURL_STORE'
 
 export function getServerIp() {
-  return 'http://localhost:8080'
+  return 'http://localhost:3000'
   // return localStorage.getItem(REQUEST_BASEURL_STORE_KEY) || ''
 }
 

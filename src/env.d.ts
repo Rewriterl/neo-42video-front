@@ -22,3 +22,5 @@ declare type ValueOf<T> = T[keyof T]
  * 动漫id
  */
 declare type ComicId = string | number
+
+declare type Authority = string

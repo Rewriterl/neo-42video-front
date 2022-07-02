@@ -1,15 +1,19 @@
 import { defineStore } from 'pinia'
-import { getUserInstance } from '@/class/user.class'
+import { getUserInstance, UserDetails } from '@/class/user.class'
 
 export const useUserStore = defineStore('userStore', {
   getters: {
     userAccessToken() {
-      return getUserInstance().jwt
+      return 'Bearer ' + (getUserInstance().userDetails.accessToken || '')
     }
   },
   actions: {
-    saveUser(jwt: string) {
-      getUserInstance().jwt = jwt
+    saveStore() {
+      getUserInstance().saveStore()
+    },
+    saveUser(userDetials: UserDetails) {
+      getUserInstance().userDetails = userDetials
+      console.log(getUserInstance().userDetails)
     }
   }
 })
