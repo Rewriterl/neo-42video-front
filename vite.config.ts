@@ -4,6 +4,17 @@ import path from 'path'
 import viteCompression from 'vite-plugin-compression'
 
 export default defineConfig({
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+        rewrite: (path) => {
+          return path.replace(/^\/api/, '')
+        }
+      }
+    }
+  },
   plugins: [
     vue(),
     // 代码压缩

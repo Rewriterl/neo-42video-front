@@ -40,17 +40,21 @@ const router = createRouter({
   routes
 })
 
+const jwt = localStorage.getItem('jwt')
+
+const logined = jwt !== null && jwt !== '' && jwt.length > 7
 createRouteSCM()
 router.beforeEach((to, from, next) => {
   getRouteSCMInstance().addCache(from.path, from.meta)
 
-  if (to.name !== 'Setting' && !getServerIp()) {
+  if ((to.name === 'PlayHistory' || to.name === 'ComicFavlist') && !logined) {
+    console.log('未登录')
     ElNotification({
       type: 'error',
-      title: '配置',
-      message: '请先配置服务器地址'
+      title: '通知',
+      message: '访问此页面需要先登录'
     })
-    next({ name: 'Setting' })
+    next({ name: 'Login' })
   }
   next()
 })

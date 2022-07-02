@@ -1,6 +1,8 @@
 const User = () => import('@/views/User/Index.vue')
 const PlayHistory = () => import('@/views/User/Routes/PlayHistory/Index.vue')
 const ComicFavlist = () => import('@/views/User/Routes/ComicFavlist/Index.vue')
+const Login = () => import('@/views/User/Routes/Login/Index.vue')
+const Register = () => import('@/views/User/Routes/Register/Index.vue')
 import { WEB_NAME } from '@/common/static'
 import { RouteRecordRaw } from 'vue-router'
 
@@ -28,6 +30,24 @@ export default {
       component: ComicFavlist,
       meta: {
         title: WEB_NAME + '-追番',
+        elName: '#user .comic-favlist'
+      }
+    },
+    {
+      path: 'login',
+      name: 'Login',
+      component: Login,
+      meta: {
+        title: WEB_NAME + '-登录',
+        elName: '#user .comic-favlist'
+      }
+    },
+    {
+      path: 'register',
+      name: 'Register',
+      component: Register,
+      meta: {
+        title: WEB_NAME + '-注册',
         elName: '#user .comic-favlist'
       }
     }

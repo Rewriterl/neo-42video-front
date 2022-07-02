@@ -49,7 +49,9 @@
       </transition>
     </div>
     <div class="avatar">
-      <BaseImg src="https://api.adicw.cn/uploads/UserAvatar/default.jpg" />
+      <BaseImg
+        src="https://fastly.jsdelivr.net/gh/Rewriterl/cdn@0.1/avater.png"
+      />
     </div>
   </div>
 </template>

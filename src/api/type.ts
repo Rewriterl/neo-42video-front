@@ -105,7 +105,7 @@ export interface GetHomeMixData {
   cn: ComicPageList[]
   /** 轮播 */
   banner: {
-    cover: string
+    thumbnail: string
     id: string
     title: string
   }[]

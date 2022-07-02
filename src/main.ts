@@ -12,12 +12,14 @@ import { createPreloadCdn } from '@/plugins/preloadCdn.class'
 import { createPlayProgress } from '@/class/playProgress.class'
 import { createPlayHistory } from '@/class/playHistory.class'
 import { createComicFav } from '@/class/comicFav.class'
+import { createUser } from '@/class/user.class'
 
 createPreloadCdn()
 createTheme()
 createPlayProgress().getStore()
 createPlayHistory().getStore()
 createComicFav().getStore()
+createUser().getStore()
 
 const app = createApp(App)
 app.use(createPinia())

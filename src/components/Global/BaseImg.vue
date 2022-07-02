@@ -45,5 +45,6 @@ export default defineComponent({
 <style lang="less" scoped>
 img {
   object-fit: cover;
+  cursor: pointer;
 }
 </style>

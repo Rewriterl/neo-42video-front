@@ -145,12 +145,13 @@ export async function getVideoUrl(
  */
 export async function getHomeMixData(): Promise<FnReturns.GetHomeMixData | null> {
   try {
-    const { data } = await getax<ApiReturns.GetIndex>('api/getIndex')
+    // const { data } = await getax<ApiReturns.GetIndex>('api/getIndex')
+    const { data } = await getax<ApiReturns.GetIndex>('api/videos')
     const listFormat = (list: any[]) =>
       list.slice(0, 10).map((item) => ({
-        cover: item.cover,
+        cover: item.thumbnail,
         id: item.id,
-        season: item.season,
+        season: 'item.season',
         title: item.title
       }))
     return {
@@ -162,7 +163,7 @@ export async function getHomeMixData(): Promise<FnReturns.GetHomeMixData | null>
       })),
       latest: listFormat(getVal(() => data.data.latest, [])),
       banner: getVal(() => data.data.banner, []).map((item) => ({
-        cover: item.cover,
+        thumbnail: item.cover,
         id: item.id || '-1',
         title: item.title || '未知'
       })),

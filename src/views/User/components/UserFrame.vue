@@ -1,15 +1,19 @@
 <template>
   <div class="user-frame">
     <div class="user-frame__routes">
-      <div
-        v-for="{ routeName, name, active } in routeList"
+      <template
+        v-for="{ routeName, name, active, logined } in routeList"
         :key="routeName"
-        :class="{ active: active.includes(activeRouteName) }"
-        class="user-frame__routes-item"
-        @click="$router.push({ name: routeName })"
       >
-        {{ name }}
-      </div>
+        <div
+          v-if="logined"
+          :class="{ active: active.includes(activeRouteName) }"
+          class="user-frame__routes-item"
+          @click="$router.push({ name: routeName })"
+        >
+          {{ name }}
+        </div>
+      </template>
     </div>
     <div class="user-frame__content">
       <router-view v-slot="{ Component }">
@@ -26,24 +30,42 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/user.store'
+
 export default defineComponent({
   name: 'UserFrame',
   setup() {
+    const userStore = useUserStore()
     const route = useRoute()
+    let logined = userStore.userAccessToken.length > 8
+    console.log(logined)
     const routeList = [
       {
         name: '播放历史',
         routeName: 'PlayHistory',
-        active: ['User', 'PlayHistory']
+        active: ['User', 'PlayHistory'],
+        logined: logined
       },
       {
         name: '追番',
         routeName: 'ComicFavlist',
-        active: ['ComicFavlist']
+        active: ['ComicFavlist'],
+        logined: logined
+      },
+      {
+        name: '登录',
+        routeName: 'Login',
+        active: ['Login'],
+        logined: !logined
+      },
+      {
+        name: '注册',
+        routeName: 'Register',
+        active: ['Register'],
+        logined: !logined
       }
     ]
     const activeRouteName = computed(() => String(route.name))
-
     return {
       routeList,
       activeRouteName
@@ -65,6 +87,7 @@ export default defineComponent({
     height: 70px;
     transform: translateY(@radius);
     user-select: none;
+
     &-item {
       position: relative;
       width: 290px;
@@ -75,6 +98,7 @@ export default defineComponent({
       color: var(--font-unactive-color);
       cursor: pointer;
       transition: all 0.25s;
+
       &::after {
         .mask(-1);
         border-radius: @radius;
@@ -83,11 +107,14 @@ export default defineComponent({
         background: var(--box-bg-color);
         opacity: 0.6;
       }
+
       &:hover::after {
         transform: translateY(75%);
       }
+
       &.active {
         color: var(--font-color);
+
         &::after {
           opacity: 1;
           transform: translateY(0);
@@ -95,6 +122,7 @@ export default defineComponent({
       }
     }
   }
+
   &__content {
     position: relative;
     flex: 1;
@@ -103,6 +131,7 @@ export default defineComponent({
     border-radius: @radius;
   }
 }
+
 .route-transition {
   @keyframes slide {
     from {
@@ -114,15 +143,18 @@ export default defineComponent({
       opacity: 1;
     }
   }
+
   .base {
     position: absolute !important;
     left: 0;
     top: 0;
   }
+
   &-enter-active {
     .base;
     animation: slide 0.25s;
   }
+
   &-leave-active {
     .base;
     animation: slide 0.25s reverse;

@@ -12,22 +12,22 @@
         <el-button type="primary" round @click="saveThemeColor">保存</el-button>
       </div>
     </div>
-    <div class="setting-box setting-config">
-      <div class="setting-box__title">参数配置</div>
-      <el-form ref="configFormComp" :model="config" :rules="configRules">
-        <el-form-item label="服务器地址" prop="serverIp">
-          <el-input
-            v-model="config.serverIp"
-            :style="hideStyle"
-            placeholder="如：http://192.169.1.19:8002/"
-          />
-        </el-form-item>
-      </el-form>
+    <!--    <div class="setting-box setting-config">-->
+    <!--      <div class="setting-box__title">参数配置</div>-->
+    <!--      <el-form ref="configFormComp" :model="config" :rules="configRules">-->
+    <!--        <el-form-item label="服务器地址" prop="serverIp">-->
+    <!--          <el-input-->
+    <!--            v-model="config.serverIp"-->
+    <!--            :style="hideStyle"-->
+    <!--            placeholder="如：http://192.169.1.19:8002/"-->
+    <!--          />-->
+    <!--        </el-form-item>-->
+    <!--      </el-form>-->
 
-      <div class="setting-box__control">
-        <el-button type="primary" round @click="saveConfig">保存</el-button>
-      </div>
-    </div>
+    <!--      <div class="setting-box__control">-->
+    <!--        <el-button type="primary" round @click="saveConfig">保存</el-button>-->
+    <!--      </div>-->
+    <!--    </div>-->
   </div>
 </template>
 
