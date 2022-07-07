@@ -162,3 +162,7 @@ export type LoginReturn = {
   accessToken: string
   refreshToken: string
 }
+
+export type SliceUploadReturn = {
+  url: string
+}

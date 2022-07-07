@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div class="upload-container">
     <el-form
       ref="form"
       :model="state.form"
@@ -82,7 +82,7 @@ export default defineComponent({
 })
 </script>
 <style lang="less" scoped>
-.login-container {
+.upload-container {
   position: relative;
   width: 100%;
   height: 100%;

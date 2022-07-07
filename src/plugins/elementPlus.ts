@@ -24,7 +24,9 @@ import {
   ElOption,
   ElDropdown,
   ElDropdownItem,
-  ElDropdownMenu
+  ElDropdownMenu,
+  ElUpload,
+  ElIcon
 } from 'element-plus'
 const comps = [
   ElCarousel,
@@ -49,7 +51,9 @@ const comps = [
   ElOption,
   ElDropdown,
   ElDropdownItem,
-  ElDropdownMenu
+  ElDropdownMenu,
+  ElUpload,
+  ElIcon
 ]
 const plugins = [ElNotification]
 export function elementPlusInit(app: App<Element>) {

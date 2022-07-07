@@ -1,4 +1,4 @@
-import { getax, postax } from '@/common/request'
+import { getax, postax, putax } from '@/common/request'
 import { getVal } from 'adicw-utils'
 import * as FnReturns from './type'
 import * as ApiReturns from './api.type'
@@ -239,5 +239,31 @@ export async function getRsaPub(): Promise<string> {
     return data.data
   } catch {
     return ''
+  }
+}
+
+export async function sliceUpload(
+  formData: FormData
+): Promise<FnReturns.SliceUploadReturn> {
+  try {
+    for (const pair of formData.entries()) {
+      console.log(pair[0] + ', ' + pair[1])
+    }
+    const { data } = await putax<ApiReturns.SliceUpload>(
+      `api/video/upload`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    )
+    return {
+      url: data.data.url
+    }
+  } catch {
+    return {
+      url: ''
+    }
   }
 }

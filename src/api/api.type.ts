@@ -236,3 +236,8 @@ export type Login = {
 export type RsaPub = {
   data: string
 }
+export type SliceUpload = {
+  data: {
+    url: string
+  }
+}

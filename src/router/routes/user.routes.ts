@@ -34,6 +34,14 @@ export default {
       }
     },
     {
+      path: 'video-manage',
+      name: 'VideoManage',
+      component: () => import('@/views/User/Routes/VideoManage/Index.vue'),
+      meta: {
+        title: WEB_NAME + '-视频管理'
+      }
+    },
+    {
       path: 'login',
       name: 'Login',
       component: Login,

@@ -37,7 +37,6 @@ export default defineComponent({
   setup() {
     const userStore = useUserStore()
     const route = useRoute()
-    // let logined = userStore.userAccessToken.length > 8
     const login = computed(() => userStore.userAccessToken.length > 8)
     const unlogin = computed(() => !login.value)
     const routeList = [
@@ -51,6 +50,12 @@ export default defineComponent({
         name: '追番',
         routeName: 'ComicFavlist',
         active: ['ComicFavlist'],
+        logined: login
+      },
+      {
+        name: '视频管理',
+        routeName: 'VideoManage',
+        active: ['VideoManage'],
         logined: login
       },
       {
