@@ -68,18 +68,18 @@ export default defineComponent({
         state.totalSliceNum = Math.ceil(size / chunkSize)
         let start = 0
         let index = 0
+        let md5: any = ''
+        md5 = await getFileHash(file)
         while (start < size) {
           let blob = null
-          let md5: any = ''
           if (start + chunkSize > size) {
             blob = file.slice(start, size)
           } else {
             blob = file.slice(start, start + chunkSize)
           }
-          md5 = await getFileHash(blob)
           start += chunkSize
           index++
-          let BlobFile = new File([blob], `${name}-${index}`)
+          let BlobFile = new File([blob], `${name}`)
           let formData = new FormData()
           formData.append('slice', BlobFile)
           formData.append('md5', md5)
