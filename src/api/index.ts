@@ -246,9 +246,6 @@ export async function sliceUpload(
   formData: FormData
 ): Promise<FnReturns.SliceUploadReturn> {
   try {
-    for (const pair of formData.entries()) {
-      console.log(pair[0] + ', ' + pair[1])
-    }
     const { data } = await putax<ApiReturns.SliceUpload>(
       `api/video/upload`,
       formData,
@@ -259,11 +256,19 @@ export async function sliceUpload(
       }
     )
     return {
-      url: data.data.url
+      url: data.data
     }
   } catch {
     return {
       url: ''
     }
+  }
+}
+
+export async function addVideo(video: ApiReturns.VideoItem) {
+  try {
+    await postax(`api/video`, video)
+  } catch {
+    return null
   }
 }

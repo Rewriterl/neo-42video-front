@@ -237,7 +237,16 @@ export type RsaPub = {
   data: string
 }
 export type SliceUpload = {
-  data: {
-    url: string
-  }
+  data: string
+}
+
+export type VideoItem = {
+  url: string
+  thumbnail: string
+  title: string
+  description: string
+  type: number
+  videoTagList: Set<string> | Array<string>
+  area: string
+  duration: number
 }

@@ -20,11 +20,15 @@ export default class AxiosUtils {
     this.instance.interceptors.response.use(
       (response) => {
         // store.state.loading = true
-        ElNotification({
-          type: 'info',
-          title: '通知',
-          message: response.data.msg
-        })
+        if (response.data.msg != '') {
+          {
+            ElNotification({
+              type: 'info',
+              title: '通知',
+              message: response.data.msg
+            })
+          }
+        }
         return response
       },
       (error) => {
